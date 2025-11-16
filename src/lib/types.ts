@@ -12,7 +12,8 @@ export type Site = {
   name: string;
   city: string;
   state: string;
-  switchCount: number;
+  distSwitchCount: number;
+  accessSwitchCount: number;
   migrationDate: string;
   status: 'Completed' | 'In Progress' | 'Pending' | 'Awaiting';
 };
