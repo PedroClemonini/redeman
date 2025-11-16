@@ -45,7 +45,6 @@ export function AvailabilityGrid({ disponibilidade, analistas, nomes }: Availabi
               <SelectValue placeholder="Selecione um analista" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Selecione um analista</SelectItem>
               {analistas.map((a) => (
                 <SelectItem key={a} value={a}>
                   {nomes[a]}
