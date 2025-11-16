@@ -31,6 +31,13 @@ export function AvailabilityGrid({ disponibilidade, analistas, nomes }: Availabi
   const [availabilityData, setAvailabilityData] = useState(disponibilidade);
 
   useEffect(() => {
+    // This could be used to save data to a backend in a real app.
+    // For now, it just reflects the state locally.
+    console.log('Availability data changed:', availabilityData);
+  }, [availabilityData]);
+
+  useEffect(() => {
+    // When the initial data from props changes, update the local state.
     setAvailabilityData(disponibilidade);
   }, [disponibilidade]);
 
@@ -47,7 +54,7 @@ export function AvailabilityGrid({ disponibilidade, analistas, nomes }: Availabi
         newData[currentAnalista][week] = Array(6).fill(Array(16).fill(false));
       }
       // Ensure the day's array is a mutable copy
-      const daySchedule = [...newData[currentAnalista][week][dayIndex]];
+      const daySchedule = [...(newData[currentAnalista][week][dayIndex] || Array(16).fill(false))];
       daySchedule[hour - 8] = checked;
       // Ensure the week's array is a mutable copy
       const weekSchedule = [...newData[currentAnalista][week]];
@@ -87,18 +94,18 @@ export function AvailabilityGrid({ disponibilidade, analistas, nomes }: Availabi
           <Table className="border">
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[100px] border-r">Hora</TableHead>
+                <TableHead className="w-[100px] border-r p-2">Hora</TableHead>
                 {days.map((day) => (
-                  <TableHead key={day} className="text-center">{day}</TableHead>
+                  <TableHead key={day} className="text-center p-2">{day}</TableHead>
                 ))}
               </TableRow>
             </TableHeader>
             <TableBody>
               {hours.map((hour) => (
                 <TableRow key={hour}>
-                  <TableCell className="font-medium border-r">{`${hour.toString().padStart(2, '0')}:00`}</TableCell>
+                  <TableCell className="font-medium border-r p-2">{`${hour.toString().padStart(2, '0')}:00`}</TableCell>
                   {days.map((_, dayIndex) => (
-                    <TableCell key={dayIndex} className="text-center">
+                    <TableCell key={dayIndex} className="text-center p-1">
                       {currentAnalista && (
                         <Checkbox
                           checked={availabilityData[currentAnalista]?.[week]?.[dayIndex]?.[hour - 8] || false}
