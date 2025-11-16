@@ -1,0 +1,44 @@
+diff --git a/node_modules/recharts/es6/component/PureComponent.js b/node_modules/recharts/es6/component/PureComponent.js
+index 52445a4714151740523b18588dc47629670ce442..1a50b86a835b6d13c00ab259928509c2409f6e61 100644
+--- a/node_modules/recharts/es6/component/PureComponent.js
++++ b/node_modules/recharts/es6/component/PureComponent.js
+@@ -1,10 +0,0 @@
+-import { PureComponent } from 'react';
+-/**
+- * @deprecated PureComponent is not supported in React 18's strict mode, and will be removed in a future version.
+- * Please use functional components and hooks instead.
+- *
+- * But if you are not in strict mode, you can use PureComponent.
+- */
+-
+-export { PureComponent };
++export var PureComponent = function PureComponent() {};
+diff --git a/node_modules/recharts/lib/component/PureComponent.js b/node_modules/recharts/lib/component/PureComponent.js
+index 92397a66b93478d59d18b6289b5375c328905b0f..38031353c893699b82736e65a0b5f121d5142100 100644
+--- a/node_modules/recharts/lib/component/PureComponent.js
++++ b/node_modules/recharts/lib/component/PureComponent.js
+@@ -1,15 +0,0 @@
+-"use strict";
+-
+-Object.defineProperty(exports, "__esModule", {
+-  value: true
+-});
+-exports.PureComponent = void 0;
+-var _react = require("react");
+-/**
+- * @deprecated PureComponent is not supported in React 18's strict mode, and will be removed in a future version.
+- * Please use functional components and hooks instead.
+- *
+- * But if you are not in strict mode, you can use PureComponent.
+- */
+-
+-var PureComponent = _react.PureComponent;
+-exports.PureComponent = PureComponent;
++"use strict";
++
++Object.defineProperty(exports, "__esModule", {
++  value: true
++});
++exports.PureComponent = void 0;
++var PureComponent = function PureComponent() {};
++exports.PureComponent = PureComponent;
