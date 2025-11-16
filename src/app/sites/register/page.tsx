@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { X } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 type SiteEntry = {
   id: number;
@@ -75,6 +76,30 @@ export default function RegisterSitePage() {
   const removeSite = (id: number) => {
     setSites(sites.filter((s) => s.id !== id));
   };
+  
+  const DayCheckbox = ({ day, type, list, setter }: { day: {id: string, label: string}, type: string, list: string[], setter: React.Dispatch<React.SetStateAction<string[]>>}) => {
+    const isChecked = list.includes(day.id);
+    return (
+      <div className="flex items-center">
+        <Checkbox
+          id={`${type}-${day.id}`}
+          checked={isChecked}
+          onCheckedChange={() => handleCheckboxChange(day.id, list, setter)}
+          className="hidden"
+        />
+        <Label
+          htmlFor={`${type}-${day.id}`}
+          className={cn(
+            "flex w-full cursor-pointer flex-col items-center justify-center rounded-md border-2 border-muted bg-popover p-4 text-center text-sm font-medium transition-all hover:bg-accent hover:text-accent-foreground",
+            isChecked && "border-primary bg-primary/10 text-primary"
+          )}
+        >
+          {day.label.split(' ')[0]}
+          <span className="block font-normal text-muted-foreground">{day.label.split(' ')[1]}</span>
+        </Label>
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-8">
@@ -101,35 +126,21 @@ export default function RegisterSitePage() {
               </SelectContent>
             </Select>
             
-            <div className="md:col-span-2 space-y-4">
+            <div className="md:col-span-2 space-y-6">
               <div>
-                <Label className="block text-sm font-medium mb-2">PREPARAÇÃO</Label>
+                <Label className="block text-sm font-medium mb-3">PREPARAÇÃO</Label>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
                   {weekDays.map(day => (
-                    <div key={`prep-${day.id}`} className="flex items-center gap-2">
-                      <Checkbox 
-                        id={`prep-${day.id}`} 
-                        onCheckedChange={() => handleCheckboxChange(day.id, prepDays, setPrepDays)}
-                        checked={prepDays.includes(day.id)}
-                      />
-                      <Label htmlFor={`prep-${day.id}`}>{day.label}</Label>
-                    </div>
+                    <DayCheckbox key={`prep-${day.id}`} day={day} type="prep" list={prepDays} setter={setPrepDays} />
                   ))}
                 </div>
               </div>
 
               <div>
-                <Label className="block text-sm font-medium mb-2">MIGRAÇÃO</Label>
+                <Label className="block text-sm font-medium mb-3">MIGRAÇÃO</Label>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
-                  {weekDays.map(day => (
-                    <div key={`mig-${day.id}`} className="flex items-center gap-2">
-                       <Checkbox 
-                        id={`mig-${day.id}`} 
-                        onCheckedChange={() => handleCheckboxChange(day.id, migDays, setMigDays)}
-                        checked={migDays.includes(day.id)}
-                      />
-                      <Label htmlFor={`mig-${day.id}`}>{day.label}</Label>
-                    </div>
+                   {weekDays.map(day => (
+                    <DayCheckbox key={`mig-${day.id}`} day={day} type="mig" list={migDays} setter={setMigDays} />
                   ))}
                 </div>
               </div>
