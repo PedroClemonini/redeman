@@ -38,7 +38,7 @@ export default function MigrationFlowsPage() {
     <div>
       <PageHeader
         title="Migration Flows"
-        description="Track and manage migration workflows for each agency."
+        description="Track and manage migration workflows for each site."
       />
       <div className="mb-4 flex items-center justify-end gap-2">
         <Button variant="outline">
@@ -62,7 +62,7 @@ export default function MigrationFlowsPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Agency</TableHead>
+                <TableHead>Site</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Assigned Analyst</TableHead>
                 <TableHead>Last Update</TableHead>
@@ -75,8 +75,8 @@ export default function MigrationFlowsPage() {
               {migrationFlows.map((flow) => (
                 <TableRow key={flow.id}>
                   <TableCell>
-                    <div className="font-medium">{flow.agencyName}</div>
-                    <div className="text-sm text-muted-foreground">{flow.agencyCode}</div>
+                    <div className="font-medium">{flow.siteName}</div>
+                    <div className="text-sm text-muted-foreground">{flow.siteCode}</div>
                   </TableCell>
                   <TableCell>
                     <Badge variant="secondary" className={statusColors[flow.status]}>

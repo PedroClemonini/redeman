@@ -20,11 +20,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { agencies } from '@/lib/data';
+import { sites } from '@/lib/data';
 import { Badge } from '@/components/ui/badge';
 import { Download, MoreHorizontal, Plus, Upload } from 'lucide-react';
 
-export default function AgenciesPage() {
+export default function SitesPage() {
   const statusColors = {
     Awaiting: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-400',
     Pending: 'bg-orange-100 text-orange-800 dark:bg-orange-900/50 dark:text-orange-400',
@@ -35,8 +35,8 @@ export default function AgenciesPage() {
   return (
     <div>
       <PageHeader
-        title="Agencies"
-        description="Manage Banco do Brasil agency data."
+        title="Sites"
+        description="Manage Banco do Brasil site data."
       />
 
       <div className="mb-4 flex items-center justify-end gap-2">
@@ -50,13 +50,13 @@ export default function AgenciesPage() {
         </Button>
         <Button>
           <Plus className="mr-2" />
-          Add Agency
+          Add Site
         </Button>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Agency List</CardTitle>
+          <CardTitle>Site List</CardTitle>
         </CardHeader>
         <CardContent>
           <Table>
@@ -73,17 +73,17 @@ export default function AgenciesPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {agencies.map((agency) => (
-                <TableRow key={agency.code}>
-                  <TableCell className="font-medium">{agency.code}</TableCell>
-                  <TableCell>{agency.name}</TableCell>
+              {sites.map((site) => (
+                <TableRow key={site.code}>
+                  <TableCell className="font-medium">{site.code}</TableCell>
+                  <TableCell>{site.name}</TableCell>
                   <TableCell>
-                    {agency.city}, {agency.state}
+                    {site.city}, {site.state}
                   </TableCell>
-                  <TableCell>{agency.switchCount}</TableCell>
+                  <TableCell>{site.switchCount}</TableCell>
                   <TableCell>
-                    <Badge variant="secondary" className={statusColors[agency.status]}>
-                      {agency.status}
+                    <Badge variant="secondary" className={statusColors[site.status]}>
+                      {site.status}
                     </Badge>
                   </TableCell>
                   <TableCell>

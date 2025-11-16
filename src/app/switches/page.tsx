@@ -63,7 +63,7 @@ export default function SwitchesPage() {
                 <TableHead>Serial Number</TableHead>
                 <TableHead>Model</TableHead>
                 <TableHead>Hostname</TableHead>
-                <TableHead>Agency</TableHead>
+                <TableHead>Site</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>
                   <span className="sr-only">Actions</span>
@@ -76,7 +76,7 @@ export default function SwitchesPage() {
                   <TableCell className="font-mono text-xs">{sw.serialNumber}</TableCell>
                   <TableCell>{sw.model}</TableCell>
                   <TableCell>{sw.hostname}</TableCell>
-                  <TableCell>{sw.agencyCode}</TableCell>
+                  <TableCell>{sw.siteCode}</TableCell>
                   <TableCell>
                     <Badge variant="secondary" className={statusColors[sw.status]}>
                       {sw.status}

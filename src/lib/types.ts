@@ -7,7 +7,7 @@ export type User = {
   avatar: string;
 };
 
-export type Agency = {
+export type Site = {
   code: string;
   name: string;
   city: string;
@@ -21,15 +21,15 @@ export type Switch = {
   serialNumber: string;
   model: string;
   hostname: string;
-  agencyCode: string;
+  siteCode: string;
   role: 'Access' | 'Distribution' | 'Core';
   status: 'In Stock' | 'Deployed' | 'Faulty' | 'Migrated';
 };
 
 export type MigrationFlow = {
   id: string;
-  agencyCode: string;
-  agencyName: string;
+  siteCode: string;
+  siteName: string;
   status:
     | 'Planning'
     | 'Site Survey'

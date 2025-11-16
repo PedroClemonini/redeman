@@ -1,4 +1,4 @@
-import type { User, Agency, Switch, MigrationFlow } from './types';
+import type { User, Site, Switch, MigrationFlow } from './types';
 
 export const users: User[] = [
   {
@@ -43,10 +43,10 @@ export const users: User[] = [
   },
 ];
 
-export const agencies: Agency[] = [
+export const sites: Site[] = [
   {
     code: '1227-0',
-    name: 'Ag Centro',
+    name: 'Site Centro',
     city: 'São Paulo',
     state: 'SP',
     switchCount: 4,
@@ -55,7 +55,7 @@ export const agencies: Agency[] = [
   },
   {
     code: '3456-1',
-    name: 'Ag Paulista',
+    name: 'Site Paulista',
     city: 'São Paulo',
     state: 'SP',
     switchCount: 8,
@@ -64,7 +64,7 @@ export const agencies: Agency[] = [
   },
   {
     code: '7890-2',
-    name: 'Ag Faria Lima',
+    name: 'Site Faria Lima',
     city: 'São Paulo',
     state: 'SP',
     switchCount: 6,
@@ -73,7 +73,7 @@ export const agencies: Agency[] = [
   },
   {
     code: '4321-3',
-    name: 'Ag Rio Branco',
+    name: 'Site Rio Branco',
     city: 'Curitiba',
     state: 'PR',
     switchCount: 5,
@@ -82,7 +82,7 @@ export const agencies: Agency[] = [
   },
   {
     code: '8765-4',
-    name: 'Ag Batel',
+    name: 'Site Batel',
     city: 'Curitiba',
     state: 'PR',
     switchCount: 3,
@@ -96,7 +96,7 @@ export const switches: Switch[] = [
     serialNumber: 'SN123456',
     model: 'S5735-S24T4X',
     hostname: 'SW-AG1227-01',
-    agencyCode: '1227-0',
+    siteCode: '1227-0',
     role: 'Access',
     status: 'In Stock',
   },
@@ -104,7 +104,7 @@ export const switches: Switch[] = [
     serialNumber: 'SN234567',
     model: 'S5735-S48T4X',
     hostname: 'SW-AG3456-01',
-    agencyCode: '3456-1',
+    siteCode: '3456-1',
     role: 'Access',
     status: 'In Stock',
   },
@@ -112,7 +112,7 @@ export const switches: Switch[] = [
     serialNumber: 'SN345678',
     model: 'S6730-H24X6C',
     hostname: 'DS-SP-CENTRO-01',
-    agencyCode: '1227-0',
+    siteCode: '1227-0',
     role: 'Distribution',
     status: 'Deployed',
   },
@@ -120,7 +120,7 @@ export const switches: Switch[] = [
     serialNumber: 'SN456789',
     model: 'S5735-S24T4X',
     hostname: 'SW-AG4321-01',
-    agencyCode: '4321-3',
+    siteCode: '4321-3',
     role: 'Access',
     status: 'Migrated',
   },
@@ -128,7 +128,7 @@ export const switches: Switch[] = [
     serialNumber: 'SN567890',
     model: 'S5735-S24T4X',
     hostname: 'SW-AG8765-01',
-    agencyCode: '8765-4',
+    siteCode: '8765-4',
     role: 'Access',
     status: 'Faulty',
   },
@@ -137,32 +137,32 @@ export const switches: Switch[] = [
 export const migrationFlows: MigrationFlow[] = [
   {
     id: 'flow_001',
-    agencyCode: '1227-0',
-    agencyName: 'Ag Centro',
+    siteCode: '1227-0',
+    siteName: 'Site Centro',
     status: 'Planning',
     assignedAnalyst: 'João Silva',
     lastUpdate: '2024-06-18',
   },
   {
     id: 'flow_002',
-    agencyCode: '3456-1',
-    agencyName: 'Ag Paulista',
+    siteCode: '3456-1',
+    siteName: 'Site Paulista',
     status: 'Site Survey',
     assignedAnalyst: 'Mariana Costa',
     lastUpdate: '2024-06-17',
   },
   {
     id: 'flow_003',
-    agencyCode: '7890-2',
-    agencyName: 'Ag Faria Lima',
+    siteCode: '7890-2',
+    siteName: 'Site Faria Lima',
     status: 'Configuration',
     assignedAnalyst: 'João Silva',
     lastUpdate: '2024-06-19',
   },
   {
     id: 'flow_004',
-    agencyCode: '4321-3',
-    agencyName: 'Ag Rio Branco',
+    siteCode: '4321-3',
+    siteName: 'Site Rio Branco',
     status: 'Completed',
     assignedAnalyst: 'Carla Dias',
     lastUpdate: '2024-05-30',

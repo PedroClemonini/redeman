@@ -23,7 +23,7 @@ import {
 
 const pathToTitle: { [key: string]: string } = {
   '/': 'Dashboard',
-  '/agencies': 'Agencies',
+  '/agencies': 'Sites',
   '/switches': 'Switches',
   '/users': 'Users',
   '/flows': 'Migration Flows',

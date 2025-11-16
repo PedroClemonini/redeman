@@ -48,35 +48,35 @@ const chartConfig = {
 const recentActivities = [
   {
     id: 'ACT-001',
-    agency: 'Ag Centro, São Paulo',
+    site: 'Site Centro, São Paulo',
     activity: 'Switch SW-AG1227-01 migrated',
     status: 'Completed',
     date: '2024-06-15',
   },
   {
     id: 'ACT-002',
-    agency: 'Ag Paulista, São Paulo',
+    site: 'Site Paulista, São Paulo',
     activity: 'Migration scheduled',
     status: 'Scheduled',
     date: '2024-06-14',
   },
   {
     id: 'ACT-003',
-    agency: 'Ag Faria Lima, São Paulo',
+    site: 'Site Faria Lima, São Paulo',
     activity: 'New switches received in stock',
     status: 'In Stock',
     date: '2024-06-12',
   },
   {
     id: 'ACT-004',
-    agency: 'Ag Rio Branco, Curitiba',
+    site: 'Site Rio Branco, Curitiba',
     activity: 'Site survey completed',
     status: 'In Progress',
     date: '2024-06-11',
   },
   {
     id: 'ACT-005',
-    agency: 'Ag Batel, Curitiba',
+    site: 'Site Batel, Curitiba',
     activity: 'Migration flow created',
     status: 'Pending',
     date: '2024-06-10',
@@ -89,13 +89,13 @@ export default function Dashboard() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Agencies</CardTitle>
+            <CardTitle className="text-sm font-medium">Total Sites</CardTitle>
             <Building2 className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">223</div>
             <p className="text-xs text-muted-foreground">
-              All agencies in the project scope
+              All sites in the project scope
             </p>
           </CardContent>
         </Card>
@@ -121,7 +121,7 @@ export default function Dashboard() {
           <CardContent>
             <div className="text-2xl font-bold">113</div>
             <p className="text-xs text-muted-foreground">
-              Agencies awaiting migration
+              Sites awaiting migration
             </p>
           </CardContent>
         </Card>
@@ -146,7 +146,7 @@ export default function Dashboard() {
           <CardHeader>
             <CardTitle>Migration Progress</CardTitle>
             <CardDescription>
-              Number of agencies migrated per month
+              Number of sites migrated per month
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -181,7 +181,7 @@ export default function Dashboard() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Agency</TableHead>
+                  <TableHead>Site</TableHead>
                   <TableHead>Activity</TableHead>
                   <TableHead className="text-right">Status</TableHead>
                 </TableRow>
@@ -190,7 +190,7 @@ export default function Dashboard() {
                 {recentActivities.map((activity) => (
                   <TableRow key={activity.id}>
                     <TableCell>
-                      <div className="font-medium">{activity.agency}</div>
+                      <div className="font-medium">{activity.site}</div>
                       <div className="hidden text-sm text-muted-foreground md:inline">
                         {activity.date}
                       </div>

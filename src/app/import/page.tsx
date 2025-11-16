@@ -18,9 +18,9 @@ const templates = [
     model: 'users',
   },
   {
-    name: 'Agencies',
-    description: 'Template for BB agency data.',
-    model: 'agencias',
+    name: 'Sites',
+    description: 'Template for BB site data.',
+    model: 'sites',
   },
   {
     name: 'Switches',

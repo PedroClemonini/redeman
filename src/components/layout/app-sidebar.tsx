@@ -31,7 +31,7 @@ const menuItems = [
   },
   {
     href: '/agencies',
-    label: 'Agencies',
+    label: 'Sites',
     icon: Building2,
   },
   {
