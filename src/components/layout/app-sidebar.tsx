@@ -23,6 +23,7 @@ import {
   LogOut,
   Settings,
   CalendarDays,
+  PlusCircle,
 } from 'lucide-react';
 
 const menuItems = [
@@ -55,6 +56,11 @@ const menuItems = [
     href: '/alocacao',
     label: 'Alocação',
     icon: CalendarDays,
+  },
+  {
+    href: '/sites/register',
+    label: 'Cadastro Sites',
+    icon: PlusCircle,
   },
   {
     href: '/import',

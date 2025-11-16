@@ -21,6 +21,7 @@ import {
   Users,
   Workflow,
   CalendarDays,
+  PlusCircle,
 } from 'lucide-react';
 
 const pathToTitle: { [key: string]: string } = {
@@ -31,6 +32,7 @@ const pathToTitle: { [key: string]: string } = {
   '/flows': 'Migration Flows',
   '/import': 'Import / Export',
   '/alocacao': 'Alocação',
+  '/sites/register': 'Cadastro de Sites',
 };
 
 export function AppHeader() {
