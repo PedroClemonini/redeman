@@ -42,10 +42,11 @@ export function AllocationTable({ alocacao, analistas, nomes }: AllocationTableP
         <CardTitle>Alocação por Analista – Semana 2</CardTitle>
       </CardHeader>
       <CardContent>
+        <div className="overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Analista</TableHead>
+              <TableHead className="w-[200px]">Analista</TableHead>
               <TableHead>Seg ({getDayFromDate(datas[0])})</TableHead>
               <TableHead>Ter ({getDayFromDate(datas[1])})</TableHead>
               <TableHead>Qua ({getDayFromDate(datas[2])})</TableHead>
@@ -59,28 +60,32 @@ export function AllocationTable({ alocacao, analistas, nomes }: AllocationTableP
               <TableRow key={usuario}>
                 <TableCell className="font-medium">{nomes[usuario]}</TableCell>
                 {datas.map((data) => {
-                  let cellContent = <span className="italic text-muted-foreground">—</span>;
+                  let cellContent: React.ReactNode = <span className="italic text-muted-foreground">—</span>;
                   let cellClass = "";
+                  
+                  const assignments: React.ReactNode[] = [];
 
                   if (alocacao[data]) {
                     for (const site in alocacao[data]) {
                       if (alocacao[data][site].includes(usuario)) {
                         const isMigracao = site.includes('MCI');
-                        cellClass = isMigracao ? 'bg-green-50 text-green-800 dark:bg-green-900/50 dark:text-green-400' : 'bg-blue-50 text-blue-800 dark:bg-blue-900/50 dark:text-blue-400';
-                        cellContent = (
-                          <div className='flex flex-col'>
-                            <span className="font-semibold">{site}</span>
-                            {alocacao[data][site].length > 1 && (
-                              <small>({alocacao[data][site].length} analistas)</small>
-                            )}
+                        const teamSize = alocacao[data][site].length;
+                        assignments.push(
+                          <div key={site} className={`p-1.5 rounded-md text-xs ${isMigracao ? 'bg-green-100 text-green-800 border border-green-200 dark:bg-green-900/50 dark:text-green-300 dark:border-green-800' : 'bg-blue-100 text-blue-800 border border-blue-200 dark:bg-blue-900/50 dark:text-blue-300 dark:border-blue-800'}`}>
+                            <div className='font-semibold'>{site} ({isMigracao ? 'Mig' : 'Prep'})</div>
+                            {teamSize > 1 && <div className='text-xs'>({teamSize} analistas)</div>}
                           </div>
                         );
-                        break;
                       }
                     }
                   }
+
+                  if (assignments.length > 0) {
+                    cellContent = <div className="flex flex-col gap-1">{assignments}</div>;
+                  }
+
                   return (
-                    <TableCell key={data} className={`text-center ${cellClass} rounded-md p-2`}>
+                    <TableCell key={data} className={`text-center align-top ${cellClass} p-2 min-w-[150px]`}>
                       {cellContent}
                     </TableCell>
                   );
@@ -89,6 +94,7 @@ export function AllocationTable({ alocacao, analistas, nomes }: AllocationTableP
             ))}
           </TableBody>
         </Table>
+        </div>
       </CardContent>
     </Card>
   );
