@@ -1,4 +1,3 @@
-
 'use client';
 import {
   Card,
@@ -24,6 +23,7 @@ import {
 import { Bar, BarChart, CartesianGrid, XAxis } from 'recharts';
 import { Building2, CheckCircle, Clock, Router } from 'lucide-react';
 import type { ChartConfig } from '@/components/ui/chart';
+import { weeklySchedule } from '@/lib/data';
 
 const chartData = [
   { month: 'January', migrated: 18, pending: 205 },
@@ -45,45 +45,16 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-const recentActivities = [
-  {
-    id: 'ACT-001',
-    site: 'Site Centro, São Paulo',
-    activity: 'Switch SW-AG1227-01 migrated',
-    status: 'Completed',
-    date: '2024-06-15',
-  },
-  {
-    id: 'ACT-002',
-    site: 'Site Paulista, São Paulo',
-    activity: 'Migration scheduled',
-    status: 'Scheduled',
-    date: '2024-06-14',
-  },
-  {
-    id: 'ACT-003',
-    site: 'Site Faria Lima, São Paulo',
-    activity: 'New switches received in stock',
-    status: 'In Stock',
-    date: '2024-06-12',
-  },
-  {
-    id: 'ACT-004',
-    site: 'Site Rio Branco, Curitiba',
-    activity: 'Site survey completed',
-    status: 'In Progress',
-    date: '2024-06-11',
-  },
-  {
-    id: 'ACT-005',
-    site: 'Site Batel, Curitiba',
-    activity: 'Migration flow created',
-    status: 'Pending',
-    date: '2024-06-10',
-  },
-];
-
 export default function Dashboard() {
+  const stepColors: { [key: string]: string } = {
+    Preparação:
+      'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-400',
+    Migração:
+      'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-400',
+    Planejamento:
+      'bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-400',
+  };
+
   return (
     <div className="flex flex-col gap-8">
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -164,7 +135,11 @@ export default function Dashboard() {
                   cursor={false}
                   content={<ChartTooltipContent />}
                 />
-                <Bar dataKey="migrated" fill="var(--color-migrated)" radius={4} />
+                <Bar
+                  dataKey="migrated"
+                  fill="var(--color-migrated)"
+                  radius={4}
+                />
               </BarChart>
             </ChartContainer>
           </CardContent>
@@ -172,9 +147,9 @@ export default function Dashboard() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Recent Activity</CardTitle>
+            <CardTitle>Agenda da Semana</CardTitle>
             <CardDescription>
-              Latest updates on the migration process.
+              Programação de migrações para a semana.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -182,38 +157,30 @@ export default function Dashboard() {
               <TableHeader>
                 <TableRow>
                   <TableHead>Site</TableHead>
-                  <TableHead>Activity</TableHead>
-                  <TableHead className="text-right">Status</TableHead>
+                  <TableHead>Etapa</TableHead>
+                  <TableHead>Analista V2MR</TableHead>
+                  <TableHead>Técnico Zoomtech</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {recentActivities.map((activity) => (
-                  <TableRow key={activity.id}>
+                {weeklySchedule.map((item) => (
+                  <TableRow key={item.id}>
                     <TableCell>
-                      <div className="font-medium">{activity.site}</div>
+                      <div className="font-medium">{item.site}</div>
                       <div className="hidden text-sm text-muted-foreground md:inline">
-                        {activity.date}
+                        {item.date}
                       </div>
                     </TableCell>
-                    <TableCell>{activity.activity}</TableCell>
-                    <TableCell className="text-right">
+                    <TableCell>
                       <Badge
-                        variant={
-                          activity.status === 'Completed'
-                            ? 'default'
-                            : 'secondary'
-                        }
-                        className={
-                          activity.status === 'Completed'
-                            ? 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-400'
-                            : activity.status === 'Scheduled'
-                            ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-400'
-                            : ''
-                        }
+                        variant="secondary"
+                        className={stepColors[item.step]}
                       >
-                        {activity.status}
+                        {item.step}
                       </Badge>
                     </TableCell>
+                    <TableCell>{item.v2mrAnalyst}</TableCell>
+                    <TableCell>{item.zoomtechTechnician}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>

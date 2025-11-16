@@ -9,13 +9,9 @@ export type User = {
 
 export type Site = {
   code: string;
-  name: string;
-  city: string;
-  state: string;
+  name:string;
   distSwitchCount: number;
   accessSwitchCount: number;
-  migrationDate: string;
-  status: 'Completed' | 'In Progress' | 'Pending' | 'Awaiting';
 };
 
 export type Switch = {
@@ -40,4 +36,13 @@ export type MigrationFlow = {
     | 'Completed';
   assignedAnalyst: string;
   lastUpdate: string;
+};
+
+export type WeeklySchedule = {
+  id: string;
+  site: string;
+  step: 'Planejamento' | 'Preparação' | 'Migração';
+  v2mrAnalyst: string;
+  zoomtechTechnician: string;
+  date: string;
 };

@@ -56,8 +56,8 @@ export default function SitesPage() {
               <TableRow>
                 <TableHead>Sigla</TableHead>
                 <TableHead>Nome</TableHead>
-                <TableHead>SW Dist</TableHead>
-                <TableHead>SW Acesso</TableHead>
+                <TableHead>SW Dist (nº)</TableHead>
+                <TableHead>SW Acesso (nº)</TableHead>
                 <TableHead>
                   <span className="sr-only">Actions</span>
                 </TableHead>

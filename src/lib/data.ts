@@ -1,4 +1,4 @@
-import type { User, Site, Switch, MigrationFlow } from './types';
+import type { User, Site, Switch, MigrationFlow, WeeklySchedule } from './types';
 
 export const users: User[] = [
   {
@@ -47,52 +47,32 @@ export const sites: Site[] = [
   {
     code: '1227-0',
     name: 'Site Centro',
-    city: 'São Paulo',
-    state: 'SP',
     distSwitchCount: 1,
     accessSwitchCount: 3,
-    migrationDate: '2025-12-01',
-    status: 'Awaiting',
   },
   {
     code: '3456-1',
     name: 'Site Paulista',
-    city: 'São Paulo',
-    state: 'SP',
     distSwitchCount: 2,
     accessSwitchCount: 6,
-    migrationDate: '2025-11-15',
-    status: 'Pending',
   },
   {
     code: '7890-2',
     name: 'Site Faria Lima',
-    city: 'São Paulo',
-    state: 'SP',
     distSwitchCount: 2,
     accessSwitchCount: 4,
-    migrationDate: '2025-10-20',
-    status: 'In Progress',
   },
   {
     code: '4321-3',
     name: 'Site Rio Branco',
-    city: 'Curitiba',
-    state: 'PR',
     distSwitchCount: 1,
     accessSwitchCount: 4,
-    migrationDate: '2024-09-05',
-    status: 'Completed',
   },
   {
     code: '8765-4',
     name: 'Site Batel',
-    city: 'Curitiba',
-    state: 'PR',
     distSwitchCount: 1,
     accessSwitchCount: 2,
-    migrationDate: '2024-08-22',
-    status: 'Completed',
   },
 ];
 
@@ -171,5 +151,56 @@ export const migrationFlows: MigrationFlow[] = [
     status: 'Completed',
     assignedAnalyst: 'Carla Dias',
     lastUpdate: '2024-05-30',
+  },
+];
+
+export const weeklySchedule: WeeklySchedule[] = [
+  {
+    id: 'SCHED-001',
+    site: 'ARN01',
+    step: 'Preparação',
+    v2mrAnalyst: 'RUAN (M)',
+    zoomtechTechnician: 'Técnico Zoom',
+    date: '2025-11-17',
+  },
+  {
+    id: 'SCHED-002',
+    site: 'ARN01',
+    step: 'Migração',
+    v2mrAnalyst: 'RUAN (T)',
+    zoomtechTechnician: 'Técnico Zoom',
+    date: '2025-11-18',
+  },
+  {
+    id: 'SCHED-003',
+    site: 'BVA02',
+    step: 'Preparação',
+    v2mrAnalyst: 'GLORIA (M)',
+    zoomtechTechnician: 'Técnico Zoom',
+    date: '2025-11-17',
+  },
+  {
+    id: 'SCHED-004',
+    site: 'BVA02',
+    step: 'Migração',
+    v2mrAnalyst: 'PAULO',
+    zoomtechTechnician: 'Técnico Zoom',
+    date: '2025-11-18',
+  },
+  {
+    id: 'SCHED-005',
+    site: 'JBN01',
+    step: 'Preparação',
+    v2mrAnalyst: 'ANGEL (M)',
+    zoomtechTechnician: 'Técnico Huawei',
+    date: '2025-11-17',
+  },
+  {
+    id: 'SCHED-006',
+    site: 'JBN01',
+    step: 'Migração',
+    v2mrAnalyst: 'AUGUSTO',
+    zoomtechTechnician: 'Técnico Huawei',
+    date: '2025-11-18',
   },
 ];
