@@ -1,3 +1,4 @@
+
 import { PageHeader } from '@/components/page-header';
 import { Button } from '@/components/ui/button';
 import {
@@ -21,7 +22,8 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { sites } from '@/lib/data';
-import { Download, MoreHorizontal, Plus, Upload } from 'lucide-react';
+import { Download, MoreHorizontal, Plus, Search, Upload } from 'lucide-react';
+import { Input } from '@/components/ui/input';
 
 export default function SitesPage() {
   return (
@@ -31,19 +33,25 @@ export default function SitesPage() {
         description="Manage Banco do Brasil site data."
       />
 
-      <div className="mb-4 flex items-center justify-end gap-2">
-        <Button variant="outline">
-          <Download className="mr-2" />
-          Export
-        </Button>
-        <Button variant="outline">
-          <Upload className="mr-2" />
-          Import
-        </Button>
-        <Button>
-          <Plus className="mr-2" />
-          Add Site
-        </Button>
+      <div className="mb-4 flex items-center justify-between gap-4">
+        <div className="relative w-full max-w-sm">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input placeholder="Search sites..." className="pl-9" />
+        </div>
+        <div className="flex items-center gap-2">
+          <Button variant="outline">
+            <Download className="mr-2" />
+            Export
+          </Button>
+          <Button variant="outline">
+            <Upload className="mr-2" />
+            Import
+          </Button>
+          <Button>
+            <Plus className="mr-2" />
+            Add Site
+          </Button>
+        </div>
       </div>
 
       <Card>
