@@ -7,6 +7,7 @@ import {
   Table,
   TableBody,
   TableCell,
+  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
@@ -51,11 +52,14 @@ export function AvailabilityGrid({ disponibilidade, analistas, nomes }: Availabi
         newData[currentAnalista] = {};
       }
       if (!newData[currentAnalista][week]) {
-        newData[currentAnalista][week] = Array(6).fill(Array(16).fill(false));
+        // Initialize the week with 6 days, each having 16 hours (8-23) set to false
+        newData[currentAnalista][week] = Array(6).fill(null).map(() => Array(16).fill(false));
       }
+      
       // Ensure the day's array is a mutable copy
       const daySchedule = [...(newData[currentAnalista][week][dayIndex] || Array(16).fill(false))];
       daySchedule[hour - 8] = checked;
+      
       // Ensure the week's array is a mutable copy
       const weekSchedule = [...newData[currentAnalista][week]];
       weekSchedule[dayIndex] = daySchedule;
@@ -69,6 +73,13 @@ export function AvailabilityGrid({ disponibilidade, analistas, nomes }: Availabi
   const week = '17/11 a 22/11/2025';
   const hours = Array.from({ length: 16 }, (_, i) => i + 8); // 8h to 23h
   const days = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+
+  const dailyTotals = days.map((_, dayIndex) => {
+    if (!currentAnalista || !availabilityData[currentAnalista]?.[week]?.[dayIndex]) {
+      return 0;
+    }
+    return availabilityData[currentAnalista][week][dayIndex].filter(Boolean).length;
+  });
 
   return (
     <Card>
@@ -103,7 +114,7 @@ export function AvailabilityGrid({ disponibilidade, analistas, nomes }: Availabi
             <TableBody>
               {hours.map((hour) => (
                 <TableRow key={hour}>
-                  <TableCell className="font-medium border-r p-2">{`${hour.toString().padStart(2, '0')}:00`}</TableCell>
+                  <TableCell className="font-medium border-r p-1 text-right pr-2">{`${hour.toString().padStart(2, '0')}:00`}</TableCell>
                   {days.map((_, dayIndex) => (
                     <TableCell key={dayIndex} className="text-center p-1">
                       {currentAnalista && (
@@ -117,6 +128,16 @@ export function AvailabilityGrid({ disponibilidade, analistas, nomes }: Availabi
                 </TableRow>
               ))}
             </TableBody>
+            <TableFooter>
+                <TableRow className='bg-muted/50'>
+                    <TableCell className="font-medium border-r p-1 text-right pr-2">Total Horas</TableCell>
+                    {dailyTotals.map((total, index) => (
+                        <TableCell key={index} className="text-center p-1 font-bold">
+                            {currentAnalista ? total : '-'}
+                        </TableCell>
+                    ))}
+                </TableRow>
+            </TableFooter>
           </Table>
         </div>
       </CardContent>
