@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -21,6 +22,7 @@ import {
   Workflow,
   LogOut,
   Settings,
+  CalendarDays,
 } from 'lucide-react';
 
 const menuItems = [
@@ -48,6 +50,11 @@ const menuItems = [
     href: '/flows',
     label: 'Migration Flows',
     icon: Workflow,
+  },
+  {
+    href: '/alocacao',
+    label: 'Alocação',
+    icon: CalendarDays,
   },
   {
     href: '/import',

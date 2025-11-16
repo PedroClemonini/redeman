@@ -1,3 +1,4 @@
+
 'use client';
 
 import { SidebarTrigger } from '@/components/ui/sidebar';
@@ -19,6 +20,7 @@ import {
   Router,
   Users,
   Workflow,
+  CalendarDays,
 } from 'lucide-react';
 
 const pathToTitle: { [key: string]: string } = {
@@ -28,6 +30,7 @@ const pathToTitle: { [key: string]: string } = {
   '/users': 'Users',
   '/flows': 'Migration Flows',
   '/import': 'Import / Export',
+  '/alocacao': 'Alocação',
 };
 
 export function AppHeader() {
