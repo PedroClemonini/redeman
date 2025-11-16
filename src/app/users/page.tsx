@@ -35,7 +35,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -67,7 +66,9 @@ export default function UsersPage() {
       ...selectedUser,
       name: formData.get('name') as string,
       email: formData.get('email') as string,
+      telefone: formData.get('telefone') as string,
       role: formData.get('role') as User['role'],
+      nivel: formData.get('nivel') as User['nivel'],
       status: formData.get('status') as User['status'],
     };
 
@@ -79,36 +80,37 @@ export default function UsersPage() {
   return (
     <div>
       <PageHeader
-        title="Users"
-        description="Manage user accounts and roles."
+        title="Usuários"
+        description="Gerencie contas e permissões de usuários."
       />
       <div className="mb-4 flex items-center justify-end gap-2">
         <Button variant="outline">
           <Download className="mr-2" />
-          Export
+          Exportar
         </Button>
         <Button variant="outline">
           <Upload className="mr-2" />
-          Import
+          Importar
         </Button>
         <Button>
           <Plus className="mr-2" />
-          Add User
+          Adicionar Usuário
         </Button>
       </div>
       <Card>
         <CardHeader>
-          <CardTitle>User List</CardTitle>
+          <CardTitle>Lista de Usuários</CardTitle>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Role</TableHead>
+                <TableHead>Nome</TableHead>
+                <TableHead>Nível</TableHead>
+                <TableHead>Função</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>
-                  <span className="sr-only">Actions</span>
+                  <span className="sr-only">Ações</span>
                 </TableHead>
               </TableRow>
             </TableHeader>
@@ -132,11 +134,12 @@ export default function UsersPage() {
                       </div>
                     </div>
                   </TableCell>
+                  <TableCell>{user.nivel}</TableCell>
                   <TableCell>{user.role}</TableCell>
                   <TableCell>
-                    <Badge variant={user.status === 'Active' ? 'default' : 'destructive'}
+                    <Badge variant={user.status === 'Ativo' ? 'default' : 'destructive'}
                       className={
-                        user.status === 'Active'
+                        user.status === 'Ativo'
                           ? 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-400'
                           : 'bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-400'
                       }>
@@ -148,16 +151,16 @@ export default function UsersPage() {
                       <DropdownMenuTrigger asChild>
                         <Button aria-haspopup="true" size="icon" variant="ghost">
                           <MoreHorizontal className="h-4 w-4" />
-                          <span className="sr-only">Toggle menu</span>
+                          <span className="sr-only">Abrir menu</span>
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem onClick={() => handleEditClick(user)}>
-                          Edit
+                          Editar
                         </DropdownMenuItem>
-                        <DropdownMenuItem>View Details</DropdownMenuItem>
+                        <DropdownMenuItem>Ver Detalhes</DropdownMenuItem>
                         <DropdownMenuItem className="text-red-600 dark:text-red-500">
-                          Deactivate
+                          Desativar
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -173,16 +176,16 @@ export default function UsersPage() {
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>Edit User</DialogTitle>
+            <DialogTitle>Editar Usuário</DialogTitle>
             <DialogDescription>
-              Make changes to the user's profile here. Click save when you're done.
+              Faça alterações no perfil do usuário aqui. Clique em salvar quando terminar.
             </DialogDescription>
           </DialogHeader>
           {selectedUser && (
             <form onSubmit={handleEditSubmit} className="grid gap-4 py-4">
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="name" className="text-right">
-                  Name
+                  Nome
                 </Label>
                 <Input id="name" name="name" defaultValue={selectedUser.name} className="col-span-3" />
               </div>
@@ -193,18 +196,39 @@ export default function UsersPage() {
                 <Input id="email" name="email" type="email" defaultValue={selectedUser.email} className="col-span-3" />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="telefone" className="text-right">
+                  Telefone
+                </Label>
+                <Input id="telefone" name="telefone" type="tel" defaultValue={selectedUser.telefone} className="col-span-3" />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="role" className="text-right">
-                  Role
+                  Função
                 </Label>
                 <Select name="role" defaultValue={selectedUser.role}>
                   <SelectTrigger className="col-span-3">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Admin">Admin</SelectItem>
-                    <SelectItem value="Coordinator">Coordinator</SelectItem>
-                    <SelectItem value="Analyst">Analyst</SelectItem>
-                    <SelectItem value="Viewer">Viewer</SelectItem>
+                    <SelectItem value="Administrador">Administrador</SelectItem>
+                    <SelectItem value="Coordenador">Coordenador</SelectItem>
+                    <SelectItem value="Analista">Analista</SelectItem>
+                    <SelectItem value="Visualizador">Visualizador</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="nivel" className="text-right">
+                  Nível
+                </Label>
+                <Select name="nivel" defaultValue={selectedUser.nivel}>
+                  <SelectTrigger className="col-span-3">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Sênior">Sênior</SelectItem>
+                    <SelectItem value="Pleno">Pleno</SelectItem>
+                    <SelectItem value="Júnior">Júnior</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -217,13 +241,13 @@ export default function UsersPage() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Active">Active</SelectItem>
-                    <SelectItem value="Inactive">Inactive</SelectItem>
+                    <SelectItem value="Ativo">Ativo</SelectItem>
+                    <SelectItem value="Inativo">Inativo</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <DialogFooter>
-                <Button type="submit">Save changes</Button>
+                <Button type="submit">Salvar alterações</Button>
               </DialogFooter>
             </form>
           )}

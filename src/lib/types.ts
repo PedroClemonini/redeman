@@ -2,9 +2,11 @@ export type User = {
   id: string;
   name: string;
   email: string;
-  role: 'Admin' | 'Coordinator' | 'Analyst' | 'Viewer';
-  status: 'Active' | 'Inactive';
+  role: 'Administrador' | 'Coordenador' | 'Analista' | 'Visualizador';
+  status: 'Ativo' | 'Inativo';
   avatar: string;
+  nivel: 'Sênior' | 'Pleno' | 'Júnior';
+  telefone: string;
 };
 
 export type Site = {
