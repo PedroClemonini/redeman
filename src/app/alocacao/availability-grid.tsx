@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Table,
@@ -28,6 +28,36 @@ interface AvailabilityGridProps {
 
 export function AvailabilityGrid({ disponibilidade, analistas, nomes }: AvailabilityGridProps) {
   const [currentAnalista, setCurrentAnalista] = useState('');
+  const [availabilityData, setAvailabilityData] = useState(disponibilidade);
+
+  useEffect(() => {
+    setAvailabilityData(disponibilidade);
+  }, [disponibilidade]);
+
+  const handleAvailabilityChange = (dayIndex: number, hour: number, checked: boolean) => {
+    if (!currentAnalista) return;
+
+    setAvailabilityData((prevData: any) => {
+      const newData = JSON.parse(JSON.stringify(prevData));
+      const week = '17/11 a 22/11/2025';
+      if (!newData[currentAnalista]) {
+        newData[currentAnalista] = {};
+      }
+      if (!newData[currentAnalista][week]) {
+        newData[currentAnalista][week] = Array(6).fill(Array(16).fill(false));
+      }
+      // Ensure the day's array is a mutable copy
+      const daySchedule = [...newData[currentAnalista][week][dayIndex]];
+      daySchedule[hour - 8] = checked;
+      // Ensure the week's array is a mutable copy
+      const weekSchedule = [...newData[currentAnalista][week]];
+      weekSchedule[dayIndex] = daySchedule;
+      
+      newData[currentAnalista][week] = weekSchedule;
+      return newData;
+    });
+  };
+
 
   const week = '17/11 a 22/11/2025';
   const hours = Array.from({ length: 16 }, (_, i) => i + 8); // 8h to 23h
@@ -71,8 +101,8 @@ export function AvailabilityGrid({ disponibilidade, analistas, nomes }: Availabi
                     <TableCell key={dayIndex} className="text-center">
                       {currentAnalista && (
                         <Checkbox
-                          checked={disponibilidade[currentAnalista]?.[week]?.[dayIndex]?.[hour - 8] || false}
-                          disabled
+                          checked={availabilityData[currentAnalista]?.[week]?.[dayIndex]?.[hour - 8] || false}
+                          onCheckedChange={(checked) => handleAvailabilityChange(dayIndex, hour, !!checked)}
                         />
                       )}
                     </TableCell>
