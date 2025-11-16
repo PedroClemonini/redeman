@@ -23,7 +23,7 @@ import {
 import { Bar, BarChart, CartesianGrid, XAxis } from 'recharts';
 import { Building2, CheckCircle, Clock, Router } from 'lucide-react';
 import type { ChartConfig } from '@/components/ui/chart';
-import { weeklySchedule } from '@/lib/data';
+import { weeklySchedule, sites } from '@/lib/data';
 
 const chartData = [
   { month: 'January', migrated: 18, pending: 205 },
@@ -64,7 +64,7 @@ export default function Dashboard() {
             <Building2 className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">223</div>
+            <div className="text-2xl font-bold">{sites.length}</div>
             <p className="text-xs text-muted-foreground">
               All sites in the project scope
             </p>
