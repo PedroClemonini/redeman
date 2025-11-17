@@ -23,7 +23,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { migrationFlows as initialMigrationFlows, sites, users } from '@/lib/data';
+import { migrationFlows as initialMigrationFlows, sites, analistas, nomes } from '@/lib/data';
 import { Badge } from '@/components/ui/badge';
 import { Download, MoreHorizontal, Plus, Upload } from 'lucide-react';
 import React, { useState } from 'react';
@@ -147,13 +147,11 @@ export default function MigrationFlowsPage() {
                     <SelectValue placeholder="Select an analyst" />
                   </SelectTrigger>
                   <SelectContent>
-                    {users
-                      .filter((user) => user.role === 'Analyst' || user.role === 'Coordinator')
-                      .map((user) => (
-                        <SelectItem key={user.id} value={user.name}>
-                          {user.name}
-                        </SelectItem>
-                      ))}
+                    {analistas.map((analystId) => (
+                      <SelectItem key={analystId} value={nomes[analystId]}>
+                        {nomes[analystId]}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
