@@ -12,6 +12,7 @@ export type User = {
 export type Site = {
   code: string;
   name:string;
+  uf: string;
   distSwitchCount: number;
   accessSwitchCount: number;
 };
@@ -23,6 +24,8 @@ export type Switch = {
   siteCode: string;
   role: 'Access' | 'Distribution' | 'Core';
   status: 'In Stock' | 'Deployed' | 'Faulty' | 'Migrated';
+  managementIp?: string;
+  migrationDate?: string;
 };
 
 export type MigrationFlow = {
