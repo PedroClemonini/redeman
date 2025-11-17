@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Download, AlertCircle } from 'lucide-react';
 import {
@@ -32,13 +33,14 @@ interface FinalReportProps {
 
 export function FinalReport({ phase, title, site }: FinalReportProps) {
   const [notes, setNotes] = useState('');
+  const [status, setStatus] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { toast } = useToast();
 
   if (!phase || !site) return null;
 
   const handleGenerateReport = () => {
-    if (!notes.trim()) {
+    if (!notes.trim() || !status.trim()) {
       setIsModalOpen(true);
       return;
     }
@@ -46,11 +48,11 @@ export function FinalReport({ phase, title, site }: FinalReportProps) {
   };
   
   const handleModalSubmit = () => {
-     if (!notes.trim()) {
+     if (!notes.trim() || !status.trim()) {
         toast({
             variant: "destructive",
-            title: "Notas Adicionais são obrigatórias",
-            description: "Por favor, preencha as notas para gerar o relatório.",
+            title: "Campos Obrigatórios",
+            description: "Por favor, preencha os campos de status e notas para gerar o relatório.",
         });
         return;
     }
@@ -68,17 +70,21 @@ export function FinalReport({ phase, title, site }: FinalReportProps) {
         ...(phaseData?.zoom?.map(p => `(zoom) ${p.name}`) || []),
         ...(phaseData?.bts?.map(p => `(bts) ${p.name}`) || [])
     ].join(' - ');
+    
+    const responsavelTecnico = [
+      ...(phaseData?.v2mr?.map(p => p.name) || []),
+    ].join(', ');
 
-    const reportContent = `
-### [${phase.charAt(0).toUpperCase() + phase.slice(1)}] – ${site.sigla} Finalização ###
 
-**Hora:** ${phaseData?.date ? new Date(phaseData.date + 'T00:00:00').toLocaleDateString('pt-BR') : 'N/A'}
-**Local:** ${site.sigla} - ${site.descricaoBreve}
+    const reportContent = `###[${phase.charAt(0).toUpperCase() + phase.slice(1)}] – ${site.sigla} Finalização ###
+
+**Hora:** ${phaseData?.date ? new Date(phaseData.date + 'T00:00:00').toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit'}) : 'N/A'} - ${phaseData?.date ? new Date(phaseData.date + 'T23:59:59').toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit'}) : 'N/A'} ${phaseData?.date ? new Date(phaseData.date + 'T00:00:00').toLocaleDateString('pt-BR') : 'N/A'}
+**Local:** ${site.sigla}
 **Template:** N/A
 **Switches novos:** N/A
-**Status:** Concluído
+**Status:** ${status}
 **Técnico em campo:** ${technicians || 'N/A'}
-**Responsável técnico:** ${formatPeople(phaseData?.v2mr || [])}
+**Responsável técnico:** ${responsavelTecnico || 'N/A'}
 **Notas Adicionais:** ${notes}
 **Atualizado por:** [Nome do Usuário Logado]
     `.trim();
@@ -110,6 +116,15 @@ export function FinalReport({ phase, title, site }: FinalReportProps) {
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
+            <Label htmlFor="report-status">Status (Obrigatório)</Label>
+            <Input
+              id="report-status"
+              placeholder="Ex: Concluído, Feito parcialmente..."
+              value={status}
+              onChange={(e) => setStatus(e.target.value)}
+            />
+          </div>
+          <div>
             <Label htmlFor="report-notes">Notas Adicionais (Obrigatório)</Label>
             <Textarea
               id="report-notes"
@@ -130,21 +145,33 @@ export function FinalReport({ phase, title, site }: FinalReportProps) {
             <DialogHeader>
                 <DialogTitle className="flex items-center gap-2">
                     <AlertCircle className="text-yellow-500" />
-                    Campo Obrigatório
+                    Campos Obrigatórios
                 </DialogTitle>
                 <DialogDescription>
-                    O campo "Notas Adicionais" é obrigatório para gerar o relatório. Por favor, preencha as informações necessárias.
+                    Os campos "Status" e "Notas Adicionais" são obrigatórios para gerar o relatório. Por favor, preencha as informações necessárias.
                 </DialogDescription>
             </DialogHeader>
-            <div className="py-4">
-                <Label htmlFor="modal-report-notes">Notas Adicionais</Label>
-                <Textarea
-                id="modal-report-notes"
-                placeholder="Insira suas notas aqui..."
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-                className="mt-2"
-                />
+            <div className="py-4 space-y-4">
+                <div>
+                  <Label htmlFor="modal-report-status">Status</Label>
+                  <Input
+                    id="modal-report-status"
+                    placeholder="Ex: Concluído, Feito parcialmente..."
+                    value={status}
+                    onChange={(e) => setStatus(e.target.value)}
+                    className="mt-2"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="modal-report-notes">Notas Adicionais</Label>
+                  <Textarea
+                  id="modal-report-notes"
+                  placeholder="Insira suas notas aqui..."
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  className="mt-2"
+                  />
+                </div>
             </div>
             <DialogFooter>
                 <Button onClick={() => setIsModalOpen(false)} variant="outline">Cancelar</Button>
