@@ -16,59 +16,133 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Building2, CheckCircle, Clock, Router, GanttChartSquare } from 'lucide-react';
-import { weeklySchedule, sites } from '@/lib/data';
-import { useMemo } from 'react';
+import { Building2, CheckCircle, Clock, GanttChartSquare } from 'lucide-react';
+import { registeredSites } from '@/lib/registered-sites';
+import { useState, useEffect, useMemo } from 'react';
+import { unifiedTasks } from '@/lib/tasks-data';
 
-// This would come from your data source in a real app
-const getSiteProgress = () => {
-  // In a real scenario, this data would be fetched or calculated.
-  // Here, we are using a simplified version based on initial data.
-  // We'll map over the sites and generate some mock progress.
-  return sites.slice(0, 10).map((site, index) => {
-    const statuses = ['Completo', 'Pendente', 'Em Andamento', 'Não Iniciado'];
-    
-    // Create some variation for demonstration
-    const getStatus = (base: number) => {
-        const statusIndex = (index + base) % statuses.length;
-        return statuses[statusIndex];
-    };
-    
-    return {
-      id: site.code,
-      siteName: site.name,
-      planning: getStatus(0),
-      preparation: getStatus(1),
-      migration: getStatus(2),
-    };
-  });
-};
-
-type Status = 'Completo' | 'Pendente' | 'Em Andamento' | 'Não Iniciado';
+type Status = 'Completo' | 'Em Andamento' | 'Pendente' | 'Não Iniciado';
 
 const statusColors: Record<Status, string> = {
   'Completo': 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-400',
-  'Pendente': 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-400',
   'Em Andamento': 'bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-400',
+  'Pendente': 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-400',
   'Não Iniciado': 'bg-gray-100 text-gray-500 dark:bg-gray-900/50 dark:text-gray-400',
 };
 
+const getPhaseTasks = (phase: 'planejamento' | 'preparacao' | 'migracao') => {
+    return unifiedTasks.filter(t => t.phase === phase);
+}
+
+const planningTasks = getPhaseTasks('planejamento');
+const preparationTasks = getPhaseTasks('preparacao');
+const migrationTasks = getPhaseTasks('migracao');
 
 export default function Dashboard() {
-  const siteProgress = useMemo(() => getSiteProgress(), []);
+  const [completedTasks, setCompletedTasks] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    // In a real app, this might be a global state or fetched from a DB.
+    // For now, we listen to localStorage changes to sync across tabs.
+    const syncTasks = () => {
+      const saved = localStorage.getItem("unified-tasks-checklist");
+      if (saved) {
+        setCompletedTasks(new Set(JSON.parse(saved)));
+      }
+    };
+    syncTasks();
+    window.addEventListener('storage', syncTasks);
+    return () => window.removeEventListener('storage', syncTasks);
+  }, []);
+
+  const siteProgress = useMemo(() => {
+    return registeredSites.map(site => {
+      const getPhaseStatus = (tasks: typeof unifiedTasks) => {
+        if (tasks.length === 0) return 'Completo';
+        const completedCount = tasks.filter(task => completedTasks.has(task.id)).length;
+        if (completedCount === tasks.length) return 'Completo';
+        if (completedCount > 0) return 'Em Andamento';
+        return 'Não Iniciado';
+      };
+
+      const planningStatus = getPhaseStatus(planningTasks);
+      let preparationStatus: Status = 'Pendente';
+      let migrationStatus: Status = 'Pendente';
+
+      if (planningStatus === 'Completo') {
+        preparationStatus = getPhaseStatus(preparationTasks);
+      } else if (planningStatus === 'Em Andamento' || planningStatus === 'Não Iniciado') {
+        preparationStatus = 'Pendente';
+      }
+
+      if (preparationStatus === 'Completo') {
+        migrationStatus = getPhaseStatus(migrationTasks);
+      } else if (preparationStatus === 'Em Andamento' || preparationStatus === 'Não Iniciado') {
+        migrationStatus = 'Pendente';
+      }
+      
+      // If previous stage is not complete, later stages are pending
+      if (planningStatus !== 'Completo') {
+         preparationStatus = 'Pendente';
+         migrationStatus = 'Pendente';
+      }
+      if (preparationStatus !== 'Completo') {
+         migrationStatus = 'Pendente';
+      }
+
+
+      return {
+        id: site.id,
+        siteName: `${site.sigla} - ${site.descricaoBreve}`,
+        planning: planningStatus,
+        preparation: preparationStatus,
+        migration: migrationStatus,
+      };
+    });
+  }, [completedTasks]);
+
+  const overallProgress = useMemo(() => {
+    const totalSites = registeredSites.length;
+    if (totalSites === 0) {
+      return {
+        completedSites: 0,
+        planningPercent: 0,
+        preparationPercent: 0,
+        migrationPercent: 0,
+      };
+    }
+
+    const completedSites = siteProgress.filter(p => p.migration === 'Completo').length;
+    
+    // Calculate percentage based on how many sites have COMPLETED the phase
+    const planningCompleted = siteProgress.filter(p => p.planning === 'Completo').length;
+    const preparationCompleted = siteProgress.filter(p => p.preparation === 'Completo').length;
+    const migrationCompleted = siteProgress.filter(p => p.migration === 'Completo').length;
+
+    return {
+      completedSites,
+      planningPercent: Math.round((planningCompleted / totalSites) * 100),
+      preparationPercent: Math.round((preparationCompleted / totalSites) * 100),
+      migrationPercent: Math.round((migrationCompleted / totalSites) * 100),
+    };
+  }, [siteProgress]);
+
 
   return (
     <div className="flex flex-col gap-8">
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Sites</CardTitle>
             <Building2 className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{sites.length}</div>
+            <div className="text-2xl font-bold">
+              <span className="text-green-500">{overallProgress.completedSites}</span>
+              <span className="text-muted-foreground">/{registeredSites.length}</span>
+            </div>
             <p className="text-xs text-muted-foreground">
-              All sites in project
+              Sites concluídos / Cadastrados
             </p>
           </CardContent>
         </Card>
@@ -80,9 +154,9 @@ export default function Dashboard() {
             <GanttChartSquare className="h-4 w-4 text-indigo-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">150</div>
+            <div className="text-2xl font-bold">{overallProgress.planningPercent}%</div>
             <p className="text-xs text-muted-foreground">
-              70% completo
+              {siteProgress.filter(p => p.planning === 'Completo').length} de {registeredSites.length} sites concluídos
             </p>
           </CardContent>
         </Card>
@@ -94,9 +168,9 @@ export default function Dashboard() {
             <Clock className="h-4 w-4 text-amber-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">120</div>
+            <div className="text-2xl font-bold">{overallProgress.preparationPercent}%</div>
              <p className="text-xs text-muted-foreground">
-              55% completo
+              {siteProgress.filter(p => p.preparation === 'Completo').length} de {registeredSites.length} sites concluídos
             </p>
           </CardContent>
         </Card>
@@ -108,23 +182,9 @@ export default function Dashboard() {
             <CheckCircle className="h-4 w-4 text-green-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">110</div>
+            <div className="text-2xl font-bold">{overallProgress.migrationPercent}%</div>
             <p className="text-xs text-muted-foreground">
-              50% completo
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Switches em Estoque
-            </CardTitle>
-            <Router className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">542</div>
-            <p className="text-xs text-muted-foreground">
-              Prontos para envio
+              {siteProgress.filter(p => p.migration === 'Completo').length} de {registeredSites.length} sites concluídos
             </p>
           </CardContent>
         </Card>
@@ -134,7 +194,7 @@ export default function Dashboard() {
           <CardHeader>
             <CardTitle>Progresso da Migração</CardTitle>
             <CardDescription>
-              Status de cada etapa da migração por site.
+              Status de cada etapa da migração por site, alimentado pela tela de Tarefas.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -152,17 +212,17 @@ export default function Dashboard() {
                   <TableRow key={site.id}>
                     <TableCell className="font-medium">{site.siteName}</TableCell>
                     <TableCell>
-                      <Badge variant="secondary" className={statusColors[site.planning as Status]}>
+                      <Badge variant="secondary" className={statusColors[site.planning]}>
                         {site.planning}
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      <Badge variant="secondary" className={statusColors[site.preparation as Status]}>
+                      <Badge variant="secondary" className={statusColors[site.preparation]}>
                         {site.preparation}
                       </Badge>
                     </TableCell>
                     <TableCell>
-                       <Badge variant="secondary" className={statusColors[site.migration as Status]}>
+                       <Badge variant="secondary" className={statusColors[site.migration]}>
                         {site.migration}
                       </Badge>
                     </TableCell>

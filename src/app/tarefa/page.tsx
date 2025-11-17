@@ -16,180 +16,10 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { CheckCircle2, Circle, ArrowLeft, RotateCcw, Play, Pause, Square, Calendar } from 'lucide-react'
 import Link from "next/link"
-import { ProjectInfoForm } from "@/components/project-info-form"
 import { FinalReport } from "@/components/final-report"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { registeredSites, type SiteEntry } from "@/lib/registered-sites"
-
-// Dados unificados de todas as fases
-const unifiedTasks = [
-  // Fase: Planejamento
-  {
-    id: "plan-1",
-    title: "Coleta de configuração dos switches legados",
-    phase: "planejamento",
-    phaseTitle: "Planejamento",
-    responsible: "ZOOM"
-  },
-  {
-    id: "plan-2",
-    title: "Análise dos arquivos coletados (configurações, CDP/LLDP)",
-    phase: "planejamento",
-    phaseTitle: "Planejamento",
-    responsible: "ZOOM"
-  },
-  {
-    id: "plan-3",
-    title: "Análise de saúde da rede (portas com erros CRC, STP, UDLD, etc.)",
-    phase: "planejamento",
-    phaseTitle: "Planejamento",
-    responsible: "ZOOM"
-  },
-  {
-    id: "plan-4",
-    title: "Desenho da topologia lógica",
-    phase: "planejamento",
-    phaseTitle: "Planejamento",
-    responsible: "ZOOM"
-  },
-  {
-    id: "plan-5",
-    title: "Mapeamento detalhado de portas (PORT_MAPPING_RPO25_ACCESS.xlsx)",
-    phase: "planejamento",
-    phaseTitle: "Planejamento",
-    responsible: "ZOOM"
-  },
-  {
-    id: "plan-6-1",
-    title: "Script de Onboarding",
-    phase: "planejamento",
-    phaseTitle: "Planejamento",
-    responsible: "ZOOM",
-  },
-  {
-    id: "plan-6-2",
-    title: "Script de Optimization",
-    phase: "planejamento",
-    phaseTitle: "Planejamento",
-    responsible: "ZOOM",
-  },
-  {
-    id: "plan-6-3",
-    title: "Script Python para identificação de APs",
-    phase: "planejamento",
-    phaseTitle: "Planejamento",
-    responsible: "ZOOM",
-  },
-  {
-    id: "plan-7",
-    title: "Criação e validação dos Templates de configuração",
-    phase: "planejamento",
-    phaseTitle: "Planejamento",
-    responsible: "ZOOM"
-  },
-  {
-    id: "plan-8",
-    title: "Criação do Site e cadastro dos equipamentos no iMaster NCE Campus",
-    phase: "planejamento",
-    phaseTitle: "Planejamento",
-    responsible: "ZOOM"
-  },
-  {
-    id: "plan-9",
-    title: "Teste dos templates no ambiente de laboratório (TENANT-LAB)",
-    phase: "planejamento",
-    phaseTitle: "Planejamento",
-    responsible: "ZOOM"
-  },
-  {
-    id: "plan-10",
-    title: "Criação da MOP (Method of Procedure)",
-    phase: "planejamento",
-    phaseTitle: "Planejamento",
-    responsible: "ZOOM"
-  },
-  {
-    id: "plan-11",
-    title: "Abertura e aprovação da RFC (com revisão e validação por Huawei e BB)",
-    phase: "planejamento",
-    phaseTitle: "Planejamento",
-    responsible: "ZOOM"
-  },
-
-  // Fase: Preparação
-  {
-    id: "prep-1-1",
-    title: "Solicitar credenciais de acesso às instalações",
-    phase: "preparacao",
-    phaseTitle: "Preparação",
-    responsible: "Field"
-  },
-  {
-    id: "prep-1-2",
-    title: "Validar acesso físico às salas técnicas",
-    phase: "preparacao",
-    phaseTitle: "Preparação",
-    responsible: "Field"
-  },
-  {
-    id: "prep-1-3",
-    title: "Confirmar horário e ponto de contato local",
-    phase: "preparacao",
-    phaseTitle: "Preparação",
-    responsible: "Field"
-  },
-  {
-    id: "prep-2-1",
-    title: "Realizar reunião de alinhamento presencial",
-    phase: "preparacao",
-    phaseTitle: "Preparação",
-    responsible: "Field"
-  },
-  {
-    id: "prep-2-2",
-    title: "Configurar canal Teams para suporte remoto",
-    phase: "preparacao",
-    phaseTitle: "Preparação",
-    responsible: "Field"
-  },
-  {
-    id: "prep-2-3",
-    title: "Distribuir responsabilidades entre equipes",
-    phase: "preparacao",
-    phaseTitle: "Preparação",
-    responsible: "Field"
-  },
-  {
-    id: "prep-2-4",
-    title: "Confirmar disponibilidade de todos os envolvidos",
-    phase: "preparacao",
-    phaseTitle: "Preparação",
-    responsible: "Field"
-  },
-
-  // Fase: Migração
-  {
-    id: "mig-1-1",
-    title: "Criar pasta do site dentro da pasta 'Rollout'",
-    phase: "migracao",
-    phaseTitle: "Migração",
-    responsible: "ZOOM/Field"
-  },
-  {
-    id: "mig-1-2",
-    title: "Acessar ferramenta NNMI",
-    phase: "migracao",
-    phaseTitle: "Migração",
-    responsible: "ZOOM"
-  },
-  {
-    id: "mig-1-3",
-    title: "Identificar site a ser migrado e coletar IPs ou ranges",
-    phase: "migracao",
-    phaseTitle: "Migração",
-    responsible: "ZOOM"
-  },
-];
+import { unifiedTasks } from "@/lib/tasks-data"
 
 // Interface para o timer
 interface PhaseTimer {
@@ -201,10 +31,10 @@ interface PhaseTimer {
 
 export default function UnifiedTasksPage() {
   const [completedItems, setCompletedItems] = useState<Set<string>>(new Set())
-  const [progress, setProgress] = useState(0)
-  const [activePhase, setActivePhase] = useState<string | null>(null)
   const [timers, setTimers] = useState<Record<string, PhaseTimer>>({})
   const [selectedSite, setSelectedSite] = useState<SiteEntry | null>(null)
+  const [activePhase, setActivePhase] = useState<string | null>(null)
+
 
   // Filtra tarefas baseado na fase selecionada
   const filteredTasks = activePhase
@@ -213,10 +43,11 @@ export default function UnifiedTasksPage() {
 
   // Agrupa tarefas por fase para exibição
   const tasksByPhase = filteredTasks.reduce((acc, task) => {
-    if (!acc[task.phase]) {
-      acc[task.phase] = []
+    const key = task.phase;
+    if (!acc[key]) {
+      acc[key] = []
     }
-    acc[task.phase].push(task)
+    acc[key].push(task)
     return acc
   }, {} as Record<string, typeof unifiedTasks>)
 
@@ -233,8 +64,9 @@ export default function UnifiedTasksPage() {
   }, [])
 
   useEffect(() => {
+    // Notify other tabs/windows of the change
+    window.dispatchEvent(new Event('storage'));
     localStorage.setItem("unified-tasks-checklist", JSON.stringify([...completedItems]))
-    setProgress((completedItems.size / unifiedTasks.length) * 100)
   }, [completedItems])
 
   useEffect(() => {
@@ -324,11 +156,9 @@ export default function UnifiedTasksPage() {
   }
 
   const resetChecklist = () => {
-    if (confirm("Tem certeza que deseja resetar todo o checklist? Todos os dados serão perdidos.")) {
+    if (confirm("Tem certeza que deseja resetar todo o checklist para este site?")) {
       setCompletedItems(new Set())
       setTimers({})
-      localStorage.removeItem("unified-tasks-checklist")
-      localStorage.removeItem("unified-tasks-timers")
     }
   }
 
@@ -347,32 +177,16 @@ export default function UnifiedTasksPage() {
 
   if (!activePhase) {
     return (
-      <div className="min-h-screen bg-background">
-        <header className="sticky top-0 z-50 border-b border-border bg-card/80 backdrop-blur-sm">
-          <div className="container mx-auto px-4 py-4 md:px-6">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <Link href="/">
-                  <Button variant="ghost" size="sm">
-                    <ArrowLeft className="mr-2 size-4" />
-                    Voltar
-                  </Button>
-                </Link>
-                <div>
-                  <h1 className="text-balance text-xl font-semibold tracking-tight md:text-2xl">
-                    Checklist de Tarefas - Projeto Huawei
-                  </h1>
-                  <p className="text-sm text-muted-foreground">Selecione um site para ver as fases do projeto</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </header>
+      <div>
+        <PageHeader
+          title="Checklist de Tarefas"
+          description="Selecione um site para ver as fases do projeto."
+        />
 
         <main className="container mx-auto px-4 py-8 md:px-6">
           <div className="max-w-md mx-auto mb-8">
-            <label className="text-sm font-medium mb-2 block">Selecione um Site</label>
-            <Select onValueChange={handleSiteChange}>
+            <Label className="text-sm font-medium mb-2 block">Selecione um Site</Label>
+            <Select onValueChange={handleSiteChange} defaultValue={selectedSite?.id.toString()}>
               <SelectTrigger>
                 <SelectValue placeholder="Escolha um site..." />
               </SelectTrigger>
@@ -414,29 +228,24 @@ export default function UnifiedTasksPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-50 border-b border-border bg-card/80 backdrop-blur-sm">
-        <div className="container mx-auto px-4 py-4 md:px-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Button variant="ghost" size="sm" onClick={() => setActivePhase(null)}>
-                <ArrowLeft className="mr-2 size-4" />
-                Voltar
-              </Button>
-              <div>
-                <h1 className="text-balance text-xl font-semibold tracking-tight md:text-2xl">
-                  Checklist: {selectedSite?.sigla} - {tasksByPhase[activePhase]?.[0]?.phaseTitle}
-                </h1>
-                <p className="text-sm text-muted-foreground">Acompanhe as tarefas da fase selecionada</p>
-              </div>
+    <div>
+       <PageHeader
+        title={`Checklist: ${selectedSite?.sigla} - ${tasksByPhase[activePhase]?.[0]?.phaseTitle}`}
+        description="Acompanhe as tarefas da fase selecionada"
+       />
+        <div className="container mx-auto px-4 md:px-6 mb-4">
+            <div className="flex items-center justify-between">
+                <Button variant="outline" size="sm" onClick={() => setActivePhase(null)}>
+                    <ArrowLeft className="mr-2 size-4" />
+                    Voltar para Fases
+                </Button>
+                <Button variant="destructive" size="sm" onClick={resetChecklist}>
+                    <RotateCcw className="mr-2 size-4" />
+                    Resetar Checklist
+                </Button>
             </div>
-            <Button variant="outline" size="sm" onClick={resetChecklist}>
-              <RotateCcw className="mr-2 size-4" />
-              Resetar
-            </Button>
-          </div>
         </div>
-      </header>
+
 
       <main className="container mx-auto px-4 py-8 md:px-6">
         <div className="mx-auto max-w-4xl space-y-8">
@@ -514,8 +323,8 @@ export default function UnifiedTasksPage() {
                       return (
                         <div
                           key={task.id}
-                          className={`flex items-start gap-3 rounded-lg border border-border bg-card p-4 transition-opacity ${
-                            isCompleted ? "opacity-60" : ""
+                          className={`flex items-start gap-3 rounded-lg border p-4 transition-colors ${
+                            isCompleted ? "opacity-60 bg-muted/30" : "bg-card"
                           }`}
                         >
                           <Checkbox
