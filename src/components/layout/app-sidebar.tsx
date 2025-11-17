@@ -34,7 +34,7 @@ const menuItems = [
     icon: LayoutDashboard,
   },
   {
-    href: '/agencies',
+    href: '/sites',
     label: 'Sites',
     icon: Building2,
   },
@@ -79,7 +79,10 @@ export function AppSidebar() {
   const pathname = usePathname();
 
   const isActive = (path: string) => {
-    return pathname === path;
+    if (path === '/') {
+      return pathname === '/';
+    }
+    return pathname.startsWith(path);
   };
 
   return (

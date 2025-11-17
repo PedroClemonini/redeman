@@ -22,7 +22,8 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { sites } from '@/lib/data';
 import { Badge } from '@/components/ui/badge';
-import { Download, MoreHorizontal, Plus, Upload } from 'lucide-react';
+import { Download, MoreHorizontal, Plus, Upload, Search } from 'lucide-react';
+import { Input } from '@/components/ui/input';
 
 export default function SitesPage() {
   const statusColors = {
@@ -39,19 +40,25 @@ export default function SitesPage() {
         description="Manage Banco do Brasil site data."
       />
 
-      <div className="mb-4 flex items-center justify-end gap-2">
-        <Button variant="outline">
-          <Download className="mr-2" />
-          Export
-        </Button>
-        <Button variant="outline">
-          <Upload className="mr-2" />
-          Import
-        </Button>
-        <Button>
-          <Plus className="mr-2" />
-          Add Site
-        </Button>
+      <div className="mb-4 flex items-center justify-between gap-4">
+        <div className="relative w-full max-w-sm">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input placeholder="Search sites..." className="pl-9" />
+        </div>
+        <div className="flex shrink-0 items-center gap-2">
+          <Button variant="outline">
+            <Download className="mr-2" />
+            Export
+          </Button>
+          <Button variant="outline">
+            <Upload className="mr-2" />
+            Import
+          </Button>
+          <Button>
+            <Plus className="mr-2" />
+            Add Site
+          </Button>
+        </div>
       </div>
 
       <Card>
@@ -78,12 +85,12 @@ export default function SitesPage() {
                   <TableCell className="font-medium">{site.code}</TableCell>
                   <TableCell>{site.name}</TableCell>
                   <TableCell>
-                    {site.city}, {site.state}
+                    {/* Location data is not in the new model. You might want to add it back or remove this column. */}
                   </TableCell>
-                  <TableCell>{site.switchCount}</TableCell>
+                  <TableCell>{site.distSwitchCount + site.accessSwitchCount}</TableCell>
                   <TableCell>
-                    <Badge variant="secondary" className={statusColors[site.status]}>
-                      {site.status}
+                    <Badge variant="secondary" className={statusColors['Completed']}>
+                      Completed
                     </Badge>
                   </TableCell>
                   <TableCell>

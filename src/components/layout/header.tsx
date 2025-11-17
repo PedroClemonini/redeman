@@ -27,7 +27,7 @@ import {
 
 const pathToTitle: { [key: string]: string } = {
   '/': 'Dashboard',
-  '/agencies': 'Sites',
+  '/sites': 'Sites',
   '/switches': 'Switches',
   '/users': 'Users',
   '/flows': 'Migration Flows',
@@ -39,7 +39,17 @@ const pathToTitle: { [key: string]: string } = {
 
 export function AppHeader() {
   const pathname = usePathname();
-  const title = pathToTitle[pathname] || 'Page';
+  
+  const getTitle = () => {
+    for (const path in pathToTitle) {
+      if (pathname.startsWith(path) && path !== '/') {
+        return pathToTitle[path];
+      }
+    }
+    return pathToTitle[pathname] || 'Page';
+  }
+
+  const title = getTitle();
 
   return (
     <header className="sticky top-0 z-10 flex h-16 items-center gap-4 border-b bg-background/80 px-4 backdrop-blur-sm md:px-6">
