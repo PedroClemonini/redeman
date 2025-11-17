@@ -19,7 +19,7 @@ import {
   Router,
   Users,
   GitCompareArrows,
-  Workflow,
+  ListTodo,
   LogOut,
   Settings,
   CalendarDays,
@@ -38,6 +38,11 @@ const menuItems = [
     label: 'Sites',
     icon: Building2,
   },
+   {
+    href: '/tarefa',
+    label: 'Tarefas',
+    icon: ListTodo,
+  },
   {
     href: '/switches',
     label: 'Switches',
@@ -47,11 +52,6 @@ const menuItems = [
     href: '/users',
     label: 'Users',
     icon: Users,
-  },
-  {
-    href: '/flows',
-    label: 'Migration Flows',
-    icon: Workflow,
   },
   {
     href: '/alocacao',
