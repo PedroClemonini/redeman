@@ -2,15 +2,24 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Progress } from "@/components/ui/progress"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { CheckCircle2, Circle, ArrowLeft, RotateCcw, Play, Pause, Square } from 'lucide-react'
+import { CheckCircle2, Circle, ArrowLeft, RotateCcw, Play, Pause, Square, Calendar } from 'lucide-react'
 import Link from "next/link"
 import { ProjectInfoForm } from "@/components/project-info-form"
 import { FinalReport } from "@/components/final-report"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { registeredSites, type SiteEntry } from "@/lib/registered-sites"
 
 // Dados unificados de todas as fases
 const unifiedTasks = [
@@ -193,13 +202,14 @@ interface PhaseTimer {
 export default function UnifiedTasksPage() {
   const [completedItems, setCompletedItems] = useState<Set<string>>(new Set())
   const [progress, setProgress] = useState(0)
-  const [activePhase, setActivePhase] = useState<string>("all") // "all", "planejamento", "preparacao", "migracao"
+  const [activePhase, setActivePhase] = useState<string | null>(null)
   const [timers, setTimers] = useState<Record<string, PhaseTimer>>({})
+  const [selectedSite, setSelectedSite] = useState<SiteEntry | null>(null)
 
   // Filtra tarefas baseado na fase selecionada
-  const filteredTasks = activePhase === "all" 
-    ? unifiedTasks 
-    : unifiedTasks.filter(task => task.phase === activePhase)
+  const filteredTasks = activePhase
+    ? unifiedTasks.filter(task => task.phase === activePhase)
+    : []
 
   // Agrupa tarefas por fase para exibição
   const tasksByPhase = filteredTasks.reduce((acc, task) => {
@@ -251,6 +261,18 @@ export default function UnifiedTasksPage() {
 
     return () => clearInterval(interval)
   }, [])
+
+  const handleSiteChange = (siteId: string) => {
+    const site = registeredSites.find(s => s.id.toString() === siteId) || null
+    setSelectedSite(site)
+    setActivePhase(null) // Reset phase when site changes
+  }
+
+  const formatDate = (dateString?: string) => {
+    if (!dateString) return 'Data não definida';
+    const date = new Date(dateString + 'T00:00:00'); // Assume local timezone
+    return date.toLocaleDateString('pt-BR');
+  };
 
   const toggleItem = (id: string) => {
     const newCompleted = new Set(completedItems)
@@ -317,23 +339,95 @@ export default function UnifiedTasksPage() {
     return (completed / phaseTasks.length) * 100
   }
 
+  const phaseCards = [
+    { id: 'planejamento', title: 'Planejamento', date: selectedSite?.planejamento.date },
+    { id: 'preparacao', title: 'Preparação', date: selectedSite?.preparacao?.date },
+    { id: 'migracao', title: 'Migração', date: selectedSite?.migracao?.date },
+  ];
+
+  if (!activePhase) {
+    return (
+      <div className="min-h-screen bg-background">
+        <header className="sticky top-0 z-50 border-b border-border bg-card/80 backdrop-blur-sm">
+          <div className="container mx-auto px-4 py-4 md:px-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Link href="/">
+                  <Button variant="ghost" size="sm">
+                    <ArrowLeft className="mr-2 size-4" />
+                    Voltar
+                  </Button>
+                </Link>
+                <div>
+                  <h1 className="text-balance text-xl font-semibold tracking-tight md:text-2xl">
+                    Checklist de Tarefas - Projeto Huawei
+                  </h1>
+                  <p className="text-sm text-muted-foreground">Selecione um site para ver as fases do projeto</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <main className="container mx-auto px-4 py-8 md:px-6">
+          <div className="max-w-md mx-auto mb-8">
+            <label className="text-sm font-medium mb-2 block">Selecione um Site</label>
+            <Select onValueChange={handleSiteChange}>
+              <SelectTrigger>
+                <SelectValue placeholder="Escolha um site..." />
+              </SelectTrigger>
+              <SelectContent>
+                {registeredSites.map(site => (
+                  <SelectItem key={site.id} value={site.id.toString()}>
+                    {site.sigla} - {site.descricaoBreve}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {selectedSite && (
+            <div className="grid md:grid-cols-3 gap-6">
+              {phaseCards.map(phase => (
+                <Card key={phase.id} className="flex flex-col">
+                  <CardHeader>
+                    <CardTitle>{phase.title}</CardTitle>
+                  </CardHeader>
+                  <CardContent className="flex-grow">
+                    <div className="flex items-center text-sm text-muted-foreground">
+                       <Calendar className="mr-2 h-4 w-4" />
+                       <span>Início: {formatDate(phase.date)}</span>
+                    </div>
+                  </CardContent>
+                  <CardFooter>
+                    <Button className="w-full" onClick={() => setActivePhase(phase.id)}>
+                      Ver Checklist
+                    </Button>
+                  </CardFooter>
+                </Card>
+              ))}
+            </div>
+          )}
+        </main>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-50 border-b border-border bg-card/80 backdrop-blur-sm">
         <div className="container mx-auto px-4 py-4 md:px-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <Link href="/">
-                <Button variant="ghost" size="sm">
-                  <ArrowLeft className="mr-2 size-4" />
-                  Voltar
-                </Button>
-              </Link>
+              <Button variant="ghost" size="sm" onClick={() => setActivePhase(null)}>
+                <ArrowLeft className="mr-2 size-4" />
+                Voltar
+              </Button>
               <div>
                 <h1 className="text-balance text-xl font-semibold tracking-tight md:text-2xl">
-                  Checklist Unificado - Projeto Huawei
+                  Checklist: {selectedSite?.sigla} - {tasksByPhase[activePhase]?.[0]?.phaseTitle}
                 </h1>
-                <p className="text-sm text-muted-foreground">Todas as fases do projeto em uma única visão</p>
+                <p className="text-sm text-muted-foreground">Acompanhe as tarefas da fase selecionada</p>
               </div>
             </div>
             <Button variant="outline" size="sm" onClick={resetChecklist}>
@@ -344,59 +438,9 @@ export default function UnifiedTasksPage() {
         </div>
       </header>
 
-      <div className="border-b border-border bg-muted/30">
-        <div className="container mx-auto px-4 py-6 md:px-6">
-          <div className="flex items-center justify-between">
-            <div className="flex-1">
-              <div className="mb-2 flex items-center justify-between">
-                <span className="text-sm font-medium">Progresso Geral</span>
-                <span className="text-sm font-semibold text-primary">{Math.round(progress)}%</span>
-              </div>
-              <Progress value={progress} className="h-3" />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="border-b border-border">
-        <div className="container mx-auto px-4 py-4 md:px-6">
-          <div className="flex flex-wrap gap-2">
-            <Button
-              variant={activePhase === "all" ? "default" : "outline"}
-              size="sm"
-              onClick={() => setActivePhase("all")}
-            >
-              Todas as Fases
-            </Button>
-            <Button
-              variant={activePhase === "planejamento" ? "default" : "outline"}
-              size="sm"
-              onClick={() => setActivePhase("planejamento")}
-            >
-              Planejamento
-            </Button>
-            <Button
-              variant={activePhase === "preparacao" ? "default" : "outline"}
-              size="sm"
-              onClick={() => setActivePhase("preparacao")}
-            >
-              Preparação
-            </Button>
-            <Button
-              variant={activePhase === "migracao" ? "default" : "outline"}
-              size="sm"
-              onClick={() => setActivePhase("migracao")}
-            >
-              Migração
-            </Button>
-          </div>
-        </div>
-      </div>
-
       <main className="container mx-auto px-4 py-8 md:px-6">
         <div className="mx-auto max-w-4xl space-y-8">
-          <ProjectInfoForm phase="unified" />
-
+          
           {Object.entries(tasksByPhase).map(([phase, tasks]) => {
             const phaseProgress = getPhaseProgress(phase)
             const phaseTitle = tasks[0]?.phaseTitle || phase
@@ -508,11 +552,9 @@ export default function UnifiedTasksPage() {
             )
           })}
 
-          <FinalReport phase="unified" title="Projeto Completo" />
+          <FinalReport phase={activePhase} title={`Relatório da Fase: ${activePhase}`} />
         </div>
       </main>
     </div>
   )
 }
-
-    

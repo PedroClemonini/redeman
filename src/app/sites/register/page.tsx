@@ -17,35 +17,11 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { X, Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
-
-type Person = { id: number; name: string };
-type Stage = {
-  date: string;
-  link: string;
-  v2mr: Person[];
-  zoom: Person[];
-  bts: Person[];
-};
-
-type SiteEntry = {
-  id: number;
-  sigla: string;
-  descricaoBreve: string;
-  semana: string;
-  planejamento: Partial<Stage>;
-  preparacao: Partial<Stage>;
-  migracao: Partial<Stage>;
-  linkWhatsapp: string;
-};
-
-const initialSiteData: SiteEntry[] = [
-    { id: 1, sigla: "ARN01", descricaoBreve: "Arniqueiras", semana: "Semana 2", planejamento: { data: "2025-11-17", v2mr: [{id: 1, name: "RUAN (M)"}] }, preparacao: { data: "2025-11-18" }, migracao: { data: "2025-11-19" }, linkWhatsapp: '' },
-    { id: 2, sigla: "BVA02", descricaoBreve: "Bela Vista", semana: "Semana 2", planejamento: { data: "2025-11-17", v2mr: [{id: 1, name: "GLORIA (M)"}] }, preparacao: { data: "2025-11-18" }, migracao: { data: "2025-11-19", v2mr: [{id: 1, name: "PAULO"}] }, linkWhatsapp: '' },
-];
+import { registeredSites, type SiteEntry, type Person } from '@/lib/registered-sites';
 
 
 export default function RegisterSitePage() {
-  const [sites, setSites] = useState<SiteEntry[]>(initialSiteData);
+  const [sites, setSites] = useState<SiteEntry[]>(registeredSites);
   
   const [sigla, setSigla] = useState('');
   const [descricaoBreve, setDescricaoBreve] = useState('');

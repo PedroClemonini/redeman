@@ -8,11 +8,13 @@ import { Label } from '@/components/ui/label';
 import { Download } from 'lucide-react';
 
 interface FinalReportProps {
-  phase: string;
+  phase: string | null;
   title: string;
 }
 
 export function FinalReport({ phase, title }: FinalReportProps) {
+  if (!phase) return null;
+
   return (
     <Card>
       <CardHeader>
@@ -34,4 +36,3 @@ export function FinalReport({ phase, title }: FinalReportProps) {
     </Card>
   );
 }
-
