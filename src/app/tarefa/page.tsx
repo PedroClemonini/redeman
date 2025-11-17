@@ -15,11 +15,12 @@ import { Progress } from "@/components/ui/progress"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { CheckCircle2, Circle, ArrowLeft, RotateCcw, Play, Pause, Square, Calendar } from 'lucide-react'
-import Link from "next/link"
 import { FinalReport } from "@/components/final-report"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { registeredSites, type SiteEntry } from "@/lib/registered-sites"
 import { unifiedTasks } from "@/lib/tasks-data"
+import { PageHeader } from "@/components/page-header"
+import { Label } from "@/components/ui/label"
 
 // Interface para o timer
 interface PhaseTimer {
