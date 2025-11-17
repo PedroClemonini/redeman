@@ -183,8 +183,8 @@ const unifiedTasks = [
 ];
 
 // Interface para o timer
-interface TaskTimer {
-  taskId: string;
+interface PhaseTimer {
+  phaseId: string;
   startTime: number;
   elapsedTime: number;
   isRunning: boolean;
@@ -194,7 +194,7 @@ export default function UnifiedTasksPage() {
   const [completedItems, setCompletedItems] = useState<Set<string>>(new Set())
   const [progress, setProgress] = useState(0)
   const [activePhase, setActivePhase] = useState<string>("all") // "all", "planejamento", "preparacao", "migracao"
-  const [timers, setTimers] = useState<Record<string, TaskTimer>>({})
+  const [timers, setTimers] = useState<Record<string, PhaseTimer>>({})
 
   // Filtra tarefas baseado na fase selecionada
   const filteredTasks = activePhase === "all" 
@@ -238,9 +238,9 @@ export default function UnifiedTasksPage() {
         const updated = { ...prev }
         let changed = false
 
-        Object.keys(updated).forEach(taskId => {
-          if (updated[taskId].isRunning) {
-            updated[taskId].elapsedTime = Date.now() - updated[taskId].startTime
+        Object.keys(updated).forEach(phaseId => {
+          if (updated[phaseId].isRunning) {
+            updated[phaseId].elapsedTime = Date.now() - updated[phaseId].startTime
             changed = true
           }
         })
@@ -262,32 +262,32 @@ export default function UnifiedTasksPage() {
     setCompletedItems(newCompleted)
   }
 
-  const startTimer = (taskId: string) => {
+  const startTimer = (phaseId: string) => {
     setTimers(prev => ({
       ...prev,
-      [taskId]: {
-        taskId,
-        startTime: Date.now() - (prev[taskId]?.elapsedTime || 0),
-        elapsedTime: prev[taskId]?.elapsedTime || 0,
+      [phaseId]: {
+        phaseId,
+        startTime: Date.now() - (prev[phaseId]?.elapsedTime || 0),
+        elapsedTime: prev[phaseId]?.elapsedTime || 0,
         isRunning: true
       }
     }))
   }
 
-  const pauseTimer = (taskId: string) => {
+  const pauseTimer = (phaseId: string) => {
     setTimers(prev => ({
       ...prev,
-      [taskId]: {
-        ...prev[taskId],
+      [phaseId]: {
+        ...prev[phaseId],
         isRunning: false
       }
     }))
   }
 
-  const stopTimer = (taskId: string) => {
+  const stopTimer = (phaseId: string) => {
     setTimers(prev => {
       const newTimers = { ...prev }
-      delete newTimers[taskId]
+      delete newTimers[phaseId]
       return newTimers
     })
   }
@@ -312,6 +312,7 @@ export default function UnifiedTasksPage() {
 
   const getPhaseProgress = (phase: string) => {
     const phaseTasks = unifiedTasks.filter(task => task.phase === phase)
+    if (phaseTasks.length === 0) return 0;
     const completed = phaseTasks.filter(task => completedItems.has(task.id)).length
     return (completed / phaseTasks.length) * 100
   }
@@ -399,12 +400,13 @@ export default function UnifiedTasksPage() {
           {Object.entries(tasksByPhase).map(([phase, tasks]) => {
             const phaseProgress = getPhaseProgress(phase)
             const phaseTitle = tasks[0]?.phaseTitle || phase
+            const timer = timers[phase];
 
             return (
               <Card key={phase}>
                 <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <div>
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div className="flex-1">
                       <CardTitle className="flex items-center gap-2">
                         {phaseTitle}
                         <Badge variant="secondary">
@@ -415,17 +417,54 @@ export default function UnifiedTasksPage() {
                         Responsável: {tasks[0]?.responsible}
                       </CardDescription>
                     </div>
-                    <div className="text-right">
-                      <div className="text-sm font-medium">Progresso da Fase</div>
-                      <div className="text-lg font-semibold text-primary">{Math.round(phaseProgress)}%</div>
+                    <div className="flex items-center gap-4">
+                      {/* Controles do Timer */}
+                       <div className="flex items-center gap-2">
+                          <span className="text-sm font-mono text-muted-foreground">
+                            {formatTime(timer?.elapsedTime || 0)}
+                          </span>
+                          <div className="flex gap-1">
+                            {!timer?.isRunning ? (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => startTimer(phase)}
+                                className="h-7 px-2"
+                              >
+                                <Play className="size-3 mr-1" /> Iniciar
+                              </Button>
+                            ) : (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => pauseTimer(phase)}
+                                className="h-7 px-2"
+                              >
+                                <Pause className="size-3 mr-1" /> Pausar
+                              </Button>
+                            )}
+                            <Button
+                              variant="destructive"
+                              size="sm"
+                              onClick={() => stopTimer(phase)}
+                              className="h-7 px-2"
+                            >
+                              <Square className="size-3" />
+                            </Button>
+                          </div>
+                        </div>
+
+                      <div className="text-right">
+                        <div className="text-sm font-medium">Progresso</div>
+                        <div className="text-lg font-semibold text-primary">{Math.round(phaseProgress)}%</div>
+                      </div>
                     </div>
                   </div>
-                  <Progress value={phaseProgress} className="mt-2 h-2" />
+                  <Progress value={phaseProgress} className="mt-4 h-2" />
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
                     {tasks.map((task) => {
-                      const timer = timers[task.id]
                       const isCompleted = completedItems.has(task.id)
                       
                       return (
@@ -451,58 +490,9 @@ export default function UnifiedTasksPage() {
                             >
                               {task.title}
                             </label>
-                            
-                            {/* Controles do Timer */}
-                            {timer && (
-                              <div className="mt-2 flex items-center gap-2">
-                                <span className="text-xs font-mono text-muted-foreground">
-                                  {formatTime(timer.elapsedTime)}
-                                </span>
-                                <div className="flex gap-1">
-                                  {!timer.isRunning ? (
-                                    <Button
-                                      variant="outline"
-                                      size="sm"
-                                      onClick={() => startTimer(task.id)}
-                                      className="h-6 px-2"
-                                    >
-                                      <Play className="size-3" />
-                                    </Button>
-                                  ) : (
-                                    <Button
-                                      variant="outline"
-                                      size="sm"
-                                      onClick={() => pauseTimer(task.id)}
-                                      className="h-6 px-2"
-                                    >
-                                      <Pause className="size-3" />
-                                    </Button>
-                                  )}
-                                  <Button
-                                    variant="destructive"
-                                    size="sm"
-                                    onClick={() => stopTimer(task.id)}
-                                    className="h-6 px-2"
-                                  >
-                                    <Square className="size-3" />
-                                  </Button>
-                                </div>
-                              </div>
-                            )}
                           </div>
 
                           <div className="flex items-center gap-2">
-                            {!timer && !isCompleted && (
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => startTimer(task.id)}
-                                className="h-8 px-2 text-xs text-muted-foreground"
-                              >
-                                <Play className="mr-1 size-3" />
-                                Timer
-                              </Button>
-                            )}
                             {isCompleted ? (
                               <CheckCircle2 className="size-5 text-green-500" />
                             ) : (
@@ -524,3 +514,5 @@ export default function UnifiedTasksPage() {
     </div>
   )
 }
+
+    
