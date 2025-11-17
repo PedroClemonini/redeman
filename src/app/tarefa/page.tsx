@@ -1,4 +1,5 @@
 
+
 "use client"
 
 import { useState, useEffect } from "react"
@@ -362,7 +363,7 @@ export default function UnifiedTasksPage() {
             )
           })}
 
-          <FinalReport phase={activePhase} title={`Relatório da Fase: ${activePhase}`} />
+          <FinalReport site={selectedSite} phase={activePhase} title={`Relatório da Fase: ${activePhase}`} />
         </div>
       </main>
     </div>
