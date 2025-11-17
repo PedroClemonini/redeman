@@ -24,6 +24,7 @@ import {
   Settings,
   CalendarDays,
   PlusCircle,
+  Link2,
 } from 'lucide-react';
 
 const menuItems = [
@@ -66,6 +67,11 @@ const menuItems = [
     href: '/import',
     label: 'Import/Export',
     icon: GitCompareArrows,
+  },
+  {
+    href: '/links',
+    label: 'Links Importantes',
+    icon: Link2,
   },
 ];
 

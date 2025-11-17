@@ -22,6 +22,7 @@ import {
   Workflow,
   CalendarDays,
   PlusCircle,
+  Link2,
 } from 'lucide-react';
 
 const pathToTitle: { [key: string]: string } = {
@@ -33,6 +34,7 @@ const pathToTitle: { [key: string]: string } = {
   '/import': 'Import / Export',
   '/alocacao': 'Alocação',
   '/sites/register': 'Cadastro de Sites',
+  '/links': 'Links Importantes',
 };
 
 export function AppHeader() {
