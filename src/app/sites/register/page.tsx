@@ -355,11 +355,16 @@ export default function RegisterSitePage() {
                return (
                <div key={site.id} className="border bg-card rounded-lg shadow-sm overflow-hidden">
                 <div className='p-5'>
-                  <div className="flex justify-between items-center mb-3 flex-wrap gap-y-3">
-                      <div className="flex-1 min-w-[200px]">
+                  <div className="flex justify-between items-start mb-3">
+                      <div className="flex-1 min-w-[200px] pr-4">
                         <h4 className="text-lg font-bold">{site.sigla} – {site.descricaoBreve}</h4>
                       </div>
                       <div className='flex items-center gap-2 flex-shrink-0'>
+                          <Button variant="outline" size="sm" asChild>
+                              <Link href={`/tarefa?siteId=${site.id}`}>
+                                 <ExternalLink className="mr-2 h-4 w-4"/> Ver Tarefas
+                              </Link>
+                          </Button>
                           {meetingLink && (
                             <Button variant="outline" size="sm" asChild>
                               <Link href={meetingLink} target="_blank">
@@ -367,11 +372,6 @@ export default function RegisterSitePage() {
                               </Link>
                             </Button>
                           )}
-                          <Button variant="outline" size="sm" asChild>
-                              <Link href={`/tarefa?siteId=${site.id}`}>
-                                 <ExternalLink className="mr-2 h-4 w-4"/> Ver Tarefas
-                              </Link>
-                          </Button>
                           <Button variant="ghost" size="icon" onClick={() => removeSite(site.id)} className="text-red-500 hover:text-red-600 hover:bg-red-50 h-8 w-8">
                               <X className="h-4 w-4" />
                           </Button>
