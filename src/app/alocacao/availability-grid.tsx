@@ -102,7 +102,7 @@ export function AvailabilityGrid({ disponibilidade, analistas, nomes }: Availabi
           </Select>
         </div>
         <div className="overflow-x-auto">
-          <Table className="border">
+          <Table className="border min-w-[800px]">
             <TableHeader>
               <TableRow>
                 <TableHead className="w-[100px] border-r p-2">Hora</TableHead>
@@ -114,9 +114,9 @@ export function AvailabilityGrid({ disponibilidade, analistas, nomes }: Availabi
             <TableBody>
               {hours.map((hour) => (
                 <TableRow key={hour}>
-                  <TableCell className="font-medium border-r p-1 text-right pr-2">{`${hour.toString().padStart(2, '0')}:00`}</TableCell>
+                  <TableCell className="font-medium border-r p-2 text-right pr-3">{`${hour.toString().padStart(2, '0')}:00`}</TableCell>
                   {days.map((_, dayIndex) => (
-                    <TableCell key={dayIndex} className="text-center p-1">
+                    <TableCell key={dayIndex} className="text-center p-2">
                       {currentAnalista && (
                         <Checkbox
                           checked={availabilityData[currentAnalista]?.[week]?.[dayIndex]?.[hour - 8] || false}
@@ -130,9 +130,9 @@ export function AvailabilityGrid({ disponibilidade, analistas, nomes }: Availabi
             </TableBody>
             <TableFooter>
                 <TableRow className='bg-muted/50'>
-                    <TableCell className="font-medium border-r p-1 text-right pr-2">Total Horas</TableCell>
+                    <TableCell className="font-medium border-r p-2 text-right pr-3">Total Horas</TableCell>
                     {dailyTotals.map((total, index) => (
-                        <TableCell key={index} className="text-center p-1 font-bold">
+                        <TableCell key={index} className="text-center p-2 font-bold">
                             {currentAnalista ? total : '-'}
                         </TableCell>
                     ))}
