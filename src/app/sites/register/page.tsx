@@ -390,6 +390,7 @@ export default function RegisterSitePage() {
                     <th className="px-6 py-4 font-semibold text-gray-900">Status</th>
                     <th className="px-6 py-4 font-semibold text-gray-900">Técnico(s)</th>
                     <th className="px-6 py-4 font-semibold text-gray-900">Observação</th>
+                    <th className="px-6 py-4 font-semibold text-gray-900">Teams</th>
                     <th className="px-6 py-4 font-semibold text-gray-900 text-right">Ações</th>
                   </tr>
                 </thead>
@@ -443,22 +444,21 @@ export default function RegisterSitePage() {
                         <td className="px-6 py-5 text-gray-600">
                           {/* Placeholder for observation */}
                         </td>
+                        <td className="px-6 py-5">
+                            {meetingLink && (
+                            <Button variant="ghost" size="icon" asChild className="h-9 w-9 text-muted-foreground">
+                                <Link href={meetingLink} target="_blank" title="Abrir Reunião">
+                                <TeamsIcon className="h-5 w-5" />
+                                </Link>
+                            </Button>
+                            )}
+                        </td>
                         <td className="px-6 py-5 text-right">
                           <div className='flex items-center justify-end gap-1 flex-shrink-0'>
                               <Button variant="ghost" size="icon" asChild className="h-9 w-9 text-muted-foreground">
                                   <Link href={`/tarefa?siteId=${site.id}`} title="Ver Tarefas">
                                      <ListTodo className="h-5 w-5"/> 
                                   </Link>
-                              </Button>
-                              {meetingLink && (
-                                <Button variant="ghost" size="icon" asChild className="h-9 w-9 text-muted-foreground">
-                                  <Link href={meetingLink} target="_blank" title="Abrir Reunião">
-                                    <TeamsIcon className="h-5 w-5" />
-                                  </Link>
-                                </Button>
-                              )}
-                              <Button variant="ghost" size="icon" onClick={() => removeSite(site.id)} className="text-muted-foreground hover:text-destructive hover:bg-red-50 h-9 w-9">
-                                  <X className="h-5 w-5" />
                               </Button>
                           </div>
                         </td>
