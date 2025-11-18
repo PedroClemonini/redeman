@@ -446,22 +446,25 @@ export default function RegisterSitePage() {
                         </td>
                         <td className="px-6 py-5">
                             {meetingLink ? (
-                            <Button variant="ghost" size="icon" asChild className="h-9 w-9 text-muted-foreground">
-                                <Link href={meetingLink} target="_blank" title="Abrir Reunião">
-                                <TeamsIcon className="h-5 w-5" />
-                                </Link>
-                            </Button>
+                                <Button variant="outline" size="sm" asChild>
+                                    <Link href={meetingLink} target="_blank">
+                                        <TeamsIcon className="mr-2 h-4 w-4" />
+                                        Link
+                                    </Link>
+                                </Button>
                             ) : (
-                              <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground" disabled>
-                                  <TeamsIcon className="h-5 w-5 opacity-30" />
-                              </Button>
+                                <Button variant="outline" size="sm" disabled>
+                                    <TeamsIcon className="mr-2 h-4 w-4" />
+                                    Link
+                                </Button>
                             )}
                         </td>
                         <td className="px-6 py-5 text-right">
                           <div className='flex items-center justify-end gap-1 flex-shrink-0'>
-                              <Button variant="ghost" size="icon" asChild className="h-9 w-9 text-muted-foreground">
+                              <Button variant="outline" size="sm" asChild>
                                   <Link href={`/tarefa?siteId=${site.id}`} title="Ver Tarefas">
-                                     <ListTodo className="h-5 w-5"/> 
+                                     <ListTodo className="mr-2 h-4 w-4"/> 
+                                     Ver Tarefas
                                   </Link>
                               </Button>
                           </div>
@@ -481,4 +484,3 @@ export default function RegisterSitePage() {
     </div>
   );
 }
-
