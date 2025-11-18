@@ -1,7 +1,8 @@
 
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
+import Link from 'next/link';
 import { PageHeader } from '@/components/page-header';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -15,9 +16,27 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { X, Plus } from 'lucide-react';
+import { X, Plus, ExternalLink } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { registeredSites, type SiteEntry, type Person } from '@/lib/registered-sites';
+import { unifiedTasks } from '@/lib/tasks-data';
+
+type Status = 'Completo' | 'Em Andamento' | 'Pendente' | 'Não Iniciado';
+
+const statusColors: Record<Status, string> = {
+  'Completo': 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-400',
+  'Em Andamento': 'bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-400',
+  'Pendente': 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-400',
+  'Não Iniciado': 'bg-gray-100 text-gray-500 dark:bg-gray-900/50 dark:text-gray-400',
+};
+
+const getPhaseTasks = (phase: 'planejamento' | 'preparacao' | 'migracao') => {
+    return unifiedTasks.filter(t => t.phase === phase);
+}
+
+const planningTasks = getPhaseTasks('planejamento');
+const preparationTasks = getPhaseTasks('preparacao');
+const migrationTasks = getPhaseTasks('migracao');
 
 
 export default function RegisterSitePage() {
@@ -42,6 +61,20 @@ export default function RegisterSitePage() {
   const [btsMigracao, setBtsMigracao] = useState<Person[]>([]);
 
   const [linkWhatsapp, setLinkWhatsapp] = useState('');
+
+  const [completedTasks, setCompletedTasks] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    const syncTasks = () => {
+      const saved = localStorage.getItem("unified-tasks-checklist");
+      if (saved) {
+        setCompletedTasks(new Set(JSON.parse(saved)));
+      }
+    };
+    syncTasks();
+    window.addEventListener('storage', syncTasks);
+    return () => window.removeEventListener('storage', syncTasks);
+  }, []);
   
   const addPerson = (
     list: Person[],
@@ -113,15 +146,59 @@ export default function RegisterSitePage() {
     setSites(sites.filter((s) => s.id !== id));
   };
 
+  const siteProgress = useMemo(() => {
+    return sites.map(site => {
+      const getPhaseStatus = (tasks: typeof unifiedTasks) => {
+        if (tasks.length === 0) return 'Completo';
+        const completedCount = tasks.filter(task => completedTasks.has(task.id)).length;
+        if (completedCount === tasks.length) return 'Completo';
+        if (completedCount > 0) return 'Em Andamento';
+        return 'Não Iniciado';
+      };
+
+      const planningStatus = getPhaseStatus(planningTasks);
+      let preparationStatus: Status = 'Pendente';
+      let migrationStatus: Status = 'Pendente';
+
+      if (planningStatus === 'Completo') {
+        preparationStatus = getPhaseStatus(preparationTasks);
+      } else if (planningStatus === 'Em Andamento' || planningStatus === 'Não Iniciado') {
+        preparationStatus = 'Pendente';
+      }
+
+      if (preparationStatus === 'Completo') {
+        migrationStatus = getPhaseStatus(migrationTasks);
+      } else if (preparationStatus === 'Em Andamento' || preparationStatus === 'Não Iniciado') {
+        migrationStatus = 'Pendente';
+      }
+      
+      if (planningStatus !== 'Completo') {
+         preparationStatus = 'Pendente';
+         migrationStatus = 'Pendente';
+      }
+      if (preparationStatus !== 'Completo') {
+         migrationStatus = 'Pendente';
+      }
+
+      return {
+        ...site,
+        planningStatus,
+        preparationStatus,
+        migrationStatus,
+      };
+    });
+  }, [sites, completedTasks]);
+
+
   const sitesByWeek = useMemo(() => {
-    return sites.reduce((acc, site) => {
+    return siteProgress.reduce((acc, site) => {
       if (!acc[site.semana]) {
         acc[site.semana] = [];
       }
       acc[site.semana].push(site);
       return acc;
-    }, {} as Record<string, SiteEntry[]>);
-  }, [sites]);
+    }, {} as Record<string, typeof siteProgress>);
+  }, [siteProgress]);
 
   const PersonInput = ({ list, setter, inputId, buttonColor, placeholder }: { list: Person[], setter: React.Dispatch<React.SetStateAction<Person[]>>, inputId: string, buttonColor: string, placeholder: string }) => (
     <>
@@ -147,6 +224,11 @@ export default function RegisterSitePage() {
     const date = new Date(dateString + 'T00:00:00'); // Assume local timezone
     return date.toLocaleDateString('pt-BR');
   };
+
+  const getAnalystsString = (people?: Person[]) => {
+      if (!people || people.length === 0) return null;
+      return people.map(p => p.name).join(', ');
+  }
 
   return (
     <div className="space-y-8">
@@ -249,28 +331,59 @@ export default function RegisterSitePage() {
         {Object.keys(sitesByWeek).sort().map(week => (
           <div key={week}>
             <h3 className="text-xl font-bold mb-4 text-primary">{week}</h3>
-            {sitesByWeek[week].map(site => (
-               <div key={site.id} className="border bg-card rounded-lg p-5 shadow-sm">
-                <div className="flex justify-between items-start mb-3">
-                  <h4 className="text-lg font-bold">{site.sigla} – {site.descricaoBreve}</h4>
-                  <Button variant="ghost" size="icon" onClick={() => removeSite(site.id)} className="text-red-500 hover:text-red-600 hover:bg-red-50 h-8 w-8">
-                    <X className="h-4 w-4" />
-                  </Button>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                  <div>
-                    <p><strong>Planejamento:</strong> {formatDate(site.planejamento.date)}</p>
-                    {site.planejamento.v2mr && site.planejamento.v2mr.length > 0 && 
-                      <div className="mt-1 flex flex-wrap gap-1">
-                        {site.planejamento.v2mr.map(p => <Badge key={p.id} className="bg-blue-100 text-blue-700">{p.name}</Badge>)}
-                      </div>
-                    }
+            <div className="space-y-4">
+            {sitesByWeek[week].map(site => {
+                const { planningStatus, preparationStatus, migrationStatus } = site;
+                const planningAnalysts = getAnalystsString(site.planejamento.v2mr);
+                const prepAnalysts = getAnalystsString(site.preparacao.v2mr);
+                const migAnalysts = getAnalystsString(site.migracao.v2mr);
+
+               return (
+               <div key={site.id} className="border bg-card rounded-lg shadow-sm overflow-hidden">
+                <div className='p-5'>
+                  <div className="flex justify-between items-start mb-3">
+                    <h4 className="text-lg font-bold">{site.sigla} – {site.descricaoBreve}</h4>
+                    <div className='flex items-center gap-2'>
+                        <Button variant="outline" size="sm" asChild>
+                            <Link href={`/tarefa?siteId=${site.id}`}>
+                               <ExternalLink className="mr-2 h-4 w-4"/> Ver Tarefas
+                            </Link>
+                        </Button>
+                        <Button variant="ghost" size="icon" onClick={() => removeSite(site.id)} className="text-red-500 hover:text-red-600 hover:bg-red-50 h-8 w-8">
+                            <X className="h-4 w-4" />
+                        </Button>
+                    </div>
                   </div>
-                   <div><p><strong>Preparação:</strong> {formatDate(site.preparacao?.date)}</p></div>
-                   <div><p><strong>Migração:</strong> {formatDate(site.migracao?.date)}</p></div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 border-t">
+                  <div className='p-4'>
+                    <p className='font-bold text-sm'>Planejamento</p>
+                    <p className="text-sm text-muted-foreground">{formatDate(site.planejamento.date)}</p>
+                    {planningAnalysts && <p className="text-xs mt-1 text-muted-foreground">Analista(s): {planningAnalysts}</p>}
+                    <Badge variant="secondary" className={cn("mt-2 text-xs", statusColors[planningStatus])}>
+                      {planningStatus}
+                    </Badge>
+                  </div>
+                   <div className='p-4 border-l border-r'>
+                    <p className='font-bold text-sm'>Preparação</p>
+                    <p className="text-sm text-muted-foreground">{formatDate(site.preparacao?.date)}</p>
+                    {prepAnalysts && <p className="text-xs mt-1 text-muted-foreground">Analista(s): {prepAnalysts}</p>}
+                     <Badge variant="secondary" className={cn("mt-2 text-xs", statusColors[preparationStatus])}>
+                      {preparationStatus}
+                    </Badge>
+                   </div>
+                   <div className='p-4'>
+                     <p className='font-bold text-sm'>Migração</p>
+                    <p className="text-sm text-muted-foreground">{formatDate(site.migracao?.date)}</p>
+                    {migAnalysts && <p className="text-xs mt-1 text-muted-foreground">Analista(s): {migAnalysts}</p>}
+                    <Badge variant="secondary" className={cn("mt-2 text-xs", statusColors[migrationStatus])}>
+                      {migrationStatus}
+                    </Badge>
+                   </div>
                 </div>
               </div>
-            ))}
+            )})}
+            </div>
           </div>
         ))}
       </div>
@@ -278,5 +391,7 @@ export default function RegisterSitePage() {
     </div>
   );
 }
+
+    
 
     
