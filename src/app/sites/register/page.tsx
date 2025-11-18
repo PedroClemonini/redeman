@@ -356,7 +356,7 @@ export default function RegisterSitePage() {
                <div key={site.id} className="border bg-card rounded-lg shadow-sm overflow-hidden">
                 <div className='p-5'>
                   <div className="flex justify-between items-start mb-3">
-                      <div className="flex-1 min-w-[200px] pr-4">
+                      <div className="flex-1 min-w-0 pr-4">
                         <h4 className="text-lg font-bold">{site.sigla} – {site.descricaoBreve}</h4>
                       </div>
                       <div className='flex items-center gap-2 flex-shrink-0'>
