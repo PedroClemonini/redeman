@@ -23,11 +23,18 @@ import { unifiedTasks } from '@/lib/tasks-data';
 
 type Status = 'Completo' | 'Em Andamento' | 'Pendente' | 'Não Iniciado';
 
+const statusClasses: Record<Status, string> = {
+  'Completo': 'status-concluido',
+  'Em Andamento': 'status-execucao',
+  'Pendente': 'status-pendente',
+  'Não Iniciado': 'status-nao-iniciado',
+};
+
 const statusColors: Record<Status, string> = {
-  'Completo': 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-400',
-  'Em Andamento': 'bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-400',
-  'Pendente': 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-400',
-  'Não Iniciado': 'bg-gray-100 text-gray-500 dark:bg-gray-900/50 dark:text-gray-400',
+  'Completo': 'bg-green-500',
+  'Em Andamento': 'bg-blue-500',
+  'Pendente': 'bg-yellow-500',
+  'Não Iniciado': 'bg-gray-500',
 };
 
 const getPhaseTasks = (phase: 'planejamento' | 'preparacao' | 'migracao') => {
@@ -180,11 +187,24 @@ export default function RegisterSitePage() {
          migrationStatus = 'Pendente';
       }
 
+      let currentPhase: 'Planejamento' | 'Preparação' | 'Migração' | 'Concluído' = 'Planejamento';
+      if (planningStatus !== 'Completo') {
+        currentPhase = 'Planejamento';
+      } else if (preparationStatus !== 'Completo') {
+        currentPhase = 'Preparação';
+      } else if (migrationStatus !== 'Completo') {
+        currentPhase = 'Migração';
+      } else {
+        currentPhase = 'Concluído';
+      }
+
       return {
         ...site,
         planningStatus,
         preparationStatus,
         migrationStatus,
+        currentPhase,
+        currentStatus: planningStatus === 'Completo' ? (preparationStatus === 'Completo' ? migrationStatus : preparationStatus) : planningStatus,
       };
     });
   }, [sites, completedTasks]);
@@ -219,15 +239,13 @@ export default function RegisterSitePage() {
     </>
   );
 
-  const formatDate = (dateString?: string) => {
-    if (!dateString) return '—';
-    const date = new Date(dateString + 'T00:00:00'); // Assume local timezone
-    return date.toLocaleDateString('pt-BR');
-  };
-
   const getAnalystsString = (people?: Person[]) => {
       if (!people || people.length === 0) return null;
       return people.map(p => p.name).join(', ');
+  }
+  
+  const getInitials = (name: string) => {
+    return name.split(' ').map(n => n[0]).join('').toUpperCase();
   }
 
   const getMeetingLink = (site: SiteEntry & { planningStatus: Status; preparationStatus: Status; migrationStatus: Status; }) => {
@@ -344,73 +362,99 @@ export default function RegisterSitePage() {
         {Object.keys(sitesByWeek).sort().map(week => (
           <div key={week}>
             <h3 className="text-xl font-bold mb-4 text-primary">{week}</h3>
-            <div className="space-y-4">
-            {sitesByWeek[week].map(site => {
-                const { planningStatus, preparationStatus, migrationStatus } = site;
-                const planningAnalysts = getAnalystsString(site.planejamento.v2mr);
-                const prepAnalysts = getAnalystsString(site.preparacao.v2mr);
-                const migAnalysts = getAnalystsString(site.migracao.v2mr);
-                const meetingLink = getMeetingLink(site);
+            <div className="overflow-hidden rounded-lg border border-gray-200 shadow-md bg-white">
+              <table className="w-full border-collapse text-left text-sm text-gray-600">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-4 font-semibold text-gray-900">Site</th>
+                    <th className="px-6 py-4 font-semibold text-gray-900">Etapa Atual</th>
+                    <th className="px-6 py-4 font-semibold text-gray-900">Status</th>
+                    <th className="px-6 py-4 font-semibold text-gray-900">Técnico(s)</th>
+                    <th className="px-6 py-4 font-semibold text-gray-900">Observação</th>
+                    <th className="px-6 py-4 font-semibold text-gray-900 text-right">Ações</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                  {sitesByWeek[week].map(site => {
+                    const { planningStatus, preparationStatus, migrationStatus, currentPhase, currentStatus } = site;
+                    const meetingLink = getMeetingLink(site);
+                    const analysts = site.planejamento.v2mr || [];
+                    
+                    const phaseToBadgeColor: Record<string, string> = {
+                        'Planejamento': 'bg-blue-50 text-blue-700',
+                        'Preparação': 'bg-yellow-50 text-yellow-700',
+                        'Migração': 'bg-green-50 text-green-700',
+                        'Concluído': 'bg-gray-50 text-gray-700',
+                    }
 
-               return (
-               <div key={site.id} className="border bg-card rounded-lg shadow-sm overflow-hidden">
-                <div className='p-5'>
-                  <div className="flex justify-between items-start mb-3">
-                      <div className="flex-1 min-w-0 pr-4">
-                        <h4 className="text-lg font-bold">{site.sigla} – {site.descricaoBreve}</h4>
-                      </div>
-                      <div className='flex items-center gap-2 flex-shrink-0'>
-                          <Button variant="outline" size="sm" asChild>
-                              <Link href={`/tarefa?siteId=${site.id}`}>
-                                 <ExternalLink className="mr-2 h-4 w-4"/> Ver Tarefas
-                              </Link>
-                          </Button>
-                          {meetingLink && (
-                            <Button variant="outline" size="sm" asChild>
-                              <Link href={meetingLink} target="_blank">
-                                <Video className="mr-2 h-4 w-4"/> Reunião
-                              </Link>
-                            </Button>
-                          )}
-                          <Button variant="ghost" size="icon" onClick={() => removeSite(site.id)} className="text-muted-foreground hover:text-destructive hover:bg-red-50 h-8 w-8">
-                              <X className="h-4 w-4" />
-                          </Button>
-                      </div>
-                  </div>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 border-t">
-                  <div className='p-4'>
-                    <p className='font-bold text-sm'>Planejamento</p>
-                    <p className="text-sm text-muted-foreground">{formatDate(site.planejamento.date)}</p>
-                    {planningAnalysts && <p className="text-xs mt-1 text-muted-foreground">Analista(s): {planningAnalysts}</p>}
-                    <Badge variant="secondary" className={cn("mt-2 text-xs", statusColors[planningStatus])}>
-                      {planningStatus}
-                    </Badge>
-                  </div>
-                   <div className='p-4 border-l border-r'>
-                    <p className='font-bold text-sm'>Preparação</p>
-                    <p className="text-sm text-muted-foreground">{formatDate(site.preparacao?.date)}</p>
-                    {prepAnalysts && <p className="text-xs mt-1 text-muted-foreground">Analista(s): {prepAnalysts}</p>}
-                     <Badge variant="secondary" className={cn("mt-2 text-xs", statusColors[preparationStatus])}>
-                      {preparationStatus}
-                    </Badge>
-                   </div>
-                   <div className='p-4'>
-                     <p className='font-bold text-sm'>Migração</p>
-                    <p className="text-sm text-muted-foreground">{formatDate(site.migracao?.date)}</p>
-                    {migAnalysts && <p className="text-xs mt-1 text-muted-foreground">Analista(s): {migAnalysts}</p>}
-                    <Badge variant="secondary" className={cn("mt-2 text-xs", statusColors[migrationStatus])}>
-                      {migrationStatus}
-                    </Badge>
-                   </div>
-                </div>
-              </div>
-            )})}
+                    return (
+                      <tr key={site.id} className="hover:bg-gray-50 transition">
+                        <td className="px-6 py-5">
+                          <div className="flex items-center gap-4">
+                            <div className="h-12 w-12 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-full flex items-center justify-center text-white font-bold text-lg">
+                              {getInitials(site.sigla)}
+                            </div>
+                            <div>
+                              <div className="font-semibold text-gray-900">{site.sigla} – {site.descricaoBreve}</div>
+                              <div className="text-xs text-gray-500">Localização/UF</div>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-5">
+                           <span className={cn("inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold", phaseToBadgeColor[currentPhase])}>
+                            {currentPhase}
+                          </span>
+                        </td>
+                        <td className="px-6 py-5">
+                           <span className={cn("inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold", statusClasses[currentStatus])}>
+                            <span className={cn("h-2 w-2 rounded-full", statusColors[currentStatus])}></span>
+                            {currentStatus}
+                          </span>
+                        </td>
+                        <td className="px-6 py-5">
+                          <div className="flex -space-x-2">
+                             {analysts.slice(0, 3).map(analyst => (
+                               <div key={analyst.id} title={analyst.name} className="h-8 w-8 rounded-full bg-indigo-600 text-white flex items-center justify-center text-xs font-bold ring-2 ring-white">
+                                   {getInitials(analyst.name)}
+                               </div>
+                             ))}
+                          </div>
+                          {analysts.length > 0 && <span className="ml-3 text-sm font-medium text-gray-700">{getAnalystsString(analysts)}</span>}
+                        </td>
+                        <td className="px-6 py-5 text-gray-600">
+                          {/* Placeholder for observation */}
+                        </td>
+                        <td className="px-6 py-5 text-right">
+                          <div className='flex items-center justify-end gap-2 flex-shrink-0'>
+                              <Button variant="outline" size="sm" asChild>
+                                  <Link href={`/tarefa?siteId=${site.id}`}>
+                                     <ExternalLink className="mr-2 h-4 w-4"/> Ver Tarefas
+                                  </Link>
+                              </Button>
+                              {meetingLink && (
+                                <Button variant="outline" size="sm" asChild>
+                                  <Link href={meetingLink} target="_blank">
+                                    <Video className="mr-2 h-4 w-4"/> Reunião
+                                  </Link>
+                                </Button>
+                              )}
+                              <Button variant="ghost" size="icon" onClick={() => removeSite(site.id)} className="text-muted-foreground hover:text-destructive hover:bg-red-50 h-8 w-8">
+                                  <X className="h-4 w-4" />
+                              </Button>
+                          </div>
+                        </td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+            </div>
+             <div className="mt-6 text-center text-sm text-gray-500">
+                Total: <strong>{sitesByWeek[week].length} sites</strong> • {week}
             </div>
           </div>
         ))}
       </div>
-
     </div>
   );
 }
