@@ -38,6 +38,17 @@ const statusColors: Record<Status, string> = {
   'Não Iniciado': 'bg-gray-500',
 };
 
+const TeamsIcon = (props: React.SVGProps<SVGSVGElement>) => (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" {...props}>
+        <path fill="#4B53BC" d="M11.5,13.5c0-1.1-0.9-2-2-2h-3c-1.1,0-2,0.9-2,2v4c0,1.1,0.9,2,2,2h3c1.1,0,2-0.9,2-2V13.5z"/>
+        <path fill="#4B53BC" d="M12,9.1c0,0.5-0.4,1-1,1h-1.5c-0.6,0-1-0.4-1-1v0c0-0.5,0.4-1,1-1h1.5C11.6,8.1,12,8.5,12,9.1z"/>
+        <path fill="#4B53BC" d="M10,6.5C10,5.1,8.9,4,7.5,4S5,5.1,5,6.5S6.1,9,7.5,9S10,7.9,10,6.5z"/>
+        <path fill="#7178D0" d="M19.5,13.5c0-1.1-0.9-2-2-2h-3c-1.1,0-2,0.9-2,2v4c0,1.1,0.9,2,2,2h3c1.1,0,2-0.9,2-2V13.5z"/>
+        <path fill="#AAB0E8" d="M14.5,11.5h-3c-0.6,0-1,0.4-1,1v1.5c0,0.6,0.4,1,1,1h3c0.6,0,1-0.4,1-1v-1.5C15.5,11.9,15.1,11.5,14.5,11.5z"/>
+    </svg>
+);
+
+
 const getPhaseTasks = (phase: 'planejamento' | 'preparacao' | 'migracao') => {
     return unifiedTasks.filter(t => t.phase === phase);
 }
@@ -433,21 +444,21 @@ export default function RegisterSitePage() {
                           {/* Placeholder for observation */}
                         </td>
                         <td className="px-6 py-5 text-right">
-                          <div className='flex items-center justify-end gap-2 flex-shrink-0'>
-                              <Button variant="outline" size="sm" asChild>
-                                  <Link href={`/tarefa?siteId=${site.id}`}>
-                                     <ListTodo className="mr-2 h-4 w-4"/> Ver Tarefas
+                          <div className='flex items-center justify-end gap-1 flex-shrink-0'>
+                              <Button variant="ghost" size="icon" asChild className="h-9 w-9 text-muted-foreground">
+                                  <Link href={`/tarefa?siteId=${site.id}`} title="Ver Tarefas">
+                                     <ListTodo className="h-5 w-5"/> 
                                   </Link>
                               </Button>
                               {meetingLink && (
-                                <Button variant="outline" size="sm" asChild>
-                                  <Link href={meetingLink} target="_blank">
-                                    <Video className="mr-2 h-4 w-4"/> Reunião
+                                <Button variant="ghost" size="icon" asChild className="h-9 w-9 text-muted-foreground">
+                                  <Link href={meetingLink} target="_blank" title="Abrir Reunião">
+                                    <TeamsIcon className="h-5 w-5" />
                                   </Link>
                                 </Button>
                               )}
-                              <Button variant="ghost" size="icon" onClick={() => removeSite(site.id)} className="text-muted-foreground hover:text-destructive hover:bg-red-50 h-8 w-8">
-                                  <X className="h-4 w-4" />
+                              <Button variant="ghost" size="icon" onClick={() => removeSite(site.id)} className="text-muted-foreground hover:text-destructive hover:bg-red-50 h-9 w-9">
+                                  <X className="h-5 w-5" />
                               </Button>
                           </div>
                         </td>
@@ -466,9 +477,3 @@ export default function RegisterSitePage() {
     </div>
   );
 }
-
-    
-
-    
-
-
