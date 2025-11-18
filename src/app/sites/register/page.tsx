@@ -52,6 +52,7 @@ export default function RegisterSitePage() {
   
   const [sigla, setSigla] = useState('');
   const [descricaoBreve, setDescricaoBreve] = useState('');
+  const [localidade, setLocalidade] = useState('');
   const [semana, setSemana] = useState('Semana 2');
 
   const [dataPlanejamento, setDataPlanejamento] = useState('');
@@ -108,6 +109,7 @@ export default function RegisterSitePage() {
       id: Date.now(),
       sigla: sigla.toUpperCase(),
       descricaoBreve,
+      localidade,
       semana,
       planejamento: {
         date: dataPlanejamento,
@@ -135,6 +137,7 @@ export default function RegisterSitePage() {
     // Clear state
     setSigla('');
     setDescricaoBreve('');
+    setLocalidade('');
     setSemana('Semana 2');
     setDataPlanejamento('');
     setLinkPlanejamento('');
@@ -281,6 +284,10 @@ export default function RegisterSitePage() {
                 <Label htmlFor="descricaoBreve" className="mb-2 block">DESCRIÇÃO BREVE</Label>
                 <Input id="descricaoBreve" value={descricaoBreve} onChange={(e) => setDescricaoBreve(e.target.value)} placeholder="ex: Arniqueiras" required />
               </div>
+               <div>
+                <Label htmlFor="localidade" className="mb-2 block">LOCALIDADE</Label>
+                <Input id="localidade" value={localidade} onChange={(e) => setLocalidade(e.target.value)} placeholder="ex: Taguatinga/DF" required />
+              </div>
               <div>
                 <Label htmlFor="semanaSelect" className="mb-2 block">SEMANA</Label>
                 <Select value={semana} onValueChange={setSemana} required>
@@ -396,8 +403,8 @@ export default function RegisterSitePage() {
                               {site.sigla}
                             </div>
                             <div>
-                              <div className="font-semibold text-gray-900">{site.sigla} – {site.descricaoBreve}</div>
-                              <div className="text-xs text-gray-500">Localização/UF</div>
+                              <div className="font-semibold text-gray-900">{site.descricaoBreve}</div>
+                              <div className="text-xs text-gray-500">{site.localidade}</div>
                             </div>
                           </div>
                         </td>
@@ -463,3 +470,4 @@ export default function RegisterSitePage() {
     
 
     
+
