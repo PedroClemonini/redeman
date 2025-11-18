@@ -391,8 +391,8 @@ export default function RegisterSitePage() {
                       <tr key={site.id} className="hover:bg-gray-50 transition">
                         <td className="px-6 py-5">
                           <div className="flex items-center gap-4">
-                            <div className="h-12 w-12 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-full flex items-center justify-center text-white font-bold text-lg">
-                              {getInitials(site.sigla)}
+                            <div className="h-12 w-12 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-full flex items-center justify-center text-white font-bold text-base tracking-wider">
+                              {site.sigla}
                             </div>
                             <div>
                               <div className="font-semibold text-gray-900">{site.sigla} – {site.descricaoBreve}</div>
@@ -458,5 +458,7 @@ export default function RegisterSitePage() {
     </div>
   );
 }
+
+    
 
     
