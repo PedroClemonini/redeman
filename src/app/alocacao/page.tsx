@@ -8,6 +8,7 @@ import { AvailabilityGrid } from './availability-grid';
 import { Button } from '@/components/ui/button';
 import { Download } from 'lucide-react';
 import { alocacao, disponibilidade, analistas, nomes } from '@/lib/data';
+import { WeeklyTimecard } from './weekly-timecard';
 
 export default function AlocacaoPage() {
 
@@ -31,15 +32,19 @@ export default function AlocacaoPage() {
         </Button>
       </div>
       <Tabs defaultValue="allocation">
-        <TabsList className="grid w-full grid-cols-2">
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="allocation">Alocação por Analista</TabsTrigger>
           <TabsTrigger value="availability">Grade de Disponibilidade</TabsTrigger>
+          <TabsTrigger value="timecard">Cartão de Ponto</TabsTrigger>
         </TabsList>
         <TabsContent value="allocation">
           <AllocationTable alocacao={alocacao} analistas={analistas} nomes={nomes} />
         </TabsContent>
         <TabsContent value="availability">
           <AvailabilityGrid disponibilidade={disponibilidade} analistas={analistas} nomes={nomes} />
+        </TabsContent>
+        <TabsContent value="timecard">
+            <WeeklyTimecard analistas={analistas} nomes={nomes} />
         </TabsContent>
       </Tabs>
     </div>
