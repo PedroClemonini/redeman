@@ -372,7 +372,7 @@ export default function RegisterSitePage() {
                               </Link>
                             </Button>
                           )}
-                          <Button variant="ghost" size="icon" onClick={() => removeSite(site.id)} className="text-red-500 hover:text-red-600 hover:bg-red-50 h-8 w-8">
+                          <Button variant="ghost" size="icon" onClick={() => removeSite(site.id)} className="text-muted-foreground hover:text-destructive hover:bg-red-50 h-8 w-8">
                               <X className="h-4 w-4" />
                           </Button>
                       </div>
@@ -414,3 +414,5 @@ export default function RegisterSitePage() {
     </div>
   );
 }
+
+    
