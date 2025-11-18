@@ -445,12 +445,16 @@ export default function RegisterSitePage() {
                           {/* Placeholder for observation */}
                         </td>
                         <td className="px-6 py-5">
-                            {meetingLink && (
+                            {meetingLink ? (
                             <Button variant="ghost" size="icon" asChild className="h-9 w-9 text-muted-foreground">
                                 <Link href={meetingLink} target="_blank" title="Abrir Reunião">
                                 <TeamsIcon className="h-5 w-5" />
                                 </Link>
                             </Button>
+                            ) : (
+                              <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground" disabled>
+                                  <TeamsIcon className="h-5 w-5 opacity-30" />
+                              </Button>
                             )}
                         </td>
                         <td className="px-6 py-5 text-right">
@@ -477,3 +481,4 @@ export default function RegisterSitePage() {
     </div>
   );
 }
+
