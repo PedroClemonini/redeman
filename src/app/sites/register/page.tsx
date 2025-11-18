@@ -17,7 +17,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { X, Plus, ExternalLink, Video } from 'lucide-react';
+import { X, Plus, ExternalLink, Video, ListTodo } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { registeredSites, type SiteEntry, type Person } from '@/lib/registered-sites';
 import { unifiedTasks } from '@/lib/tasks-data';
@@ -436,7 +436,7 @@ export default function RegisterSitePage() {
                           <div className='flex items-center justify-end gap-2 flex-shrink-0'>
                               <Button variant="outline" size="sm" asChild>
                                   <Link href={`/tarefa?siteId=${site.id}`}>
-                                     <ExternalLink className="mr-2 h-4 w-4"/> Ver Tarefas
+                                     <ListTodo className="mr-2 h-4 w-4"/> Ver Tarefas
                                   </Link>
                               </Button>
                               {meetingLink && (
@@ -470,4 +470,5 @@ export default function RegisterSitePage() {
     
 
     
+
 
