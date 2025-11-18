@@ -16,7 +16,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { X, Plus, ExternalLink } from 'lucide-react';
+import { X, Plus, ExternalLink, Video } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { registeredSites, type SiteEntry, type Person } from '@/lib/registered-sites';
 import { unifiedTasks } from '@/lib/tasks-data';
@@ -230,6 +230,19 @@ export default function RegisterSitePage() {
       return people.map(p => p.name).join(', ');
   }
 
+  const getMeetingLink = (site: SiteEntry & { planningStatus: Status; preparationStatus: Status; migrationStatus: Status; }) => {
+    if (site.planningStatus !== 'Completo' && site.planejamento.link) {
+        return site.planejamento.link;
+    }
+    if (site.preparationStatus !== 'Completo' && site.preparacao.link) {
+        return site.preparacao.link;
+    }
+    if (site.migrationStatus !== 'Completo' && site.migracao.link) {
+        return site.migracao.link;
+    }
+    return site.planejamento.link || site.preparacao.link || site.migracao.link || '';
+  };
+
   return (
     <div className="space-y-8">
       <PageHeader
@@ -337,6 +350,7 @@ export default function RegisterSitePage() {
                 const planningAnalysts = getAnalystsString(site.planejamento.v2mr);
                 const prepAnalysts = getAnalystsString(site.preparacao.v2mr);
                 const migAnalysts = getAnalystsString(site.migracao.v2mr);
+                const meetingLink = getMeetingLink(site);
 
                return (
                <div key={site.id} className="border bg-card rounded-lg shadow-sm overflow-hidden">
@@ -344,6 +358,13 @@ export default function RegisterSitePage() {
                   <div className="flex justify-between items-start mb-3">
                     <h4 className="text-lg font-bold">{site.sigla} – {site.descricaoBreve}</h4>
                     <div className='flex items-center gap-2'>
+                        {meetingLink && (
+                          <Button variant="outline" size="sm" asChild>
+                            <Link href={meetingLink} target="_blank">
+                              <Video className="mr-2 h-4 w-4"/> Reunião
+                            </Link>
+                          </Button>
+                        )}
                         <Button variant="outline" size="sm" asChild>
                             <Link href={`/tarefa?siteId=${site.id}`}>
                                <ExternalLink className="mr-2 h-4 w-4"/> Ver Tarefas
@@ -391,7 +412,5 @@ export default function RegisterSitePage() {
     </div>
   );
 }
-
-    
 
     
