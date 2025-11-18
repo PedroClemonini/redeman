@@ -1,9 +1,10 @@
 "use client"
 
 import * as React from "react"
+import * as CollapsiblePrimitive from "@radix-ui/react-collapsible"
 import { Slot } from "@radix-ui/react-slot"
 import { VariantProps, cva } from "class-variance-authority"
-import { PanelLeft } from "lucide-react"
+import { PanelLeft, ChevronRight } from "lucide-react"
 
 import { useIsMobile } from "@/hooks/use-mobile"
 import { cn } from "@/lib/utils"
@@ -682,22 +683,40 @@ const SidebarMenuSkeleton = React.forwardRef<
 })
 SidebarMenuSkeleton.displayName = "SidebarMenuSkeleton"
 
-const SidebarMenuSub = React.forwardRef<
-  HTMLUListElement,
-  React.ComponentProps<"ul">
+const SidebarMenuSub = CollapsiblePrimitive.Root
+
+const SidebarMenuSubTrigger = React.forwardRef<
+  React.ElementRef<typeof SidebarMenuButton>,
+  React.ComponentProps<typeof SidebarMenuButton>
+>(({ children, ...props }, ref) => {
+  return (
+    <CollapsiblePrimitive.Trigger asChild>
+      <SidebarMenuButton ref={ref} {...props}>
+        {children}
+        <ChevronRight className="ml-auto size-4 shrink-0 transition-transform duration-200 group-data-[state=open]:rotate-90" />
+      </SidebarMenuButton>
+    </CollapsiblePrimitive.Trigger>
+  )
+})
+SidebarMenuSubTrigger.displayName = "SidebarMenuSubTrigger"
+
+const SidebarMenuSubContent = React.forwardRef<
+  React.ElementRef<typeof CollapsiblePrimitive.Content>,
+  React.ComponentProps<typeof CollapsiblePrimitive.Content>
 >(({ className, ...props }, ref) => (
-  <ul
+  <CollapsiblePrimitive.Content
     ref={ref}
     data-sidebar="menu-sub"
     className={cn(
-      "mx-3.5 flex min-w-0 translate-x-px flex-col gap-1 border-l border-sidebar-border px-2.5 py-0.5",
+      "mx-3.5 flex min-w-0 translate-x-px flex-col gap-1 border-l border-sidebar-border px-2.5 py-1",
+      "data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down",
       "group-data-[collapsible=icon]:hidden",
       className
     )}
     {...props}
   />
 ))
-SidebarMenuSub.displayName = "SidebarMenuSub"
+SidebarMenuSubContent.displayName = "SidebarMenuSubContent"
 
 const SidebarMenuSubItem = React.forwardRef<
   HTMLLIElement,
@@ -753,6 +772,8 @@ export {
   SidebarMenuItem,
   SidebarMenuSkeleton,
   SidebarMenuSub,
+  SidebarMenuSubTrigger,
+  SidebarMenuSubContent,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
   SidebarProvider,

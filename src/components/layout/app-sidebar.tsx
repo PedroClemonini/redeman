@@ -11,6 +11,11 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
   SidebarFooter,
+  SidebarMenuSub,
+  SidebarMenuSubTrigger,
+  SidebarMenuSubContent,
+  SidebarMenuSubItem,
+  SidebarMenuSubButton,
 } from '@/components/ui/sidebar';
 import { Logo } from '@/components/icons';
 import {
@@ -25,6 +30,9 @@ import {
   CalendarDays,
   PlusCircle,
   Link2,
+  Lock,
+  KeyRound,
+  UserCog,
 } from 'lucide-react';
 
 const menuItems = [
@@ -116,12 +124,26 @@ export function AppSidebar() {
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild tooltip="Settings">
-              <Link href="#">
-                <Settings />
-                <span>Settings</span>
-              </Link>
-            </SidebarMenuButton>
+             <SidebarMenuSub>
+                <SidebarMenuSubTrigger tooltip="Settings">
+                    <Settings />
+                    <span>Configurações</span>
+                </SidebarMenuSubTrigger>
+                <SidebarMenuSubContent>
+                    <SidebarMenuSubItem>
+                        <SidebarMenuSubButton href="#">CRUD</SidebarMenuSubButton>
+                    </SidebarMenuSubItem>
+                    <SidebarMenuSubItem>
+                        <SidebarMenuSubButton href="#">Permissões e Acessos</SidebarMenuSubButton>
+                    </SidebarMenuSubItem>
+                    <SidebarMenuSubItem>
+                        <SidebarMenuSubButton href="#">Alterar Senha</SidebarMenuSubButton>
+                    </SidebarMenuSubItem>
+                    <SidebarMenuSubItem>
+                        <SidebarMenuSubButton href="#">Alterar Perfil</SidebarMenuSubButton>
+                    </SidebarMenuSubItem>
+                </SidebarMenuSubContent>
+            </SidebarMenuSub>
           </SidebarMenuItem>
           <SidebarMenuItem>
             <SidebarMenuButton asChild tooltip="Logout">
