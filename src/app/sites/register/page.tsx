@@ -381,8 +381,8 @@ export default function RegisterSitePage() {
         {Object.keys(sitesByWeek).sort().map(week => (
           <div key={week}>
             <h3 className="text-xl font-bold mb-4 text-primary">{week}</h3>
-            <div className="overflow-hidden rounded-lg border border-gray-200 shadow-md bg-white">
-              <table className="w-full border-collapse text-left text-sm text-gray-600">
+            <div className="overflow-x-auto rounded-lg border border-gray-200 shadow-md bg-white">
+              <table className="w-full min-w-[1200px] border-collapse text-left text-sm text-gray-600">
                 <thead className="bg-gray-50">
                   <tr>
                     <th className="px-6 py-4 font-semibold text-gray-900">Site</th>
