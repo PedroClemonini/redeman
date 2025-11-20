@@ -12,7 +12,7 @@ interface FirebaseClientProviderProps {
 
 function AuthGate({ children }: { children: ReactNode }) {
   const { user, isUserLoading } = useUser();
-  const auth = initializeFirebase().auth;
+  const auth = useMemo(() => initializeFirebase().auth, []);
 
   useEffect(() => {
     if (!isUserLoading && !user) {
@@ -20,6 +20,16 @@ function AuthGate({ children }: { children: ReactNode }) {
     }
   }, [isUserLoading, user, auth]);
 
+  // While checking auth state, or if there's no user yet (and sign-in is in progress), show a loading state.
+  if (isUserLoading || !user) {
+    return (
+        <div className="flex h-screen w-full items-center justify-center">
+            <div className="text-lg font-semibold text-muted-foreground">Loading...</div>
+        </div>
+    );
+  }
+
+  // Once user is authenticated (anonymous or otherwise), render the children.
   return <>{children}</>;
 }
 
