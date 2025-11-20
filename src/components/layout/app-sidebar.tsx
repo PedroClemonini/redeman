@@ -42,24 +42,14 @@ const menuItems = [
     icon: LayoutDashboard,
   },
   {
-    href: '/sites',
-    label: 'Sites',
-    icon: Building2,
+    href: '/sites/register',
+    label: 'Cadastro Sites',
+    icon: PlusCircle,
   },
-   {
+  {
     href: '/tarefa',
     label: 'Tarefas',
     icon: ListTodo,
-  },
-  {
-    href: '/switches',
-    label: 'Switches',
-    icon: Router,
-  },
-  {
-    href: '/users',
-    label: 'Users',
-    icon: Users,
   },
   {
     href: '/alocacao',
@@ -67,21 +57,34 @@ const menuItems = [
     icon: CalendarDays,
   },
   {
-    href: '/sites/register',
-    label: 'Cadastro Sites',
-    icon: PlusCircle,
+    href: '/links',
+    label: 'Links Importantes',
+    icon: Link2,
   },
   {
     href: '/import',
     label: 'Import/Export',
     icon: GitCompareArrows,
   },
-  {
-    href: '/links',
-    label: 'Links Importantes',
-    icon: Link2,
-  },
 ];
+
+const managementMenuItems = [
+    {
+        href: '/sites',
+        label: 'Sites',
+        icon: Building2,
+    },
+    {
+        href: '/switches',
+        label: 'Switches',
+        icon: Router,
+    },
+    {
+        href: '/users',
+        label: 'Users',
+        icon: Users,
+    },
+]
 
 export function AppSidebar() {
   const pathname = usePathname();
@@ -98,7 +101,7 @@ export function AppSidebar() {
       <SidebarHeader>
         <div className="flex items-center gap-2">
           <Logo className="size-8 text-sidebar-primary" />
-          <span className="font-headline text-xl font-semibold text-sidebar-primary">
+          <span className="font-headline text-xl font-semibold text-sidebar-primary group-data-[state=collapsed]:hidden">
             RedeMan
           </span>
         </div>
@@ -114,42 +117,38 @@ export function AppSidebar() {
               >
                 <Link href={item.href}>
                   <item.icon />
-                  <span>{item.label}</span>
+                  <span className="group-data-[state=collapsed]:hidden">{item.label}</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
           ))}
+           <SidebarMenuSub>
+                <SidebarMenuSubTrigger tooltip="Gerenciamento">
+                    <Settings />
+                    <span className="group-data-[state=collapsed]:hidden">Gerenciamento</span>
+                </SidebarMenuSubTrigger>
+                <SidebarMenuSubContent>
+                    {managementMenuItems.map((item) => (
+                        <SidebarMenuSubItem key={item.href}>
+                            <SidebarMenuSubButton href={item.href} asChild isActive={isActive(item.href)}>
+                                <Link href={item.href}>
+                                  <item.icon />
+                                  <span>{item.label}</span>
+                                </Link>
+                            </SidebarMenuSubButton>
+                        </SidebarMenuSubItem>
+                    ))}
+                </SidebarMenuSubContent>
+            </SidebarMenuSub>
         </SidebarMenu>
       </SidebarContent>
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
-             <SidebarMenuSub>
-                <SidebarMenuSubTrigger tooltip="Settings">
-                    <Settings />
-                    <span>Configurações</span>
-                </SidebarMenuSubTrigger>
-                <SidebarMenuSubContent>
-                    <SidebarMenuSubItem>
-                        <SidebarMenuSubButton href="#">CRUD</SidebarMenuSubButton>
-                    </SidebarMenuSubItem>
-                    <SidebarMenuSubItem>
-                        <SidebarMenuSubButton href="#">Permissões e Acessos</SidebarMenuSubButton>
-                    </SidebarMenuSubItem>
-                    <SidebarMenuSubItem>
-                        <SidebarMenuSubButton href="#">Alterar Senha</SidebarMenuSubButton>
-                    </SidebarMenuSubItem>
-                    <SidebarMenuSubItem>
-                        <SidebarMenuSubButton href="#">Alterar Perfil</SidebarMenuSubButton>
-                    </SidebarMenuSubItem>
-                </SidebarMenuSubContent>
-            </SidebarMenuSub>
-          </SidebarMenuItem>
-          <SidebarMenuItem>
             <SidebarMenuButton asChild tooltip="Logout">
               <Link href="#">
                 <LogOut />
-                <span>Logout</span>
+                <span className="group-data-[state=collapsed]:hidden">Logout</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>

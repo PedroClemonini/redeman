@@ -32,12 +32,12 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased">
         <SidebarProvider>
-          <div className="flex min-h-screen">
+          <div className="relative flex min-h-screen">
             <AppSidebar />
-            <SidebarInset className="flex flex-col flex-1">
+            <div className="flex flex-1 flex-col">
               <AppHeader />
               <main className="flex-1 p-4 md:p-6 lg:p-8">{children}</main>
-            </SidebarInset>
+            </div>
           </div>
         </SidebarProvider>
         <Toaster />
