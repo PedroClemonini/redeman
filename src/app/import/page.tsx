@@ -14,17 +14,17 @@ import { ImportForm } from './import-form';
 const templates = [
   {
     name: 'Users',
-    description: 'Template for analyst data.',
+    description: 'Template para dados de analistas.',
     model: 'users',
   },
   {
     name: 'Sites',
-    description: 'Template for BB site data.',
+    description: 'Template para dados de sites do BB.',
     model: 'sites',
   },
   {
     name: 'Switches',
-    description: 'Template for switch inventory.',
+    description: 'Template para inventário de switches.',
     model: 'switches',
   },
 ];
@@ -33,13 +33,13 @@ export default function ImportPage() {
   return (
     <div className="space-y-8">
       <PageHeader
-        title="Import / Export"
-        description="Bulk manage your data using CSV or JSON files."
+        title="Importar / Exportar"
+        description="Gerencie seus dados em massa usando arquivos CSV ou JSON."
       />
 
       <section>
         <h2 className="mb-4 font-headline text-2xl font-semibold">
-          1. Download a Template
+          1. Baixar um Modelo
         </h2>
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {templates.map((template) => (
@@ -65,7 +65,7 @@ export default function ImportPage() {
 
       <section>
         <h2 className="mb-4 font-headline text-2xl font-semibold">
-          2. Import Data
+          2. Importar Dados (com Detecção de IA)
         </h2>
         <ImportForm />
       </section>

@@ -1,5 +1,6 @@
 
 'use client';
+import { useState } from 'react';
 import { PageHeader } from '@/components/page-header';
 import { Button } from '@/components/ui/button';
 import {
@@ -27,6 +28,7 @@ import { Input } from '@/components/ui/input';
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, query } from 'firebase/firestore';
 import type { Site } from '@/lib/types';
+import { ImportDialog } from '@/components/import-dialog';
 
 
 export default function SitesPage() {
@@ -37,38 +39,39 @@ export default function SitesPage() {
   }, [firestore]);
 
   const { data: sites, isLoading } = useCollection<Site>(sitesQuery);
+  const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
   
   return (
     <div>
       <PageHeader
         title="Sites"
-        description="Manage Banco do Brasil site data."
+        description="Gerencie os dados dos sites do Banco do Brasil."
       />
 
       <div className="mb-4 flex items-center justify-between gap-4">
         <div className="relative w-full max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input placeholder="Search sites..." className="pl-9" />
+          <Input placeholder="Buscar sites..." className="pl-9" />
         </div>
         <div className="flex shrink-0 items-center gap-2">
           <Button variant="outline">
             <Download className="mr-2" />
-            Export
+            Exportar
           </Button>
-          <Button variant="outline">
+          <Button variant="outline" onClick={() => setIsImportDialogOpen(true)}>
             <Upload className="mr-2" />
-            Import
+            Importar
           </Button>
           <Button>
             <Plus className="mr-2" />
-            Add Site
+            Adicionar Site
           </Button>
         </div>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Site List</CardTitle>
+          <CardTitle>Lista de Sites</CardTitle>
         </CardHeader>
         <CardContent>
           <Table>
@@ -100,10 +103,10 @@ export default function SitesPage() {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem>Edit</DropdownMenuItem>
-                        <DropdownMenuItem>View Details</DropdownMenuItem>
+                        <DropdownMenuItem>Editar</DropdownMenuItem>
+                        <DropdownMenuItem>Ver Detalhes</DropdownMenuItem>
                         <DropdownMenuItem className="text-red-600 dark:text-red-500">
-                          Delete
+                          Deletar
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -114,6 +117,7 @@ export default function SitesPage() {
           </Table>
         </CardContent>
       </Card>
+      <ImportDialog modelName="Site" open={isImportDialogOpen} onOpenChange={setIsImportDialogOpen} />
     </div>
   );
 }

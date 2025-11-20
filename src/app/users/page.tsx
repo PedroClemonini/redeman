@@ -48,6 +48,7 @@ import type { User } from '@/lib/types';
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, doc, query } from 'firebase/firestore';
 import { updateDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import { ImportDialog } from '@/components/import-dialog';
 
 export default function UsersPage() {
   const firestore = useFirestore();
@@ -58,6 +59,7 @@ export default function UsersPage() {
   const { data: users, isLoading } = useCollection<User>(usersQuery);
 
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
   const handleEditClick = (user: User) => {
@@ -73,8 +75,7 @@ export default function UsersPage() {
     const updatedUser: Partial<User> = {
       nome: formData.get('name') as string,
       email: formData.get('email') as string,
-      telefone: formData.get('telefone') as string,
-      cargo: formData.get('role') as User['cargo'],
+      cargo: formData.get('cargo') as User['cargo'],
       nivel: formData.get('nivel') as User['nivel'],
       status: formData.get('status') as User['status'],
     };
@@ -97,7 +98,7 @@ export default function UsersPage() {
           <Download className="mr-2" />
           Exportar
         </Button>
-        <Button variant="outline">
+        <Button variant="outline" onClick={() => setIsImportDialogOpen(true)}>
           <Upload className="mr-2" />
           Importar
         </Button>
@@ -206,16 +207,10 @@ export default function UsersPage() {
                 <Input id="email" name="email" type="email" defaultValue={selectedUser.email} className="col-span-3" />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="telefone" className="text-right">
-                  Telefone
-                </Label>
-                <Input id="telefone" name="telefone" type="tel" defaultValue={selectedUser.telefone} className="col-span-3" />
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="role" className="text-right">
                   Função
                 </Label>
-                <Select name="role" defaultValue={selectedUser.cargo}>
+                <Select name="cargo" defaultValue={selectedUser.cargo}>
                   <SelectTrigger className="col-span-3">
                     <SelectValue />
                   </SelectTrigger>
@@ -263,6 +258,8 @@ export default function UsersPage() {
           )}
         </DialogContent>
       </Dialog>
+
+      <ImportDialog modelName="User" open={isImportDialogOpen} onOpenChange={setIsImportDialogOpen} />
     </div>
   );
 }
