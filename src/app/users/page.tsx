@@ -71,10 +71,10 @@ export default function UsersPage() {
 
     const formData = new FormData(event.currentTarget);
     const updatedUser: Partial<User> = {
-      name: formData.get('name') as string,
+      nome: formData.get('name') as string,
       email: formData.get('email') as string,
       telefone: formData.get('telefone') as string,
-      role: formData.get('role') as User['role'],
+      cargo: formData.get('role') as User['cargo'],
       nivel: formData.get('nivel') as User['nivel'],
       status: formData.get('status') as User['status'],
     };
@@ -266,5 +266,3 @@ export default function UsersPage() {
     </div>
   );
 }
-
-    
