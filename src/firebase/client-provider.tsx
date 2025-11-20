@@ -5,6 +5,7 @@ import { FirebaseProvider } from '@/firebase/provider';
 import { initializeFirebase } from '@/firebase';
 import { initiateAnonymousSignIn } from '@/firebase/non-blocking-login';
 import { useUser } from '@/firebase/provider';
+import { SidebarProvider } from '@/components/ui/sidebar';
 
 interface FirebaseClientProviderProps {
   children: ReactNode;
@@ -20,25 +21,24 @@ function AuthGate({ children }: { children: ReactNode }) {
     }
   }, [isUserLoading, user, auth]);
 
-  // While checking auth state, or if there's no user yet (and sign-in is in progress), show a loading state.
   if (isUserLoading || !user) {
     return (
-        <div className="flex h-screen w-full items-center justify-center">
-            <div className="text-lg font-semibold text-muted-foreground">Loading...</div>
+      <div className="flex h-screen w-full items-center justify-center">
+        <div className="text-lg font-semibold text-muted-foreground">
+          Loading...
         </div>
+      </div>
     );
   }
 
-  // Once user is authenticated (anonymous or otherwise), render the children.
-  return <>{children}</>;
+  return <div className="relative flex min-h-screen">{children}</div>;
 }
 
 
 export function FirebaseClientProvider({ children }: FirebaseClientProviderProps) {
   const firebaseServices = useMemo(() => {
-    // Initialize Firebase on the client side, once per component mount.
     return initializeFirebase();
-  }, []); // Empty dependency array ensures this runs only once on mount
+  }, []); 
 
   return (
     <FirebaseProvider
@@ -46,7 +46,9 @@ export function FirebaseClientProvider({ children }: FirebaseClientProviderProps
       auth={firebaseServices.auth}
       firestore={firebaseServices.firestore}
     >
-      <AuthGate>{children}</AuthGate>
+      <AuthGate>
+        {children}
+      </AuthGate>
     </FirebaseProvider>
   );
 }
