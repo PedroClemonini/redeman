@@ -1,6 +1,7 @@
 
 'use client';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { PageHeader } from '@/components/page-header';
 import { Button } from '@/components/ui/button';
 import {
@@ -33,6 +34,7 @@ import { ImportDialog } from '@/components/import-dialog';
 
 export default function SitesPage() {
   const firestore = useFirestore();
+  const router = useRouter();
   const sitesQuery = useMemoFirebase(() => {
     if (!firestore) return null;
     return query(collection(firestore, 'agencias'));
@@ -62,7 +64,7 @@ export default function SitesPage() {
             <Upload className="mr-2" />
             Importar
           </Button>
-          <Button>
+          <Button onClick={() => router.push('/sites/register')}>
             <Plus className="mr-2" />
             Adicionar Site
           </Button>
