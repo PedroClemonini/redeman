@@ -47,11 +47,13 @@ import {
 import type { User } from '@/lib/types';
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, doc, query } from 'firebase/firestore';
-import { updateDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import { addDocumentNonBlocking, updateDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { ImportDialog } from '@/components/import-dialog';
+import { useToast } from '@/hooks/use-toast';
 
 export default function UsersPage() {
   const firestore = useFirestore();
+  const { toast } = useToast();
   const usersQuery = useMemoFirebase(() => {
     if (!firestore) return null;
     return query(collection(firestore, 'users'));
@@ -59,6 +61,7 @@ export default function UsersPage() {
   const { data: users, isLoading } = useCollection<User>(usersQuery);
 
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
@@ -83,8 +86,40 @@ export default function UsersPage() {
     const userRef = doc(firestore, 'users', selectedUser.id);
     updateDocumentNonBlocking(userRef, updatedUser);
 
+    toast({
+      title: 'Usuário Atualizado',
+      description: `As informações de ${updatedUser.nome} foram salvas.`,
+    });
+
     setIsEditDialogOpen(false);
     setSelectedUser(null);
+  };
+
+  const handleAddSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!firestore) return;
+    
+    const formData = new FormData(event.currentTarget);
+    const usersCollection = collection(firestore, 'users');
+    const newDocRef = doc(usersCollection);
+
+    const newUser: User = {
+      id: newDocRef.id,
+      nome: formData.get('name') as string,
+      email: formData.get('email') as string,
+      cargo: formData.get('cargo') as User['cargo'],
+      nivel: formData.get('nivel') as User['nivel'],
+      status: formData.get('status') as User['status'],
+    };
+    
+    addDocumentNonBlocking(usersCollection, newUser);
+
+    toast({
+      title: 'Usuário Adicionado',
+      description: `${newUser.nome} foi adicionado com sucesso.`,
+    });
+
+    setIsAddDialogOpen(false);
   };
 
   return (
@@ -102,7 +137,7 @@ export default function UsersPage() {
           <Upload className="mr-2" />
           Importar
         </Button>
-        <Button>
+        <Button onClick={() => setIsAddDialogOpen(true)}>
           <Plus className="mr-2" />
           Adicionar Usuário
         </Button>
@@ -259,7 +294,85 @@ export default function UsersPage() {
         </DialogContent>
       </Dialog>
 
+      {/* Add User Dialog */}
+      <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Adicionar Novo Usuário</DialogTitle>
+            <DialogDescription>
+              Preencha os dados para criar um novo usuário.
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleAddSubmit} className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="add-name" className="text-right">
+                Nome
+              </Label>
+              <Input id="add-name" name="name" placeholder="Nome completo" className="col-span-3" required />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="add-email" className="text-right">
+                Email
+              </Label>
+              <Input id="add-email" name="email" type="email" placeholder="email@v2mr.com" className="col-span-3" required />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="add-role" className="text-right">
+                Função
+              </Label>
+              <Select name="cargo" defaultValue="Analista" required>
+                <SelectTrigger className="col-span-3">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Administrador">Administrador</SelectItem>
+                  <SelectItem value="Coordenador">Coordenador</SelectItem>
+                  <SelectItem value="Analista">Analista</SelectItem>
+                  <SelectItem value="Visualizador">Visualizador</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="add-nivel" className="text-right">
+                Nível
+              </Label>
+              <Select name="nivel" defaultValue="Júnior" required>
+                <SelectTrigger className="col-span-3">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Sênior">Sênior</SelectItem>
+                  <SelectItem value="Pleno">Pleno</SelectItem>
+                  <SelectItem value="Júnior">Júnior</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="add-status" className="text-right">
+                Status
+              </Label>
+              <Select name="status" defaultValue="ativo" required>
+                <SelectTrigger className="col-span-3">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="ativo">Ativo</SelectItem>
+                  <SelectItem value="inativo">Inativo</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <DialogFooter>
+               <Button variant="outline" type="button" onClick={() => setIsAddDialogOpen(false)}>Cancelar</Button>
+              <Button type="submit">Criar Usuário</Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+
       <ImportDialog modelName="User" open={isImportDialogOpen} onOpenChange={setIsImportDialogOpen} />
     </div>
   );
 }
+
+    
