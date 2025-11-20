@@ -1,0 +1,179 @@
+/**
+ * @file firestore.rules
+ * @description Security rules for the RedeMan Firestore database.
+ *
+ * ## Core Philosophy
+ * This ruleset enforces a Role-Based Access Control (RBAC) model with two primary levels: Admins and standard Users (Analysts).
+ * - Admins have full write access to all operational data (agencies, switches, workflows). Admin status is granted by the existence of a document in the `/roles_admin` collection.
+ * - Authenticated users (Analysts) have read-only access to all operational data, allowing them to view and monitor migration progress.
+ * - User-specific data (in `/users/{userId}`) is strictly private and can only be accessed by the document owner.
+ *
+ * ## Data Structure
+ * The data is organized into several top-level collections:
+ * - `/users`: Stores private user profiles.
+ * - `/agencias`, `/switches`, `/fluxos`: Store shared, operational data for the network migration project.
+ * - `/roles_admin`: A dedicated collection to manage admin privileges.
+ * - Subcollections like `/fluxos/{fluxoId}/fluxoEquipes` store data related to a parent document and inherit a similar access model.
+ *
+ * ## Key Security Decisions
+ * - Default Deny: All paths are closed by default. Access is granted explicitly.
+ * - Admin Management: Only existing admins can add or remove other admins, securing the `/roles_admin` collection.
+ * - Public Data Model: Most operational data is considered "internal public," meaning it's readable by any authenticated user but writable only by admins.
+ * - No User Listing: It is not possible to list all documents in the `/users` collection, protecting user privacy.
+ * - Relational Integrity: On document creation, key relational IDs (e.g., a user's own `id` or a subcollection's parent `fluxoId`) are validated to ensure they match the document's path. These IDs are enforced as immutable on update to prevent re-parenting or ownership changes.
+ */
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // -------------------------------------------------------------------------
+    // Helper Functions
+    // -------------------------------------------------------------------------
+
+    /**
+     * Checks if the user is authenticated.
+     */
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    /**
+     * Checks if the currently authenticated user's UID matches the provided userId.
+     * This is the basis for the ownership model.
+     * @param userId The UID of the resource owner.
+     */
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+
+    /**
+     * Checks if the user is an administrator by verifying the existence of a
+     * corresponding document in the roles_admin collection.
+     */
+    function isAdmin() {
+      return exists(/databases/$(database)/documents/roles_admin/$(request.auth.uid));
+    }
+
+    // -------------------------------------------------------------------------
+    // User Data Rules (/users)
+    // -------------------------------------------------------------------------
+
+    /**
+     * @description Secures the user's private profile document.
+     * @path /users/{userId}
+     * @allow (create) An authenticated user creating their own profile document for the first time.
+     * @deny (get) An authenticated user trying to read another user's profile.
+     * @principle Restricts access to a user's own data tree.
+     */
+    match /users/{userId} {
+      allow get: if isOwner(userId);
+      allow list: if false; // Disallow listing all users to protect privacy.
+      allow create: if isOwner(userId) && request.resource.data.id == userId;
+      allow update: if isOwner(userId) && resource != null && request.resource.data.id == resource.data.id;
+      allow delete: if isOwner(userId) && resource != null;
+    }
+
+    // -------------------------------------------------------------------------
+    // Agency Data Rules (/agencias)
+    // -------------------------------------------------------------------------
+
+    /**
+     * @description Manages access to agency data. Readable by any authenticated user,
+     * but only writable by administrators.
+     * @path /agencias/{agenciaId}
+     * @allow (get) Any authenticated user reading agency information.
+     * @deny (create) A non-admin user trying to create a new agency document.
+     * @principle Enforces read-only access for standard users and write restrictions for admins.
+     */
+    match /agencias/{agenciaId} {
+      allow get, list: if isSignedIn();
+      allow create: if isAdmin() && request.resource.data.id == agenciaId;
+      allow update: if isAdmin() && resource != null && request.resource.data.id == resource.data.id;
+      allow delete: if isAdmin() && resource != null;
+    }
+
+    // -------------------------------------------------------------------------
+    // Switch Data Rules (/switches)
+    // -------------------------------------------------------------------------
+
+    /**
+     * @description Manages access to network switch data. Readable by any authenticated user,
+     * but only writable by administrators.
+     * @path /switches/{switchId}
+     * @allow (list) Any authenticated user listing all switches.
+     * @deny (update) A non-admin user trying to modify a switch document.
+     * @principle Enforces read-only access for standard users and write restrictions for admins.
+     */
+    match /switches/{switchId} {
+      allow get, list: if isSignedIn();
+      allow create: if isAdmin() && request.resource.data.id == switchId;
+      allow update: if isAdmin() && resource != null && request.resource.data.id == resource.data.id;
+      allow delete: if isAdmin() && resource != null;
+    }
+
+    // -------------------------------------------------------------------------
+    // Migration Workflow Rules (/fluxos)
+    // -------------------------------------------------------------------------
+
+    /**
+     * @description Manages access to migration workflow documents. Readable by any
+     * authenticated user, but only writable by administrators. Also secures nested
+     * subcollections for teams and attachments.
+     * @path /fluxos/{fluxoId}
+     * @allow (get) Any authenticated user reading a migration workflow.
+     * @deny (delete) A non-admin user trying to delete a workflow.
+     * @principle Enforces read-only access for standard users and write restrictions for admins.
+     */
+    match /fluxos/{fluxoId} {
+      allow get, list: if isSignedIn();
+      allow create: if isAdmin() && request.resource.data.id == fluxoId;
+      allow update: if isAdmin() && resource != null && request.resource.data.id == resource.data.id;
+      allow delete: if isAdmin() && resource != null;
+
+      /**
+       * @description Secures team information associated with a workflow.
+       * @path /fluxos/{fluxoId}/fluxoEquipes/{fluxoEquipeId}
+       * @allow (list) Any authenticated user listing teams for a given workflow.
+       * @deny (create) A non-admin user trying to add a team to a workflow.
+       * @principle Validates relational integrity between documents.
+       */
+      match /fluxoEquipes/{fluxoEquipeId} {
+        allow get, list: if isSignedIn();
+        allow create: if isAdmin() && request.resource.data.fluxoId == fluxoId;
+        allow update: if isAdmin() && resource != null && request.resource.data.fluxoId == resource.data.fluxoId;
+        allow delete: if isAdmin() && resource != null;
+      }
+
+      /**
+       * @description Secures attachments associated with a workflow.
+       * @path /fluxos/{fluxoId}/fluxoAnexos/{fluxoAnexoId}
+       * @allow (get) Any authenticated user viewing an attachment record for a workflow.
+       * @deny (update) A non-admin user trying to modify an attachment record.
+       * @principle Validates relational integrity between documents.
+       */
+      match /fluxoAnexos/{fluxoAnexoId} {
+        allow get, list: if isSignedIn();
+        allow create: if isAdmin() && request.resource.data.fluxoId == fluxoId;
+        allow update: if isAdmin() && resource != null && request.resource.data.fluxoId == resource.data.fluxoId;
+        allow delete: if isAdmin() && resource != null;
+      }
+    }
+
+    // -------------------------------------------------------------------------
+    // Admin Role Management Rules (/roles_admin)
+    // -------------------------------------------------------------------------
+    
+    /**
+     * @description Secures the admin role documents. Only other admins can view or
+     * manage who is an admin.
+     * @path /roles_admin/{userId}
+     * @allow (create) An existing admin adding another user as an admin.
+     * @deny (get) A non-admin user trying to check if another user is an admin.
+     * @principle Secures administrative privileges by restricting management to current admins.
+     */
+    match /roles_admin/{userId} {
+      allow get, list: if isAdmin();
+      allow create, update, delete: if isAdmin() && resource != null;
+    }
+  }
+}

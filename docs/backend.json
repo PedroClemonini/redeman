@@ -1,0 +1,402 @@
+{
+  "entities": {
+    "User": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "User",
+      "type": "object",
+      "description": "Represents a user (Analyst) of the RedeMan system.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the User entity."
+        },
+        "nome": {
+          "type": "string",
+          "description": "The user's full name."
+        },
+        "email": {
+          "type": "string",
+          "description": "The user's email address.",
+          "format": "email"
+        },
+        "cargo": {
+          "type": "string",
+          "description": "The user's job title (e.g., analyst)."
+        },
+        "nivel": {
+          "type": "string",
+          "description": "The user's skill level (e.g., pleno)."
+        },
+        "certificacao": {
+          "type": "string",
+          "description": "The user's certifications (e.g., CCNA)."
+        },
+        "disponibilidade": {
+          "type": "string",
+          "description": "The user's availability (e.g., Integral)."
+        },
+        "modalidade": {
+          "type": "string",
+          "description": "The user's work modality (e.g., remoto)."
+        },
+        "status": {
+          "type": "string",
+          "description": "The user's status (e.g., ativo)."
+        }
+      },
+      "required": [
+        "id",
+        "nome",
+        "email",
+        "cargo",
+        "nivel",
+        "disponibilidade",
+        "modalidade",
+        "status"
+      ]
+    },
+    "Agencia": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Agencia",
+      "type": "object",
+      "description": "Represents a Banco do Brasil agency.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Agencia entity."
+        },
+        "codigo": {
+          "type": "string",
+          "description": "The agency's code."
+        },
+        "nome": {
+          "type": "string",
+          "description": "The agency's name."
+        },
+        "cidade": {
+          "type": "string",
+          "description": "The agency's city."
+        },
+        "estado": {
+          "type": "string",
+          "description": "The agency's state."
+        },
+        "endereco": {
+          "type": "string",
+          "description": "The agency's address."
+        },
+        "qtd_switches": {
+          "type": "number",
+          "description": "The quantity of switches at the agency."
+        },
+        "data_prevista": {
+          "type": "string",
+          "description": "The scheduled date for migration.",
+          "format": "date-time"
+        },
+        "status": {
+          "type": "string",
+          "description": "The agency's migration status (e.g., aguardando)."
+        }
+      },
+      "required": [
+        "id",
+        "codigo",
+        "nome",
+        "cidade",
+        "estado",
+        "endereco",
+        "qtd_switches",
+        "data_prevista",
+        "status"
+      ]
+    },
+    "Switch": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Switch",
+      "type": "object",
+      "description": "Represents a Huawei switch.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Switch entity."
+        },
+        "numero_serie": {
+          "type": "string",
+          "description": "The switch's serial number."
+        },
+        "modelo": {
+          "type": "string",
+          "description": "The switch's model."
+        },
+        "hostname": {
+          "type": "string",
+          "description": "The switch's hostname."
+        },
+        "agenciaId": {
+          "type": "string",
+          "description": "Reference to Agencia. (Relationship: Agencia 1:N Switch)"
+        },
+        "role": {
+          "type": "string",
+          "description": "The switch's role (e.g., access)."
+        },
+        "status": {
+          "type": "string",
+          "description": "The switch's status (e.g., estoque)."
+        },
+        "vrp_version": {
+          "type": "string",
+          "description": "The switch's VRP version."
+        },
+        "pat_version": {
+          "type": "string",
+          "description": "The switch's PAT version."
+        },
+        "observacoes": {
+          "type": "string",
+          "description": "Additional notes about the switch."
+        }
+      },
+      "required": [
+        "id",
+        "numero_serie",
+        "modelo",
+        "hostname",
+        "agenciaId",
+        "role",
+        "status",
+        "vrp_version",
+        "pat_version"
+      ]
+    },
+    "Fluxo": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Fluxo",
+      "type": "object",
+      "description": "Represents a migration workflow.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Fluxo entity."
+        },
+        "agenciaId": {
+          "type": "string",
+          "description": "Reference to Agencia. (Relationship: Agencia 1:N Fluxo)"
+        },
+        "status": {
+          "type": "string",
+          "description": "The workflow's status."
+        },
+        "startDate": {
+          "type": "string",
+          "description": "The workflow's start date.",
+          "format": "date-time"
+        },
+        "endDate": {
+          "type": "string",
+          "description": "The workflow's end date.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "agenciaId",
+        "status",
+        "startDate",
+        "endDate"
+      ]
+    },
+    "FluxoEquipe": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "FluxoEquipe",
+      "type": "object",
+      "description": "Represents an external team assigned to a migration workflow.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the FluxoEquipe entity."
+        },
+        "fluxoId": {
+          "type": "string",
+          "description": "Reference to Fluxo. (Relationship: Fluxo 1:N FluxoEquipe)"
+        },
+        "nome": {
+          "type": "string",
+          "description": "The team's name (e.g., Zoomtech)."
+        },
+        "funcao": {
+          "type": "string",
+          "description": "The team's function."
+        }
+      },
+      "required": [
+        "id",
+        "fluxoId",
+        "nome",
+        "funcao"
+      ]
+    },
+    "FluxoAnexo": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "FluxoAnexo",
+      "type": "object",
+      "description": "Represents an attachment related to a migration workflow.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the FluxoAnexo entity."
+        },
+        "fluxoId": {
+          "type": "string",
+          "description": "Reference to Fluxo. (Relationship: Fluxo 1:N FluxoAnexo)"
+        },
+        "nomeArquivo": {
+          "type": "string",
+          "description": "The attachment's file name."
+        },
+        "caminhoArquivo": {
+          "type": "string",
+          "description": "The attachment's file path (URI)."
+        }
+      },
+      "required": [
+        "id",
+        "fluxoId",
+        "nomeArquivo",
+        "caminhoArquivo"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/users/{userId}",
+        "definition": {
+          "entityName": "User",
+          "schema": {
+            "$ref": "#/backend/entities/User"
+          },
+          "description": "Stores user data. Uses path-based ownership for private user data.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier for the user."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/agencias/{agenciaId}",
+        "definition": {
+          "entityName": "Agencia",
+          "schema": {
+            "$ref": "#/backend/entities/Agencia"
+          },
+          "description": "Stores agency data.",
+          "params": [
+            {
+              "name": "agenciaId",
+              "description": "The unique identifier for the agency."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/switches/{switchId}",
+        "definition": {
+          "entityName": "Switch",
+          "schema": {
+            "$ref": "#/backend/entities/Switch"
+          },
+          "description": "Stores switch data.",
+          "params": [
+            {
+              "name": "switchId",
+              "description": "The unique identifier for the switch."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/fluxos/{fluxoId}",
+        "definition": {
+          "entityName": "Fluxo",
+          "schema": {
+            "$ref": "#/backend/entities/Fluxo"
+          },
+          "description": "Stores migration workflow data.",
+          "params": [
+            {
+              "name": "fluxoId",
+              "description": "The unique identifier for the migration workflow."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/fluxos/{fluxoId}/fluxoEquipes/{fluxoEquipeId}",
+        "definition": {
+          "entityName": "FluxoEquipe",
+          "schema": {
+            "$ref": "#/backend/entities/FluxoEquipe"
+          },
+          "description": "Stores external team data assigned to migration workflows.",
+          "params": [
+            {
+              "name": "fluxoId",
+              "description": "The unique identifier for the parent workflow."
+            },
+            {
+              "name": "fluxoEquipeId",
+              "description": "The unique identifier for the external team."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/fluxos/{fluxoId}/fluxoAnexos/{fluxoAnexoId}",
+        "definition": {
+          "entityName": "FluxoAnexo",
+          "schema": {
+            "$ref": "#/backend/entities/FluxoAnexo"
+          },
+          "description": "Stores attachments related to migration workflows.",
+          "params": [
+            {
+              "name": "fluxoId",
+              "description": "The unique identifier for the parent workflow."
+            },
+            {
+              "name": "fluxoAnexoId",
+              "description": "The unique identifier for the attachment."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/roles_admin/{userId}",
+        "definition": {
+          "entityName": "role",
+          "schema": {
+            "$ref": "#/backend/entities/User"
+          },
+          "description": "Marks a user as an admin. Existence of the document grants admin privileges.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier for the user."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "The Firestore structure is designed to manage the migration of Banco do Brasil agencies from Cisco to Huawei switches, using a system called RedeMan. The structure prioritizes authorization independence, clarity, and scalability.\n\n**Authorization Independence:**\nAuthorization independence is achieved through path-based ownership for user data (`/users/{userId}`) and denormalization where needed.  For example, while `Switch` documents reference an `agenciaId`, authorization rules for switches would primarily rely on the user's role and not necessitate fetching the associated `Agencia` document.\n\n**Structural Segregation:**\nThe structure segregates data based on access requirements. User data is stored in `/users/{userId}`, while agency and switch data are stored in top-level collections (`/agencias` and `/switches`), since all analysts and admins must be able to view such data.\n\n**Access Modeling:**\nPath-based ownership is used for private user data.  Membership maps are not used in this design, leaning towards simpler role-based access. Admin roles will be checked via document existence in `/roles_admin/{userId}`.\n\n**QAPs (Rules are not Filters):**\nThe segregation of data into distinct collections with uniform access requirements ensures that `list` operations can be secured effectively.  For example, listing agencies doesn't require filtering based on complex authorization logic; the rule simply checks if the user has the necessary permissions to view agency data.\n\n**Global Roles:**\nGlobal roles (e.g., admin) are managed through the existence of documents in dedicated collections like `/roles_admin/{userId}`. This allows for simple and efficient security rule implementation.\n\nThis structure enables secure, scalable, and easily debuggable Firestore rules by adhering to the core design principles of authorization independence, clarity of intent, and structural segregation."
+  }
+}
