@@ -86,7 +86,7 @@ service cloud.firestore {
      * @principle Enforces read-only access for standard users and write restrictions for admins.
      */
     match /agencias/{agenciaId} {
-      allow get, list: if isSignedIn();
+      allow read: if true;
       allow create: if isAdmin() && request.resource.data.id == agenciaId;
       allow update: if isAdmin() && resource != null && request.resource.data.id == resource.data.id;
       allow delete: if isAdmin() && resource != null;
@@ -105,7 +105,7 @@ service cloud.firestore {
      * @principle Enforces read-only access for standard users and write restrictions for admins.
      */
     match /switches/{switchId} {
-      allow get, list: if isSignedIn();
+      allow read: if true;
       allow create: if isAdmin() && request.resource.data.id == switchId;
       allow update: if isAdmin() && resource != null && request.resource.data.id == resource.data.id;
       allow delete: if isAdmin() && resource != null;
@@ -125,7 +125,7 @@ service cloud.firestore {
      * @principle Enforces read-only access for standard users and write restrictions for admins.
      */
     match /fluxos/{fluxoId} {
-      allow get, list: if isSignedIn();
+      allow read: if true;
       allow create: if isAdmin() && request.resource.data.id == fluxoId;
       allow update: if isAdmin() && resource != null && request.resource.data.id == resource.data.id;
       allow delete: if isAdmin() && resource != null;
@@ -138,7 +138,7 @@ service cloud.firestore {
        * @principle Validates relational integrity between documents.
        */
       match /fluxoEquipes/{fluxoEquipeId} {
-        allow get, list: if isSignedIn();
+        allow read: if true;
         allow create: if isAdmin() && request.resource.data.fluxoId == fluxoId;
         allow update: if isAdmin() && resource != null && request.resource.data.fluxoId == resource.data.fluxoId;
         allow delete: if isAdmin() && resource != null;
@@ -152,7 +152,7 @@ service cloud.firestore {
        * @principle Validates relational integrity between documents.
        */
       match /fluxoAnexos/{fluxoAnexoId} {
-        allow get, list: if isSignedIn();
+        allow read: if true;
         allow create: if isAdmin() && request.resource.data.fluxoId == fluxoId;
         allow update: if isAdmin() && resource != null && request.resource.data.fluxoId == resource.data.fluxoId;
         allow delete: if isAdmin() && resource != null;
@@ -177,3 +177,5 @@ service cloud.firestore {
     }
   }
 }
+
+    
