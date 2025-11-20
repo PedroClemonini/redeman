@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -16,7 +17,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { X, Plus, ExternalLink, Video, ListTodo } from 'lucide-react';
+import { X, Plus, ExternalLink, Video, ListTodo, Upload } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { SiteEntry, Person } from '@/lib/registered-sites';
 import { unifiedTasks } from '@/lib/tasks-data';
@@ -24,6 +25,10 @@ import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, doc, query } from 'firebase/firestore';
 import { setDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { useToast } from '@/hooks/use-toast';
+import { nomes as allAnalysts } from '@/lib/data';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Checkbox } from '@/components/ui/checkbox';
+import { ImportDialog } from '@/components/import-dialog';
 
 type Status = 'Completo' | 'Em Andamento' | 'Pendente' | 'Não Iniciado';
 
@@ -82,15 +87,18 @@ export default function RegisterSitePage() {
   const [linkPreparacao, setLinkPreparacao] = useState('');
   const [zoomPreparacao, setZoomPreparacao] = useState<Person[]>([]);
   const [btsPreparacao, setBtsPreparacao] = useState<Person[]>([]);
+  const [v2mrPreparacao, setV2mrPreparacao] = useState<Person[]>([]);
 
   const [dataMigracao, setDataMigracao] = useState('');
   const [linkMigracao, setLinkMigracao] = useState('');
   const [zoomMigracao, setZoomMigracao] = useState<Person[]>([]);
   const [btsMigracao, setBtsMigracao] = useState<Person[]>([]);
+  const [v2mrMigracao, setV2mrMigracao] = useState<Person[]>([]);
 
   const [linkWhatsapp, setLinkWhatsapp] = useState('');
 
   const [completedTasks, setCompletedTasks] = useState<Set<string>>(new Set());
+  const [isImportMigrationOpen, setIsImportMigrationOpen] = useState(false);
 
   useEffect(() => {
     const syncTasks = () => {
@@ -119,6 +127,19 @@ export default function RegisterSitePage() {
   const removePerson = (list: Person[], setter: React.Dispatch<React.SetStateAction<Person[]>>, id: number) => {
     setter(list.filter((p) => p.id !== id));
   };
+  
+  const handleAnalystSelection = (
+    analystName: string, 
+    isChecked: boolean, 
+    list: Person[], 
+    setter: React.Dispatch<React.SetStateAction<Person[]>>
+  ) => {
+      if (isChecked) {
+          setter([...list, { id: Date.now() + Math.random(), name: analystName }]);
+      } else {
+          setter(list.filter(p => p.name !== analystName));
+      }
+  };
 
   const addSite = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -142,12 +163,14 @@ export default function RegisterSitePage() {
         link: linkPreparacao,
         zoom: zoomPreparacao,
         bts: btsPreparacao,
+        v2mr: v2mrPreparacao,
       },
       migracao: {
         date: dataMigracao,
         link: linkMigracao,
         zoom: zoomMigracao,
         bts: btsMigracao,
+        v2mr: v2mrMigracao,
       },
       linkWhatsapp,
     };
@@ -174,10 +197,12 @@ export default function RegisterSitePage() {
     setLinkPreparacao('');
     setZoomPreparacao([]);
     setBtsPreparacao([]);
+    setV2mrPreparacao([]);
     setDataMigracao('');
     setLinkMigracao('');
     setZoomMigracao([]);
     setBtsMigracao([]);
+    setV2mrMigracao([]);
     setLinkWhatsapp('');
   };
 
@@ -268,6 +293,43 @@ export default function RegisterSitePage() {
     </>
   );
 
+  const AnalystSelector = ({ list, setter, buttonColor }: { list: Person[], setter: React.Dispatch<React.SetStateAction<Person[]>>, buttonColor: string }) => (
+    <div>
+        <div className="flex flex-wrap gap-2 mb-2 min-h-[24px]">
+            {list.map(p => (
+                <Badge key={p.id} variant="secondary" className={cn("flex items-center gap-1.5", buttonColor)}>
+                    {p.name}
+                    <button type="button" onClick={() => removePerson(list, setter, p.id)} className="rounded-full hover:bg-black/10">
+                        <X className="h-3 w-3" />
+                    </button>
+                </Badge>
+            ))}
+        </div>
+        <Popover>
+            <PopoverTrigger asChild>
+                <Button variant="outline" className="w-full justify-start font-normal h-9 text-sm">
+                    <Plus className="mr-2" /> Selecionar Analistas
+                </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-64 p-0">
+                <div className="p-2 space-y-2 max-h-60 overflow-y-auto">
+                    {Object.entries(allAnalysts).map(([key, name]) => (
+                        <div key={key} className="flex items-center space-x-2">
+                            <Checkbox 
+                                id={`analyst-${key}`}
+                                checked={list.some(p => p.name === name)}
+                                onCheckedChange={(checked) => handleAnalystSelection(name, !!checked, list, setter)}
+                            />
+                            <Label htmlFor={`analyst-${key}`} className="font-normal">{name}</Label>
+                        </div>
+                    ))}
+                </div>
+            </PopoverContent>
+        </Popover>
+    </div>
+);
+
+
   const getAnalystsString = (people?: Person[]) => {
       if (!people || people.length === 0) return null;
       return people.map(p => p.name).join(', ');
@@ -292,10 +354,16 @@ export default function RegisterSitePage() {
 
   return (
     <div className="space-y-8">
-      <PageHeader
-        title="Cadastro de Sites"
-        description="Fluxo: Planejamento → Preparação → Migração"
-      />
+      <div className='flex flex-wrap items-center justify-between gap-4'>
+        <PageHeader
+          title="Cadastro de Sites"
+          description="Fluxo: Planejamento → Preparação → Migração"
+        />
+        <Button variant="outline" onClick={() => setIsImportMigrationOpen(true)}>
+            <Upload className="mr-2" />
+            Importar Migração (JSON)
+        </Button>
+      </div>
       <Card>
         <CardContent className="p-6">
           <form onSubmit={addSite} className="space-y-6">
@@ -333,12 +401,12 @@ export default function RegisterSitePage() {
               <div className="border bg-muted/20 rounded-lg p-4">
                 <h3 className="text-lg font-bold mb-3 flex items-center gap-3"><span className="flex size-8 items-center justify-center rounded-full bg-blue-600 text-sm font-bold text-white">1</span>PLANEJAMENTO</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Input type="date" value={dataPlanejamento} onChange={e => setDataPlanejamento(e.target.value)} required />
+                  <Input type="date" value={dataPlanejamento} onChange={e => setDataPlanejamento(e.target.value)} />
                   <Input type="url" value={linkPlanejamento} onChange={e => setLinkPlanejamento(e.target.value)} placeholder="Link da Reunião" />
                 </div>
                 <div className="mt-4">
                   <Label className="block text-sm font-medium mb-2">Analistas V2MR</Label>
-                  <PersonInput list={v2mrPlanejamento} setter={setV2mrPlanejamento} inputId="v2mr-input-planejamento" placeholder="Nome do analista" buttonColor="bg-blue-600 hover:bg-blue-700 text-white" />
+                  <AnalystSelector list={v2mrPlanejamento} setter={setV2mrPlanejamento} buttonColor="bg-blue-600 hover:bg-blue-700 text-white" />
                 </div>
               </div>
 
@@ -349,7 +417,11 @@ export default function RegisterSitePage() {
                   <Input type="date" value={dataPreparacao} onChange={e => setDataPreparacao(e.target.value)} />
                   <Input type="url" value={linkPreparacao} onChange={e => setLinkPreparacao(e.target.value)} placeholder="Link da Reunião" />
                 </div>
-                <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <div>
+                    <Label className="block text-sm font-medium mb-2">Analistas V2MR</Label>
+                    <AnalystSelector list={v2mrPreparacao} setter={setV2mrPreparacao} buttonColor="bg-blue-600 hover:bg-blue-700 text-white" />
+                  </div>
                   <div>
                     <Label className="block text-sm font-medium mb-2">Técnicos Zoomtech</Label>
                     <PersonInput list={zoomPreparacao} setter={setZoomPreparacao} inputId="zoom-input-preparacao" placeholder="Nome do técnico" buttonColor="bg-green-600 hover:bg-green-700 text-white" />
@@ -368,7 +440,11 @@ export default function RegisterSitePage() {
                   <Input type="date" value={dataMigracao} onChange={e => setDataMigracao(e.target.value)} />
                   <Input type="url" value={linkMigracao} onChange={e => setLinkMigracao(e.target.value)} placeholder="Link da Reunião" />
                 </div>
-                <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <div>
+                    <Label className="block text-sm font-medium mb-2">Analistas V2MR</Label>
+                    <AnalystSelector list={v2mrMigracao} setter={setV2mrMigracao} buttonColor="bg-blue-600 hover:bg-blue-700 text-white" />
+                  </div>
                   <div>
                     <Label className="block text-sm font-medium mb-2">Técnicos Zoomtech</Label>
                     <PersonInput list={zoomMigracao} setter={setZoomMigracao} inputId="zoom-input-migracao" placeholder="Nome do técnico" buttonColor="bg-green-600 hover:bg-green-700 text-white" />
@@ -402,7 +478,7 @@ export default function RegisterSitePage() {
                     <th className="px-6 py-4 font-semibold text-gray-900">Site</th>
                     <th className="px-6 py-4 font-semibold text-gray-900">Etapa Atual</th>
                     <th className="px-6 py-4 font-semibold text-gray-900">Status</th>
-                    <th className="px-6 py-4 font-semibold text-gray-900">Técnico(s)</th>
+                    <th className="px-6 py-4 font-semibold text-gray-900">Analista(s) V2MR</th>
                     <th className="px-6 py-4 font-semibold text-gray-900">Observação</th>
                     <th className="px-6 py-4 font-semibold text-gray-900">Teams</th>
                     <th className="px-6 py-4 font-semibold text-gray-900 text-right">Ações</th>
@@ -413,7 +489,8 @@ export default function RegisterSitePage() {
                   {sitesByWeek[week].map(site => {
                     const { planningStatus, preparationStatus, migrationStatus, currentPhase, currentStatus } = site;
                     const meetingLink = getMeetingLink(site);
-                    const analysts = site.planejamento.v2mr || [];
+                    
+                    const analysts = site.planejamento.v2mr || site.preparacao.v2mr || site.migracao.v2mr || [];
                     
                     const phaseToBadgeColor: Record<string, string> = {
                         'Planejamento': 'bg-blue-50 text-blue-700',
@@ -496,6 +573,7 @@ export default function RegisterSitePage() {
           </div>
         ))}
       </div>
+      <ImportDialog modelName="SiteMigration" open={isImportMigrationOpen} onOpenChange={setIsImportMigrationOpen} />
     </div>
   );
 }

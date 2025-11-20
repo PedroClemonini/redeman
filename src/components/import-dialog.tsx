@@ -28,13 +28,13 @@ import {
 import { useToast } from '@/hooks/use-toast';
 
 interface ImportDialogProps {
-  modelName: 'User' | 'Site' | 'Switch';
+  modelName: 'User' | 'Site' | 'Switch' | 'SiteMigration';
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
 const modelTemplates: Record<
-  'User' | 'Site' | 'Switch',
+  'User' | 'Site' | 'Switch' | 'SiteMigration',
   { name: string; description: string }
 > = {
   User: {
@@ -48,6 +48,10 @@ const modelTemplates: Record<
   Switch: {
     name: 'Switches',
     description: 'Template para inventário de switches.',
+  },
+  SiteMigration: {
+    name: 'Migração de Site',
+    description: 'Template para importação de dados de migração.',
   },
 };
 
@@ -91,10 +95,20 @@ const switchTemplateJson = `[
   }
 ]`;
 
+const siteMigrationTemplateJson = `[
+  {
+    "sigla": "NVT02",
+    "descricaoBreve": "Outro Site",
+    "localidade": "São Paulo/SP",
+    "semana": "Semana 4"
+  }
+]`;
+
 const templateData: Record<string, { json: string; csv: string }> = {
   User: { json: userTemplateJson, csv: 'id,nome,email,cargo,nivel,status,telefone' },
   Site: { json: siteTemplateJson, csv: 'id,codigo,nome,cidade,estado,endereco,qtd_switches,data_prevista,status' },
   Switch: { json: switchTemplateJson, csv: 'id,numero_serie,modelo,hostname,agenciaId,role,status,vrp_version,pat_version,observacoes' },
+  SiteMigration: { json: siteMigrationTemplateJson, csv: 'sigla,descricaoBreve,localidade,semana' },
 };
 
 
