@@ -19,8 +19,12 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { X, Plus, ExternalLink, Video, ListTodo } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { registeredSites, type SiteEntry, type Person } from '@/lib/registered-sites';
+import type { SiteEntry, Person } from '@/lib/registered-sites';
 import { unifiedTasks } from '@/lib/tasks-data';
+import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { collection, doc, query } from 'firebase/firestore';
+import { setDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import { useToast } from '@/hooks/use-toast';
 
 type Status = 'Completo' | 'Em Andamento' | 'Pendente' | 'Não Iniciado';
 
@@ -56,8 +60,16 @@ const migrationTasks = getPhaseTasks('migracao');
 
 
 export default function RegisterSitePage() {
-  const [sites, setSites] = useState<SiteEntry[]>(registeredSites);
+  const firestore = useFirestore();
+  const { toast } = useToast();
   
+  const sitesQuery = useMemoFirebase(() => {
+    if (!firestore) return null;
+    return query(collection(firestore, 'agencias'));
+  }, [firestore]);
+  const { data: sites, isLoading: sitesLoading } = useCollection<SiteEntry>(sitesQuery);
+
+
   const [sigla, setSigla] = useState('');
   const [descricaoBreve, setDescricaoBreve] = useState('');
   const [localidade, setLocalidade] = useState('');
@@ -111,10 +123,12 @@ export default function RegisterSitePage() {
 
   const addSite = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (sigla.length > 5 || !sigla || !descricaoBreve || !semana) return;
+    if (!firestore || sigla.length > 5 || !sigla || !descricaoBreve || !semana) return;
+
+    const newSiteId = doc(collection(firestore, 'agencias')).id;
 
     const newSite: SiteEntry = {
-      id: Date.now(),
+      id: newSiteId,
       sigla: sigla.toUpperCase(),
       descricaoBreve,
       localidade,
@@ -139,7 +153,14 @@ export default function RegisterSitePage() {
       linkWhatsapp,
     };
     
-    setSites([newSite, ...sites]);
+    const docRef = doc(firestore, 'agencias', newSiteId);
+    setDocumentNonBlocking(docRef, newSite, { merge: false });
+
+    toast({
+        title: "Site Cadastrado!",
+        description: `O site ${newSite.sigla} foi adicionado com sucesso.`
+    });
+    
     e.currentTarget.reset();
     
     // Clear state
@@ -161,15 +182,12 @@ export default function RegisterSitePage() {
     setLinkWhatsapp('');
   };
 
-  const removeSite = (id: number) => {
-    setSites(sites.filter((s) => s.id !== id));
-  };
-
   const siteProgress = useMemo(() => {
+    if (!sites) return [];
     return sites.map(site => {
       const getPhaseStatus = (tasks: typeof unifiedTasks) => {
         if (tasks.length === 0) return 'Completo';
-        const completedCount = tasks.filter(task => completedTasks.has(task.id)).length;
+        const completedCount = tasks.filter(task => completedTasks.has(`${site.id}-${task.id}`)).length;
         if (completedCount === tasks.length) return 'Completo';
         if (completedCount > 0) return 'Em Andamento';
         return 'Não Iniciado';
@@ -392,6 +410,7 @@ export default function RegisterSitePage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
+                  {sitesLoading && <tr><td colSpan={7} className='text-center p-4'>Carregando...</td></tr>}
                   {sitesByWeek[week].map(site => {
                     const { planningStatus, preparationStatus, migrationStatus, currentPhase, currentStatus } = site;
                     const meetingLink = getMeetingLink(site);
@@ -473,7 +492,7 @@ export default function RegisterSitePage() {
               </table>
             </div>
              <div className="mt-6 text-center text-sm text-gray-500">
-                Total: <strong>{sitesByWeek[week].length} sites</strong> • {week}
+                Total: <strong>{sitesByWeek[week]?.length || 0} sites</strong> • {week}
             </div>
           </div>
         ))}
@@ -481,5 +500,7 @@ export default function RegisterSitePage() {
     </div>
   );
 }
+
+    
 
     

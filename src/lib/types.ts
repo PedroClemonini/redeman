@@ -1,23 +1,29 @@
+
 export type User = {
   id: string;
-  name: string;
+  nome: string;
   email: string;
-  role: 'Administrador' | 'Coordenador' | 'Analista' | 'Visualizador';
-  status: 'Ativo' | 'Inativo';
-  avatar: string;
+  cargo: 'Administrador' | 'Coordenador' | 'Analista' | 'Visualizador';
+  status: 'ativo' | 'inativo';
+  avatar?: string;
   nivel: 'Sênior' | 'Pleno' | 'Júnior';
-  telefone: string;
+  telefone?: string;
 };
 
 export type Site = {
-  code: string;
-  name:string;
-  uf: string;
-  distSwitchCount: number;
-  accessSwitchCount: number;
+  id: string;
+  codigo: string;
+  nome:string;
+  cidade: string;
+  estado: string;
+  endereco: string;
+  qtd_switches: number;
+  data_prevista: string;
+  status: string;
 };
 
 export type Switch = {
+  id: string;
   serialNumber: string;
   model: string;
   hostname: string;
@@ -51,3 +57,5 @@ export type WeeklySchedule = {
   zoomtechTechnician: string;
   date: string;
 };
+
+    

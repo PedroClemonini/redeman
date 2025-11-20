@@ -1,9 +1,10 @@
 import type { Metadata } from 'next';
 import './globals.css';
-import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
+import { SidebarProvider } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/layout/app-sidebar';
 import { AppHeader } from '@/components/layout/header';
 import { Toaster } from '@/components/ui/toaster';
+import { FirebaseClientProvider } from '@/firebase/client-provider';
 
 export const metadata: Metadata = {
   title: 'RedeMan',
@@ -31,15 +32,17 @@ export default function RootLayout({
         />
       </head>
       <body className="font-body antialiased">
-        <SidebarProvider>
-          <div className="relative flex min-h-screen">
-            <AppSidebar />
-            <div className="flex flex-1 flex-col">
-              <AppHeader />
-              <main className="flex-1 p-4 md:p-6 lg:p-8">{children}</main>
+        <FirebaseClientProvider>
+          <SidebarProvider>
+            <div className="relative flex min-h-screen">
+              <AppSidebar />
+              <div className="flex flex-1 flex-col">
+                <AppHeader />
+                <main className="flex-1 p-4 md:p-6 lg:p-8">{children}</main>
+              </div>
             </div>
-          </div>
-        </SidebarProvider>
+          </SidebarProvider>
+        </FirebaseClientProvider>
         <Toaster />
       </body>
     </html>

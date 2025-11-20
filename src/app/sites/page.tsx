@@ -1,4 +1,5 @@
 
+'use client';
 import { PageHeader } from '@/components/page-header';
 import { Button } from '@/components/ui/button';
 import {
@@ -21,11 +22,22 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { sites } from '@/lib/data';
 import { Download, MoreHorizontal, Plus, Search, Upload } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { collection, query } from 'firebase/firestore';
+import type { Site } from '@/lib/types';
+
 
 export default function SitesPage() {
+  const firestore = useFirestore();
+  const sitesQuery = useMemoFirebase(() => {
+    if (!firestore) return null;
+    return query(collection(firestore, 'agencias'));
+  }, [firestore]);
+
+  const { data: sites, isLoading } = useCollection<Site>(sitesQuery);
+  
   return (
     <div>
       <PageHeader
@@ -72,12 +84,13 @@ export default function SitesPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {sites.map((site) => (
-                <TableRow key={site.code}>
-                  <TableCell className="font-medium">{site.code}</TableCell>
-                  <TableCell>{site.name}</TableCell>
-                  <TableCell>{site.distSwitchCount}</TableCell>
-                  <TableCell>{site.accessSwitchCount}</TableCell>
+              {isLoading && <TableRow><TableCell colSpan={5} className='text-center'>Carregando sites...</TableCell></TableRow>}
+              {sites && sites.map((site) => (
+                <TableRow key={site.id}>
+                  <TableCell className="font-medium">{site.codigo}</TableCell>
+                  <TableCell>{site.nome}</TableCell>
+                  <TableCell>{1}</TableCell>
+                  <TableCell>{site.qtd_switches}</TableCell>
                   <TableCell>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
@@ -104,3 +117,5 @@ export default function SitesPage() {
     </div>
   );
 }
+
+    

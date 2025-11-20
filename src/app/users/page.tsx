@@ -24,7 +24,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { users as initialUsers } from '@/lib/data';
 import { Badge } from '@/components/ui/badge';
 import { Download, MoreHorizontal, Plus, Upload } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -46,9 +45,18 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import type { User } from '@/lib/types';
+import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { collection, doc, query } from 'firebase/firestore';
+import { updateDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 
 export default function UsersPage() {
-  const [users, setUsers] = useState<User[]>(initialUsers);
+  const firestore = useFirestore();
+  const usersQuery = useMemoFirebase(() => {
+    if (!firestore) return null;
+    return query(collection(firestore, 'users'));
+  }, [firestore]);
+  const { data: users, isLoading } = useCollection<User>(usersQuery);
+
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
@@ -59,11 +67,10 @@ export default function UsersPage() {
 
   const handleEditSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!selectedUser) return;
+    if (!selectedUser || !firestore) return;
 
     const formData = new FormData(event.currentTarget);
-    const updatedUser: User = {
-      ...selectedUser,
+    const updatedUser: Partial<User> = {
       name: formData.get('name') as string,
       email: formData.get('email') as string,
       telefone: formData.get('telefone') as string,
@@ -71,8 +78,10 @@ export default function UsersPage() {
       nivel: formData.get('nivel') as User['nivel'],
       status: formData.get('status') as User['status'],
     };
+    
+    const userRef = doc(firestore, 'users', selectedUser.id);
+    updateDocumentNonBlocking(userRef, updatedUser);
 
-    setUsers(users.map((u) => (u.id === updatedUser.id ? updatedUser : u)));
     setIsEditDialogOpen(false);
     setSelectedUser(null);
   };
@@ -115,31 +124,32 @@ export default function UsersPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {users.map((user) => (
+              {isLoading && <TableRow><TableCell colSpan={5} className='text-center'>Carregando usuários...</TableCell></TableRow>}
+              {users && users.map((user) => (
                 <TableRow key={user.id}>
                   <TableCell className="font-medium">
                     <div className="flex items-center gap-3">
                       <Avatar className="h-9 w-9">
-                        <AvatarImage src={`https://i.pravatar.cc/40?u=${user.id}`} alt={user.name} />
+                        <AvatarImage src={`https://i.pravatar.cc/40?u=${user.id}`} alt={user.nome} />
                         <AvatarFallback>
-                          {user.name
-                            .split(' ')
+                          {user.nome
+                            ?.split(' ')
                             .map((n) => n[0])
                             .join('')}
                         </AvatarFallback>
                       </Avatar>
                       <div className="grid gap-0.5">
-                        <span className="font-medium">{user.name}</span>
+                        <span className="font-medium">{user.nome}</span>
                         <span className="text-xs text-muted-foreground">{user.email}</span>
                       </div>
                     </div>
                   </TableCell>
                   <TableCell>{user.nivel}</TableCell>
-                  <TableCell>{user.role}</TableCell>
+                  <TableCell>{user.cargo}</TableCell>
                   <TableCell>
-                    <Badge variant={user.status === 'Ativo' ? 'default' : 'destructive'}
+                    <Badge variant={user.status === 'ativo' ? 'default' : 'destructive'}
                       className={
-                        user.status === 'Ativo'
+                        user.status === 'ativo'
                           ? 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-400'
                           : 'bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-400'
                       }>
@@ -187,7 +197,7 @@ export default function UsersPage() {
                 <Label htmlFor="name" className="text-right">
                   Nome
                 </Label>
-                <Input id="name" name="name" defaultValue={selectedUser.name} className="col-span-3" />
+                <Input id="name" name="name" defaultValue={selectedUser.nome} className="col-span-3" />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="email" className="text-right">
@@ -205,7 +215,7 @@ export default function UsersPage() {
                 <Label htmlFor="role" className="text-right">
                   Função
                 </Label>
-                <Select name="role" defaultValue={selectedUser.role}>
+                <Select name="role" defaultValue={selectedUser.cargo}>
                   <SelectTrigger className="col-span-3">
                     <SelectValue />
                   </SelectTrigger>
@@ -241,8 +251,8 @@ export default function UsersPage() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Ativo">Ativo</SelectItem>
-                    <SelectItem value="Inativo">Inativo</SelectItem>
+                    <SelectItem value="ativo">Ativo</SelectItem>
+                    <SelectItem value="inativo">Inativo</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -256,3 +266,5 @@ export default function UsersPage() {
     </div>
   );
 }
+
+    

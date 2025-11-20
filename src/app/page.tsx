@@ -17,9 +17,12 @@ import {
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Building2, CheckCircle, Clock, GanttChartSquare } from 'lucide-react';
-import { registeredSites } from '@/lib/registered-sites';
 import { useState, useEffect, useMemo } from 'react';
 import { unifiedTasks } from '@/lib/tasks-data';
+import { useCollection, useMemoFirebase } from '@/firebase';
+import { collection, query } from 'firebase/firestore';
+import { useFirestore } from '@/firebase/provider';
+import type { SiteEntry } from '@/lib/registered-sites';
 
 type Status = 'Completo' | 'Em Andamento' | 'Pendente' | 'Não Iniciado';
 
@@ -40,6 +43,14 @@ const migrationTasks = getPhaseTasks('migracao');
 
 export default function Dashboard() {
   const [completedTasks, setCompletedTasks] = useState<Set<string>>(new Set());
+  const firestore = useFirestore();
+
+  const sitesQuery = useMemoFirebase(() => {
+    if (!firestore) return null;
+    return query(collection(firestore, 'agencias'));
+  }, [firestore]);
+  const { data: registeredSites, isLoading: sitesLoading } = useCollection<SiteEntry>(sitesQuery);
+
 
   useEffect(() => {
     // In a real app, this might be a global state or fetched from a DB.
@@ -56,10 +67,11 @@ export default function Dashboard() {
   }, []);
 
   const siteProgress = useMemo(() => {
+    if (!registeredSites) return [];
     return registeredSites.map(site => {
       const getPhaseStatus = (tasks: typeof unifiedTasks) => {
         if (tasks.length === 0) return 'Completo';
-        const completedCount = tasks.filter(task => completedTasks.has(task.id)).length;
+        const completedCount = tasks.filter(task => completedTasks.has(`${site.id}-${task.id}`)).length;
         if (completedCount === tasks.length) return 'Completo';
         if (completedCount > 0) return 'Em Andamento';
         return 'Não Iniciado';
@@ -99,10 +111,10 @@ export default function Dashboard() {
         migration: migrationStatus,
       };
     });
-  }, [completedTasks]);
+  }, [completedTasks, registeredSites]);
 
   const overallProgress = useMemo(() => {
-    const totalSites = registeredSites.length;
+    const totalSites = registeredSites?.length || 0;
     if (totalSites === 0) {
       return {
         completedSites: 0,
@@ -125,7 +137,7 @@ export default function Dashboard() {
       preparationPercent: Math.round((preparationCompleted / totalSites) * 100),
       migrationPercent: Math.round((migrationCompleted / totalSites) * 100),
     };
-  }, [siteProgress]);
+  }, [siteProgress, registeredSites]);
 
 
   return (
@@ -139,7 +151,7 @@ export default function Dashboard() {
           <CardContent>
             <div className="text-2xl font-bold">
               <span className="text-green-500">{overallProgress.completedSites}</span>
-              <span className="text-muted-foreground">/{registeredSites.length}</span>
+              <span className="text-muted-foreground">/{registeredSites?.length || 0}</span>
             </div>
             <p className="text-xs text-muted-foreground">
               Sites concluídos / Cadastrados
@@ -156,7 +168,7 @@ export default function Dashboard() {
           <CardContent>
             <div className="text-2xl font-bold">{overallProgress.planningPercent}%</div>
             <p className="text-xs text-muted-foreground">
-              {siteProgress.filter(p => p.planning === 'Completo').length} de {registeredSites.length} sites concluídos
+              {siteProgress.filter(p => p.planning === 'Completo').length} de {registeredSites?.length || 0} sites concluídos
             </p>
           </CardContent>
         </Card>
@@ -170,7 +182,7 @@ export default function Dashboard() {
           <CardContent>
             <div className="text-2xl font-bold">{overallProgress.preparationPercent}%</div>
              <p className="text-xs text-muted-foreground">
-              {siteProgress.filter(p => p.preparation === 'Completo').length} de {registeredSites.length} sites concluídos
+              {siteProgress.filter(p => p.preparation === 'Completo').length} de {registeredSites?.length || 0} sites concluídos
             </p>
           </CardContent>
         </Card>
@@ -184,7 +196,7 @@ export default function Dashboard() {
           <CardContent>
             <div className="text-2xl font-bold">{overallProgress.migrationPercent}%</div>
             <p className="text-xs text-muted-foreground">
-              {siteProgress.filter(p => p.migration === 'Completo').length} de {registeredSites.length} sites concluídos
+              {siteProgress.filter(p => p.migration === 'Completo').length} de {registeredSites?.length || 0} sites concluídos
             </p>
           </CardContent>
         </Card>
@@ -208,6 +220,7 @@ export default function Dashboard() {
                 </TableRow>
               </TableHeader>
               <TableBody>
+                {sitesLoading && <TableRow><TableCell colSpan={4} className="text-center">Carregando...</TableCell></TableRow>}
                 {siteProgress.map((site) => (
                   <TableRow key={site.id}>
                     <TableCell className="font-medium">{site.siteName}</TableCell>
@@ -235,3 +248,5 @@ export default function Dashboard() {
     </div>
   );
 }
+
+    

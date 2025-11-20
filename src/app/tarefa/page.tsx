@@ -19,10 +19,13 @@ import { Badge } from "@/components/ui/badge"
 import { CheckCircle2, Circle, ArrowLeft, RotateCcw, Play, Pause, Square, Calendar } from 'lucide-react'
 import { FinalReport } from "@/components/final-report"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { registeredSites, type SiteEntry } from "@/lib/registered-sites"
+import type { SiteEntry } from "@/lib/registered-sites"
 import { unifiedTasks } from "@/lib/tasks-data"
 import { PageHeader } from "@/components/page-header"
 import { Label } from "@/components/ui/label"
+import { useCollection, useFirestore, useMemoFirebase } from "@/firebase"
+import { collection, doc, query } from 'firebase/firestore'
+
 
 // Interface para o timer
 interface PhaseTimer {
@@ -35,22 +38,27 @@ interface PhaseTimer {
 export default function UnifiedTasksPage() {
   const searchParams = useSearchParams();
   const siteIdFromQuery = searchParams.get('siteId');
+  const firestore = useFirestore();
 
   const [completedItems, setCompletedItems] = useState<Set<string>>(new Set())
   const [timers, setTimers] = useState<Record<string, PhaseTimer>>({})
   const [selectedSite, setSelectedSite] = useState<SiteEntry | null>(null)
   const [activePhase, setActivePhase] = useState<string | null>(null)
 
+  const sitesQuery = useMemoFirebase(() => {
+    if (!firestore) return null;
+    return query(collection(firestore, 'agencias'));
+  }, [firestore]);
+  const { data: registeredSites, isLoading: sitesLoading } = useCollection<SiteEntry>(sitesQuery);
+
+
   // Initialize site and phase from URL params
   useEffect(() => {
-    if (siteIdFromQuery) {
+    if (siteIdFromQuery && registeredSites) {
         const site = registeredSites.find(s => s.id.toString() === siteIdFromQuery) || null;
         setSelectedSite(site);
-        // If you want to go directly to a phase, you'd need a phase param as well
-        // e.g., const phaseFromQuery = searchParams.get('phase');
-        // setActivePhase(phaseFromQuery);
     }
-  }, [siteIdFromQuery]);
+  }, [siteIdFromQuery, registeredSites]);
 
   // Filtra tarefas baseado na fase selecionada
   const filteredTasks = activePhase
@@ -68,26 +76,33 @@ export default function UnifiedTasksPage() {
   }, {} as Record<string, typeof unifiedTasks>)
 
   useEffect(() => {
-    const saved = localStorage.getItem("unified-tasks-checklist")
+    if (!selectedSite) return;
+    const saved = localStorage.getItem(`tasks-${selectedSite.id}`);
     if (saved) {
       setCompletedItems(new Set(JSON.parse(saved)))
+    } else {
+      setCompletedItems(new Set());
     }
 
-    const savedTimers = localStorage.getItem("unified-tasks-timers")
+    const savedTimers = localStorage.getItem(`timers-${selectedSite.id}`)
     if (savedTimers) {
       setTimers(JSON.parse(savedTimers))
+    } else {
+      setTimers({});
     }
-  }, [])
+  }, [selectedSite])
 
   useEffect(() => {
-    // Notify other tabs/windows of the change
+    if (!selectedSite) return;
+    localStorage.setItem(`tasks-${selectedSite.id}`, JSON.stringify([...completedItems]))
     window.dispatchEvent(new Event('storage'));
-    localStorage.setItem("unified-tasks-checklist", JSON.stringify([...completedItems]))
-  }, [completedItems])
+  }, [completedItems, selectedSite])
 
   useEffect(() => {
-    localStorage.setItem("unified-tasks-timers", JSON.stringify(timers))
-  }, [timers])
+    if (!selectedSite) return;
+    localStorage.setItem(`timers-${selectedSite.id}`, JSON.stringify(timers))
+  }, [timers, selectedSite])
+
 
   // Atualiza os timers a cada segundo
   useEffect(() => {
@@ -111,6 +126,7 @@ export default function UnifiedTasksPage() {
   }, [])
 
   const handleSiteChange = (siteId: string) => {
+    if (!registeredSites) return;
     const site = registeredSites.find(s => s.id.toString() === siteId) || null
     setSelectedSite(site)
     setActivePhase(null) // Reset phase when site changes
@@ -128,11 +144,13 @@ export default function UnifiedTasksPage() {
   };
 
   const toggleItem = (id: string) => {
+    if (!selectedSite) return;
+    const itemId = `${selectedSite.id}-${id}`;
     const newCompleted = new Set(completedItems)
-    if (newCompleted.has(id)) {
-      newCompleted.delete(id)
+    if (newCompleted.has(itemId)) {
+      newCompleted.delete(itemId)
     } else {
-      newCompleted.add(id)
+      newCompleted.add(itemId)
     }
     setCompletedItems(newCompleted)
   }
@@ -170,18 +188,30 @@ export default function UnifiedTasksPage() {
   }
 
   const resetChecklist = () => {
+    if (!selectedSite) return;
     if (confirm("Tem certeza que deseja resetar todo o checklist para este site?")) {
       setCompletedItems(new Set())
       setTimers({})
+      localStorage.removeItem(`tasks-${selectedSite.id}`);
+      localStorage.removeItem(`timers-${selectedSite.id}`);
     }
   }
 
   const getPhaseProgress = (phase: string) => {
+    if (!selectedSite) return 0;
     const phaseTasks = unifiedTasks.filter(task => task.phase === phase)
     if (phaseTasks.length === 0) return 0;
-    const completed = phaseTasks.filter(task => completedItems.has(task.id)).length
+    const completed = phaseTasks.filter(task => completedItems.has(`${selectedSite.id}-${task.id}`)).length
     return (completed / phaseTasks.length) * 100
   }
+  
+  const formatTime = (ms: number) => {
+    const totalSeconds = Math.floor(ms / 1000);
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  };
 
   const phaseCards = [
     { id: 'planejamento', title: 'Planejamento', date: selectedSite?.planejamento.date },
@@ -200,18 +230,20 @@ export default function UnifiedTasksPage() {
         <main className="container mx-auto px-4 py-8 md:px-6">
           <div className="max-w-md mx-auto mb-8">
             <Label className="text-sm font-medium mb-2 block">Selecione um Site</Label>
-            <Select onValueChange={handleSiteChange} value={selectedSite?.id.toString()}>
-              <SelectTrigger>
-                <SelectValue placeholder="Escolha um site..." />
-              </SelectTrigger>
-              <SelectContent>
-                {registeredSites.map(site => (
-                  <SelectItem key={site.id} value={site.id.toString()}>
-                    {site.sigla} - {site.descricaoBreve}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            {sitesLoading ? <p>Carregando sites...</p> : 
+              <Select onValueChange={handleSiteChange} value={selectedSite?.id.toString()}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Escolha um site..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {registeredSites?.map(site => (
+                    <SelectItem key={site.id} value={site.id.toString()}>
+                      {site.sigla} - {site.descricaoBreve}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            }
           </div>
 
           {selectedSite && (
@@ -220,6 +252,7 @@ export default function UnifiedTasksPage() {
                 <Card key={phase.id} className="flex flex-col">
                   <CardHeader>
                     <CardTitle>{phase.title}</CardTitle>
+                     <Progress value={getPhaseProgress(phase.id)} className="mt-4 h-2" />
                   </CardHeader>
                   <CardContent className="flex-grow">
                     <div className="flex items-center text-sm text-muted-foreground">
@@ -253,6 +286,10 @@ export default function UnifiedTasksPage() {
                     <ArrowLeft className="mr-2 size-4" />
                     Voltar para Fases
                 </Button>
+                 <Button variant="destructive" size="sm" onClick={resetChecklist}>
+                    <RotateCcw className="mr-2 size-4" />
+                    Resetar Checklist
+                </Button>
             </div>
         </div>
 
@@ -274,7 +311,7 @@ export default function UnifiedTasksPage() {
                       <CardTitle className="flex items-center gap-2">
                         {phaseTitle}
                         <Badge variant="secondary">
-                          {tasks.filter(task => completedItems.has(task.id)).length}/{tasks.length}
+                          {tasks.filter(task => completedItems.has(`${selectedSite?.id}-${task.id}`)).length}/{tasks.length}
                         </Badge>
                       </CardTitle>
                       <CardDescription>
@@ -287,7 +324,7 @@ export default function UnifiedTasksPage() {
                 <CardContent>
                   <div className="space-y-3">
                     {tasks.map((task) => {
-                      const isCompleted = completedItems.has(task.id)
+                      const isCompleted = completedItems.has(`${selectedSite?.id}-${task.id}`)
                       
                       return (
                         <div
