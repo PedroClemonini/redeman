@@ -51,7 +51,7 @@ export function TimecardGrid({ analistas, nomes }: TimecardGridProps) {
       const newData = JSON.parse(JSON.stringify(prevData));
       const week = '17/11 a 22/11/2025';
       
-      // Initialize data structure if it doesn't exist for the current analyst and week
+      // Initialize data structure if it doesn't exist
       if (!newData[currentAnalista]) {
         newData[currentAnalista] = {};
       }
@@ -59,7 +59,6 @@ export function TimecardGrid({ analistas, nomes }: TimecardGridProps) {
         newData[currentAnalista][week] = Array(6).fill(null).map(() => Array(16).fill(false));
       }
       
-      // Update the specific hour for the specific day
       const daySchedule = [...(newData[currentAnalista][week][dayIndex] || Array(16).fill(false))];
       daySchedule[hour - 8] = checked;
       
@@ -135,7 +134,7 @@ export function TimecardGrid({ analistas, nomes }: TimecardGridProps) {
               <TableRow>
                 <TableHead className="w-[100px] border-r p-2">Hora</TableHead>
                 {days.map((day, i) => (
-                  <TableHead key={day} className="text-center p-2">{`${day} (${dailyTotals[i]}h)`}</TableHead>
+                  <TableHead key={day} className="text-center p-2">{`${day}`}</TableHead>
                 ))}
               </TableRow>
             </TableHeader>
