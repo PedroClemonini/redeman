@@ -206,7 +206,7 @@ export default function UnifiedTasksPage() {
     if (!selectedSite) return 0;
     const phaseTasks = unifiedTasks.filter(task => task.phase === phase)
     if (phaseTasks.length === 0) return 0;
-    const completed = phaseTasks.filter(task => completedItems.has(`${selectedSite.id}-${task.id}`)).length
+    const completed = phaseTasks.filter(task => completedItems.has(`${selectedSite?.id}-${task.id}`)).length
     return (completed / phaseTasks.length) * 100
   }
   
@@ -288,19 +288,6 @@ export default function UnifiedTasksPage() {
                 <CardContent className="space-y-4">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
-                            <Label htmlFor="site-search">Buscar por Sigla/Nome</Label>
-                             <div className="relative">
-                                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                                <Input 
-                                    id="site-search"
-                                    placeholder="Ex: ARN01, Arniqueiras..." 
-                                    className="pl-8"
-                                    value={siteSearchTerm}
-                                    onChange={(e) => setSiteSearchTerm(e.target.value)}
-                                />
-                            </div>
-                        </div>
-                        <div>
                             <Label htmlFor="phase-filter">Filtrar por Etapa</Label>
                             <Select value={phaseFilter} onValueChange={setPhaseFilter}>
                                 <SelectTrigger id="phase-filter">
@@ -314,24 +301,27 @@ export default function UnifiedTasksPage() {
                                 </SelectContent>
                             </Select>
                         </div>
+                         <div>
+                            <Label htmlFor="site-select">Selecione um Site</Label>
+                            {sitesLoading ? <p className="text-sm text-muted-foreground mt-2">Carregando sites...</p> : 
+                            <Select onValueChange={handleSiteChange} value={selectedSite?.id.toString()}>
+                                <SelectTrigger id="site-select">
+                                <SelectValue placeholder="Escolha um site da lista..." />
+                                </SelectTrigger>
+                                <SelectContent>
+                                {filteredSitesForSelection.length > 0 ? filteredSitesForSelection.map(site => (
+                                    <SelectItem key={site.id} value={site.id.toString()}>
+                                    {`${site.sigla} - ${site.descricaoBreve} (${getCurrentPhaseName(site)})`}
+                                    </SelectItem>
+                                )) : <div className="p-4 text-sm text-center text-muted-foreground">Nenhum site encontrado.</div>}
+                                </SelectContent>
+                            </Select>
+                            }
+                        </div>
                     </div>
                      <div>
-                        <Label htmlFor="site-select">Selecione um Site</Label>
-                        {sitesLoading ? <p className="text-sm text-muted-foreground mt-2">Carregando sites...</p> : 
-                        <Select onValueChange={handleSiteChange} value={selectedSite?.id.toString()}>
-                            <SelectTrigger id="site-select">
-                            <SelectValue placeholder="Escolha um site da lista..." />
-                            </SelectTrigger>
-                            <SelectContent>
-                            {filteredSitesForSelection.length > 0 ? filteredSitesForSelection.map(site => (
-                                <SelectItem key={site.id} value={site.id.toString()}>
-                                {`${site.sigla} - ${site.descricaoBreve} (${getCurrentPhaseName(site)})`}
-                                </SelectItem>
-                            )) : <div className="p-4 text-sm text-center text-muted-foreground">Nenhum site encontrado.</div>}
-                            </SelectContent>
-                        </Select>
-                        }
-                    </div>
+                           
+                        </div>
                 </CardContent>
             </Card>
 
@@ -512,3 +502,4 @@ export default function UnifiedTasksPage() {
     
 
     
+
