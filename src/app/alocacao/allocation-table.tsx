@@ -132,7 +132,7 @@ export function AllocationTable({ alocacao, disponibilidade, analistas, nomes }:
                           const borderClass = periodIndex === 0 ? 'border-l' : (periodIndex === 2 ? 'border-r' : 'border-x');
 
                           return (
-                            <TableCell key={`${data}-${periodName}`} className={cn("text-center align-top p-2 min-w-[150px]", cellClass, borderClass)}>
+                            <TableCell key={`${data}-${periodName}`} className={cn("text-center align-top p-2 min-w-[100px]", cellClass, borderClass)}>
                               {cellContent}
                             </TableCell>
                           );
