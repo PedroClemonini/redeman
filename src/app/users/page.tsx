@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { PageHeader } from '@/components/page-header';
 import { Button } from '@/components/ui/button';
 import {
@@ -35,7 +35,7 @@ import {
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Badge } from '@/components/ui/badge';
-import { Download, MoreHorizontal, Plus, Upload } from 'lucide-react';
+import { Download, MoreHorizontal, Plus, Upload, ArrowUpDown } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   Dialog,
@@ -60,6 +60,9 @@ import { collection, doc, query } from 'firebase/firestore';
 import { setDocumentNonBlocking, updateDocumentNonBlocking, deleteDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { ImportDialog } from '@/components/import-dialog';
 import { useToast } from '@/hooks/use-toast';
+import { cn } from '@/lib/utils';
+
+type SortKey = keyof User;
 
 export default function UsersPage() {
   const firestore = useFirestore();
@@ -75,6 +78,49 @@ export default function UsersPage() {
   const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [sortConfig, setSortConfig] = useState<{ key: SortKey | null; direction: 'ascending' | 'descending' }>({ key: 'nome', direction: 'ascending' });
+
+  const sortedUsers = useMemo(() => {
+    let sortableUsers = users ? [...users] : [];
+    if (sortConfig.key !== null) {
+      sortableUsers.sort((a, b) => {
+        const aValue = a[sortConfig.key!];
+        const bValue = b[sortConfig.key!];
+        
+        if (aValue === undefined || aValue === null) return 1;
+        if (bValue === undefined || bValue === null) return -1;
+        
+        if (aValue < bValue) {
+          return sortConfig.direction === 'ascending' ? -1 : 1;
+        }
+        if (aValue > bValue) {
+          return sortConfig.direction === 'ascending' ? 1 : -1;
+        }
+        return 0;
+      });
+    }
+    return sortableUsers;
+  }, [users, sortConfig]);
+
+  const requestSort = (key: SortKey) => {
+    let direction: 'ascending' | 'descending' = 'ascending';
+    if (sortConfig.key === key && sortConfig.direction === 'ascending') {
+      direction = 'descending';
+    }
+    setSortConfig({ key, direction });
+  };
+
+  const getSortIcon = (key: SortKey) => {
+    if (sortConfig.key !== key) {
+      return <ArrowUpDown className="ml-2 h-4 w-4 opacity-0 group-hover:opacity-50" />;
+    }
+    return sortConfig.direction === 'ascending' ? (
+      <ArrowUpDown className="ml-2 h-4 w-4" />
+    ) : (
+      <ArrowUpDown className="ml-2 h-4 w-4" />
+    );
+  };
+
 
   const handleEditClick = (user: User) => {
     setSelectedUser(user);
@@ -116,9 +162,6 @@ export default function UsersPage() {
       status: formData.get('status') as User['status'],
     };
     
-    // Note: Password change logic should be handled separately and securely
-    // For this prototype, we are not implementing the actual password update.
-    
     const userRef = doc(firestore, 'users', selectedUser.id);
     updateDocumentNonBlocking(userRef, updatedUser);
 
@@ -140,7 +183,7 @@ export default function UsersPage() {
     
     const newDocRef = doc(usersCollection);
 
-    const newUserPayload = {
+    const newUserPayload: User = {
       id: newDocRef.id,
       nome: formData.get('name') as string,
       email: formData.get('email') as string,
@@ -190,11 +233,27 @@ export default function UsersPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Nome</TableHead>
-                <TableHead>Nível</TableHead>
-                <TableHead>Função</TableHead>
+                <TableHead>
+                    <button onClick={() => requestSort('nome')} className="group flex items-center">
+                        Nome {getSortIcon('nome')}
+                    </button>
+                </TableHead>
+                <TableHead>
+                    <button onClick={() => requestSort('nivel')} className="group flex items-center">
+                        Nível {getSortIcon('nivel')}
+                    </button>
+                </TableHead>
+                <TableHead>
+                    <button onClick={() => requestSort('cargo')} className="group flex items-center">
+                        Função {getSortIcon('cargo')}
+                    </button>
+                </TableHead>
                 <TableHead>Telefone</TableHead>
-                <TableHead>Status</TableHead>
+                <TableHead>
+                    <button onClick={() => requestSort('status')} className="group flex items-center">
+                        Status {getSortIcon('status')}
+                    </button>
+                </TableHead>
                 <TableHead>
                   <span className="sr-only">Ações</span>
                 </TableHead>
@@ -206,12 +265,12 @@ export default function UsersPage() {
                     <TableCell colSpan={6} className='text-center text-muted-foreground'>Carregando usuários...</TableCell>
                 </TableRow>
               )}
-              {!isLoading && users?.length === 0 && (
+              {!isLoading && sortedUsers.length === 0 && (
                 <TableRow>
                     <TableCell colSpan={6} className='text-center text-muted-foreground'>Nenhum usuário cadastrado.</TableCell>
                 </TableRow>
               )}
-              {users && users.map((user) => (
+              {sortedUsers.map((user) => (
                 <TableRow key={user.id}>
                   <TableCell className="font-medium">
                     <div className="flex items-center gap-3">
@@ -235,11 +294,11 @@ export default function UsersPage() {
                   <TableCell>{user.telefone}</TableCell>
                   <TableCell>
                     <Badge variant={user.status === 'ativo' ? 'default' : 'destructive'}
-                      className={
+                      className={cn('capitalize',
                         user.status === 'ativo'
                           ? 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-400'
                           : 'bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-400'
-                      }>
+                      )}>
                       {user.status}
                     </Badge>
                   </TableCell>
