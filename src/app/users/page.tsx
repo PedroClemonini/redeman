@@ -126,35 +126,41 @@ export default function UsersPage() {
     setSelectedUser(null);
   };
 
-  const handleAddSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleAddSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!firestore) return;
-    
+
     const formData = new FormData(event.currentTarget);
     const usersCollection = collection(firestore, 'users');
-    const newDocRef = doc(usersCollection);
-
-    const newUser: User = {
-      id: newDocRef.id,
+    
+    // Create the user object without an ID first
+    const newUserPayload = {
       nome: formData.get('name') as string,
       email: formData.get('email') as string,
       cargo: formData.get('cargo') as User['cargo'],
       nivel: formData.get('nivel') as User['nivel'],
       status: formData.get('status') as User['status'],
     };
-    
-    // Use setDoc with the new ID
-    const userDocRef = doc(firestore, 'users', newUser.id);
-    addDocumentNonBlocking(userDocRef, newUser);
 
+    // Let addDocumentNonBlocking handle ID generation
+    const docRefPromise = addDocumentNonBlocking(usersCollection, newUserPayload);
+    
+    // We can get the ID from the returned promise if needed, but it's handled by the function.
+    const newDocRef = await docRefPromise;
+
+    // Update the document with its own ID
+    if (newDocRef) {
+        updateDocumentNonBlocking(newDocRef, { id: newDocRef.id });
+    }
 
     toast({
       title: 'Usuário Adicionado',
-      description: `${newUser.nome} foi adicionado com sucesso.`,
+      description: `${newUserPayload.nome} foi adicionado com sucesso.`,
     });
 
     setIsAddDialogOpen(false);
   };
+
 
   return (
     <div>
