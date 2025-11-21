@@ -204,7 +204,7 @@ export default function UsersPage() {
     setIsAddDialogOpen(false);
   };
 
-  const defaultAvatar = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAACfUlEQVRYR+2Wz0sUYRzHP3/vjM6yK05CSguR4qEQFvQDpWlI8dDDR/8DCSk8dGgoiIeKPAQRRARRKLQgHlJKS0lJkV5CehQpXWdmdt5jZ3ZnZtf5bO/B8z7v8z7P+/N93x8eRjCg/g9I9YcK/M8PyH59+o8/xZcWnxxr5dC8qjGqZXyVquWk+k6aB6T6YFz5JflX2l+svxReeYQJ4d0J3YfHj6D+fPCu+bQnOqD2jc1YnhYcv6nUvHsm70U/D5+lK4a6Ak0y3YUd7s+K9fQ6w4Y0D51y//9Cg/PmjgWqI4fXFjYv352y310TKVx/LBCW5/c54s53n88s8iP8/Vd3hNaD/pAFpyAyuMvLCPdDtkfAEsD2o/hL8dM/X2/i70eX+3+nJqJGBGgA3gSgKuyz2A/x4c449t5Uv36d2c49uXyB/b2/i8NnEV3m/X6o/fX/Hl3fL1H+g/v28eF6uA1wD9x2/w4I5j3/cZfXz+vP/u7C+/X9zs/L1Ifv3E/v6iYgGAAiYAdgT4AYB/BsBfAHgA4P/GgO9sB7gBwFbgaq/uFih8P8S8L8T793w8UDD/Z4Bqj8P/0/o/fL14gO8BwB/xMgA/AkBvAQSAM4qU+aEEeP5WwO0mAPo0AJ/j/ZcD6v2AK4DdBOAIAE8Clks2n893LgKYA1bA+78w4IsA7ADwFwBuFqh+fQE3gNcA3BGAo/Fm3b08fzrwGgAHAJzH0K8D2J8BvAVgAHA3gC8DGFeA7z8B+BTA93vVb+IAfA/gFwB3gAcA3wK4uQLvPwB4B+DuBqj+/QE3gGcAvgTwL4C/A/g3gOcA/gxwG/BrgK4G6LcDvAD4MMD/pwB/Ange4NcAnwI4BPi3D+BvAf4O4EcAZwI453L6+wBGAIAfAngfwK8B/A3gpwD+CfAnAOcD3AVwL8BXARwG8K8D/gZwF8A7D9D3AK4BfAfgiwD+CuBfB+wD/A1gFsC/DPgjwD8AfAPwOQAPAjgD4DcAdx0g7wDcA3gEYBmA8QC2AnAPgC0AmwC2AbgE4A7AJgCPAbgI4GkAxwM4DeDRkEwBcB/gDIBfAmARgC0AjwG4EOBGAI8C2AvgRQAPAq8CuBvAswDuAtgG4GkARwI4BfBPgN8C+AvAhwC+DPAYwK8BvAq8CuAtAOcDfA7gSgBvAwgA/3k0j03gYgH2y//9kXwA2wAfAQgAfgP4Yw/AX//iB3i+AcCqgL/B/4n/A20fAbT5hYF2AAAAAElFTkSuQmCC";
+  const defaultAvatar = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjQiIGN5PSIyNCIgcj0iMjMiIHN0cm9rZT0iIzBDNEVGRiIgc3Ryb2tlLXdpZHRoPSIyIi8+CjxwYXRoIGQ9Ik0yMy45OTk5IDM4LjY2NjZDMjkuMTEzNiAzOC42NjY2IDMzLjMyNzIgMzUuNDU2NyAzNC42NjA3IDIxLjMzMzJDMzAuNTYwMiAyMS4zMzMyIDI3LjQ1NTUgMjMuNTk5OCAyMy45OTk5IDI3LjMzMzJDMjAuNTQ0MyAyMy41OTk4IDE3LjQzOTYgMjEuMzMzMiAxMy4zMzkxIDIxLjMzMzJDMTQuNjcyNiAzNS40NTY3IDE4Ljg4NjIgMzguNjY2NiAyMy45OTk5IDM4LjY2NjZaIiBmaWxsPSIjMEM0RUZGIi8+CjxwYXRoIGQ9Ik0yNCAxMkM0MC41IDYgNDAgMzggMjQgMzgiIHN0cm9rZT0iIzBDNEVGRiIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KPGNpcmNsZSBjeD0iMjQiIGN5PSIxMiIgcj0iNCIgZmlsbD0iIzBDNEVGRiIvPgo8L3N2Zz4K";
 
   return (
     <div>
@@ -330,7 +330,7 @@ export default function UsersPage() {
       
       {/* Edit User Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-2xl">
           <DialogHeader>
             <DialogTitle>Editar Usuário</DialogTitle>
             <DialogDescription>
@@ -339,23 +339,27 @@ export default function UsersPage() {
           </DialogHeader>
           {selectedUser && (
             <form onSubmit={handleEditSubmit} className="grid gap-4 py-4">
-              <div className="space-y-2">
-                <Label htmlFor="name">Nome</Label>
-                <Input id="name" name="name" defaultValue={selectedUser.nome} />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                    <Label htmlFor="name">Nome</Label>
+                    <Input id="name" name="name" defaultValue={selectedUser.nome} />
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="email">Email</Label>
+                    <Input id="email" name="email" type="email" defaultValue={selectedUser.email} />
+                </div>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input id="email" name="email" type="email" defaultValue={selectedUser.email} />
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                    <Label htmlFor="phone">Telefone</Label>
+                    <Input id="phone" name="phone" type="tel" defaultValue={selectedUser.telefone} />
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="photoUrl">URL da Foto</Label>
+                    <Input id="photoUrl" name="photoUrl" type="url" defaultValue={selectedUser.fotoUrl} placeholder="https://..." />
+                </div>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="phone">Telefone</Label>
-                <Input id="phone" name="phone" type="tel" defaultValue={selectedUser.telefone} />
-              </div>
-               <div className="space-y-2">
-                <Label htmlFor="photoUrl">URL da Foto</Label>
-                <Input id="photoUrl" name="photoUrl" type="url" defaultValue={selectedUser.fotoUrl} placeholder="https://..." />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="space-y-2">
                     <Label htmlFor="role">Função</Label>
                     <Select name="cargo" defaultValue={selectedUser.cargo}>
@@ -379,18 +383,18 @@ export default function UsersPage() {
                       </SelectContent>
                     </Select>
                 </div>
+                 <div className="space-y-2">
+                    <Label htmlFor="status">Status</Label>
+                    <Select name="status" defaultValue={selectedUser.status}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="ativo">Ativo</SelectItem>
+                        <SelectItem value="inativo">Inativo</SelectItem>
+                    </SelectContent>
+                    </Select>
+                </div>
               </div>
-               <div className="space-y-2">
-                <Label htmlFor="status">Status</Label>
-                <Select name="status" defaultValue={selectedUser.status}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="ativo">Ativo</SelectItem>
-                    <SelectItem value="inativo">Inativo</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                  <div className="space-y-2">
                     <Label htmlFor="newPassword">Nova Senha</Label>
                     <Input id="newPassword" name="newPassword" type="password" placeholder="Deixe em branco para não alterar"/>
@@ -411,7 +415,7 @@ export default function UsersPage() {
 
       {/* Add User Dialog */}
       <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-2xl">
           <DialogHeader>
             <DialogTitle>Adicionar Novo Usuário</DialogTitle>
             <DialogDescription>
@@ -419,23 +423,27 @@ export default function UsersPage() {
             </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleAddSubmit} className="grid gap-4 py-4">
-             <div className="space-y-2">
-              <Label htmlFor="add-name">Nome</Label>
-              <Input id="add-name" name="name" placeholder="Nome completo" required />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                    <Label htmlFor="add-name">Nome</Label>
+                    <Input id="add-name" name="name" placeholder="Nome completo" required />
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="add-email">Email</Label>
+                    <Input id="add-email" name="email" type="email" placeholder="email@v2mr.com" required />
+                </div>
             </div>
-             <div className="space-y-2">
-              <Label htmlFor="add-email">Email</Label>
-              <Input id="add-email" name="email" type="email" placeholder="email@v2mr.com" required />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                    <Label htmlFor="add-phone">Telefone</Label>
+                    <Input id="add-phone" name="phone" type="tel" placeholder="(00) 00000-0000" />
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="add-photoUrl">URL da Foto</Label>
+                    <Input id="add-photoUrl" name="photoUrl" type="url" placeholder="https://..." />
+                </div>
             </div>
-             <div className="space-y-2">
-              <Label htmlFor="add-phone">Telefone</Label>
-              <Input id="add-phone" name="phone" type="tel" placeholder="(00) 00000-0000" />
-            </div>
-             <div className="space-y-2">
-                <Label htmlFor="add-photoUrl">URL da Foto</Label>
-                <Input id="add-photoUrl" name="photoUrl" type="url" placeholder="https://..." />
-              </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="space-y-2">
                     <Label htmlFor="add-role">Função</Label>
                     <Select name="cargo" defaultValue="Analista" required>
@@ -459,18 +467,18 @@ export default function UsersPage() {
                         </SelectContent>
                     </Select>
                 </div>
+                 <div className="space-y-2">
+                    <Label htmlFor="add-status">Status</Label>
+                    <Select name="status" defaultValue="ativo" required>
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                        <SelectItem value="ativo">Ativo</SelectItem>
+                        <SelectItem value="inativo">Inativo</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
             </div>
-             <div className="space-y-2">
-              <Label htmlFor="add-status">Status</Label>
-              <Select name="status" defaultValue="ativo" required>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="ativo">Ativo</SelectItem>
-                  <SelectItem value="inativo">Inativo</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-             <div className="grid grid-cols-2 gap-4">
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                  <div className="space-y-2">
                     <Label htmlFor="add-password">Senha</Label>
                     <Input id="add-password" name="password" type="password" required />
