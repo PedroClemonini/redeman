@@ -26,7 +26,7 @@ const parseDate = (dateString: string | null): string => {
   const parts = dateString.split('/');
   if (parts.length === 3) {
     const year = parts[2].length === 4 ? parts[2] : `20${parts[2]}`;
-    return `${year}-${parts[1]}-${parts[0]}`;
+    return `${year}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
   }
   return "";
 };
@@ -34,7 +34,7 @@ const parseDate = (dateString: string | null): string => {
 // Helper to parse analyst names
 const parseAnalysts = (analystString: string | null): Person[] => {
     if (!analystString) return [];
-    return analystString.split(/[/,]/).map((name, index) => ({ id: Date.now() + index, name: name.trim() }));
+    return analystString.split(/[/,]/).map((name, index) => ({ id: Date.now() + Math.random() + index, name: name.trim() }));
 };
 
 export const registeredSites: SiteEntry[] = [
@@ -113,17 +113,6 @@ export const registeredSites: SiteEntry[] = [
         planejamento: { },
         preparacao: { date: parseDate("17/11/2025"), v2mr: parseAnalysts("PAULO (N)") },
         migracao: { date: parseDate("18/11/2025"), v2mr: parseAnalysts(null) },
-        linkWhatsapp: ''
-    },
-    {
-        id: "site_8",
-        sigla: "BRS02",
-        descricaoBreve: "Feira de Santana",
-        localidade: "Bahia/BA",
-        semana: "Semana 2",
-        planejamento: { },
-        preparacao: { date: parseDate("18/11/2025"), v2mr: parseAnalysts("ABILIO (T)") },
-        migracao: { date: parseDate("19/11/2025"), v2mr: parseAnalysts("PAULO") },
         linkWhatsapp: ''
     },
     {
@@ -233,8 +222,8 @@ export const registeredSites: SiteEntry[] = [
         semana: "Semana 3",
         planejamento: { },
         preparacao: { date: parseDate("19/11/2025"), v2mr: parseAnalysts("RAISSA") },
-        migracao: { date: parseDate("21/11/2025"), v2mr: parseAnalysts("PAULO SILVA / NICOLAS") }, 
-        linkWhatsapp: ''
+        migracao: { date: parseDate("21/11/2025"), v2mr: parseAnalysts("PAULO SILVA/NICOLAS") }, 
+        linkWhatsapp: '' 
     },
     {
         id: "site_19",
@@ -243,7 +232,7 @@ export const registeredSites: SiteEntry[] = [
         localidade: "Goiás/GO",
         semana: "Semana 3",
         planejamento: { },
-        preparacao: { date: parseDate("20/11/2025"), v2mr: parseAnalysts("RAISSA / ABILIO") },
+        preparacao: { date: parseDate("20/11/2025"), v2mr: parseAnalysts("RAISSA/ABILIO") },
         migracao: { date: parseDate("21/11/2025"), v2mr: parseAnalysts(null) },
         linkWhatsapp: ''
     },
@@ -266,7 +255,7 @@ export const registeredSites: SiteEntry[] = [
         semana: "Semana 3",
         planejamento: { },
         preparacao: { date: parseDate("20/11/2025"), v2mr: parseAnalysts("NICOLAS") },
-        migracao: { date: parseDate("21/11/2025"), v2mr: parseAnalysts("ABILIO / PAULO BORGES") },
+        migracao: { date: parseDate("21/11/2025"), v2mr: parseAnalysts("ABILIO/PAULO BORGES") },
         linkWhatsapp: ''
     },
     {
@@ -320,7 +309,7 @@ export const registeredSites: SiteEntry[] = [
         localidade: "Rio Grande do Sul/RS",
         semana: "Semana 3",
         planejamento: { },
-        preparacao: { date: parseDate("21/11/2025"), v2mr: parseAnalysts("LAILTON / HELOISA") },
+        preparacao: { date: parseDate("21/11/2025"), v2mr: parseAnalysts("LAILTON/HELOISA") },
         migracao: { date: parseDate("22/11/2025"), v2mr: parseAnalysts("SAMUEL") },
         linkWhatsapp: ''
     },
@@ -331,7 +320,7 @@ export const registeredSites: SiteEntry[] = [
         localidade: "Espírito Santo/ES",
         semana: "Semana 3",
         planejamento: { },
-        preparacao: { date: parseDate("21/11/2025"), v2mr: parseAnalysts("LUCAS / SAMUEL") },
+        preparacao: { date: parseDate("21/11/2025"), v2mr: parseAnalysts("LUCAS/SAMUEL") },
         migracao: { date: parseDate("22/11/2025"), v2mr: parseAnalysts("PAULO SILVA") },
         linkWhatsapp: ''
     },
@@ -342,7 +331,7 @@ export const registeredSites: SiteEntry[] = [
         localidade: "Minas Gerais/MG",
         semana: "Semana 3",
         planejamento: { },
-        preparacao: { date: parseDate("21/11/2025"), v2mr: parseAnalysts("LUCAS (M) / RAISSA (T)") },
+        preparacao: { date: parseDate("21/11/2025"), v2mr: parseAnalysts("LUCAS (M)/RAISSA (T)") },
         migracao: { date: parseDate("22/11/2025"), v2mr: parseAnalysts("RAISSA") },
         linkWhatsapp: ''
     },
@@ -375,7 +364,7 @@ export const registeredSites: SiteEntry[] = [
         localidade: "Piauí/PI",
         semana: "Semana 3",
         planejamento: { },
-        preparacao: { date: parseDate("21/11/2025"), v2mr: parseAnalysts("RUAN / NICOLAS") },
+        preparacao: { date: parseDate("21/11/2025"), v2mr: parseAnalysts("RUAN/NICOLAS") },
         migracao: { date: parseDate("22/11/2025"), v2mr: parseAnalysts("AUGUSTO") },
         linkWhatsapp: ''
     },
@@ -387,7 +376,7 @@ export const registeredSites: SiteEntry[] = [
         semana: "Semana 3",
         planejamento: { },
         preparacao: { },
-        migracao: { date: parseDate("22/11/2025"), v2mr: parseAnalysts("LAILTON / PEDRO CLEMONINI") },
+        migracao: { date: parseDate("22/11/2025"), v2mr: parseAnalysts("LAILTON/PEDRO CLEMONINI") },
         linkWhatsapp: ''
     }
 ];
