@@ -56,13 +56,14 @@ const modelTemplates: Record<
 // Dummy data for templates
 const userTemplateJson = `[
   {
-    "id": "usr_006",
-    "nome": "Novo Usuário",
-    "email": "novo@v2mr.com",
+    "id": "usr_007",
+    "nome": "Novo Usuário Exemplo",
+    "email": "exemplo@v2mr.com",
     "cargo": "Analista",
     "nivel": "Júnior",
     "status": "ativo",
-    "telefone": "(11) 98765-4321"
+    "telefone": "(11) 98765-4321",
+    "fotoUrl": "https://i.pravatar.cc/150?u=usr_007"
   }
 ]`;
 const siteTemplateJson = `[
@@ -103,7 +104,7 @@ const siteMigrationTemplateJson = `[
 ]`;
 
 const templateData: Record<string, { json: string; csv: string }> = {
-  User: { json: userTemplateJson, csv: 'id,nome,email,cargo,nivel,status,telefone' },
+  User: { json: userTemplateJson, csv: 'id,nome,email,cargo,nivel,status,telefone,fotoUrl' },
   Site: { json: siteTemplateJson, csv: 'id,codigo,nome,cidade,estado,endereco,qtd_switches,data_prevista,status' },
   Switch: { json: switchTemplateJson, csv: 'id,numero_serie,modelo,hostname,agenciaId,role,status,vrp_version,pat_version,observacoes' },
   SiteMigration: { json: siteMigrationTemplateJson, csv: 'sigla,descricaoBreve,localidade,semana' },
