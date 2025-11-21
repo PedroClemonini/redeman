@@ -33,6 +33,7 @@ import {
   Lock,
   KeyRound,
   UserCog,
+  Workflow,
 } from 'lucide-react';
 
 const menuItems = [
@@ -83,6 +84,11 @@ const managementMenuItems = [
         href: '/users',
         label: 'Users',
         icon: Users,
+    },
+    {
+        href: '/integrations',
+        label: 'Integrações',
+        icon: Workflow,
     },
 ]
 
