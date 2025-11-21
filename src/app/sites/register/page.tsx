@@ -18,7 +18,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { X, Plus, ListTodo, Upload } from 'lucide-react';
+import { X, Plus, ListTodo, Upload, Search } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { SiteEntry, Person } from '@/lib/registered-sites';
 import { unifiedTasks } from '@/lib/tasks-data';
@@ -108,6 +108,8 @@ export default function RegisterSitePage() {
 
   const [completedTasks, setCompletedTasks] = useState<Set<string>>(new Set());
   const [isImportMigrationOpen, setIsImportMigrationOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+
 
   useEffect(() => {
     if (siteId && existingSite) {
@@ -276,14 +278,37 @@ export default function RegisterSitePage() {
 
 
   const sitesByWeek = useMemo(() => {
-    return siteProgress.reduce((acc, site) => {
+    const filteredSites = siteProgress.filter(site => {
+        if (searchTerm === '') return true;
+        const searchLower = searchTerm.toLowerCase();
+
+        const formatDateForSearch = (dateStr: string) => {
+            if (!dateStr) return '';
+            const [year, month, day] = dateStr.split('-');
+            return `${day}/${month}/${year}`;
+        }
+        
+        const datePlanejamento = formatDateForSearch(site.planejamento?.date || '');
+        const datePreparacao = formatDateForSearch(site.preparacao?.date || '');
+        const dateMigracao = formatDateForSearch(site.migracao?.date || '');
+
+        return (
+            site.sigla.toLowerCase().includes(searchLower) ||
+            site.descricaoBreve.toLowerCase().includes(searchLower) ||
+            datePlanejamento.includes(searchLower) ||
+            datePreparacao.includes(searchLower) ||
+            dateMigracao.includes(searchLower)
+        );
+    });
+
+    return filteredSites.reduce((acc, site) => {
       if (!acc[site.semana]) {
         acc[site.semana] = [];
       }
       acc[site.semana].push(site);
       return acc;
     }, {} as Record<string, typeof siteProgress>);
-  }, [siteProgress]);
+  }, [siteProgress, searchTerm]);
 
   const AnalystSelector = ({ list, setter, buttonColor }: { list: Person[], setter: React.Dispatch<React.SetStateAction<Person[]>>, buttonColor: string }) => (
     <div>
@@ -359,22 +384,22 @@ export default function RegisterSitePage() {
                 <div className="space-y-4">
                   <CardTitle>Informações Gerais</CardTitle>
                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="space-y-2">
+                    <div>
                         <Label htmlFor="sigla">SIGLA (máx. 5)</Label>
                         <Input id="sigla" value={sigla} onChange={(e) => setSigla(e.target.value)} maxLength={5} placeholder="ex: ARN01" required />
                         {sigla.length > 5 && <p className="text-red-500 text-xs mt-1">Máx. 5 caracteres!</p>}
                     </div>
-                    <div className="space-y-2">
+                    <div>
                         <Label htmlFor="descricaoBreve">DESCRIÇÃO BREVE</Label>
                         <Input id="descricaoBreve" value={descricaoBreve} onChange={(e) => setDescricaoBreve(e.target.value)} placeholder="ex: Arniqueiras" required />
                     </div>
-                    <div className="space-y-2">
+                    <div>
                         <Label htmlFor="localidade">LOCALIDADE</Label>
                         <Input id="localidade" value={localidade} onChange={(e) => setLocalidade(e.target.value)} placeholder="ex: Taguatinga/DF" required />
                     </div>
                   </div>
                   <div className='grid grid-cols-1 md:grid-cols-2 gap-4 items-end'>
-                    <div className="space-y-2">
+                    <div>
                       <Label htmlFor="semanaSelect">SEMANA</Label>
                       <Select value={semana} onValueChange={setSemana} required>
                         <SelectTrigger id="semanaSelect"><SelectValue /></SelectTrigger>
@@ -391,7 +416,7 @@ export default function RegisterSitePage() {
                         Importar JSON
                     </Button>
                   </div>
-                   <div className="space-y-2">
+                   <div>
                     <Label htmlFor="linkWhatsapp">Grupo WhatsApp do Site</Label>
                     <Input id="linkWhatsapp" type="url" value={linkWhatsapp} onChange={e => setLinkWhatsapp(e.target.value)} placeholder="https://chat.whatsapp.com/..." />
                 </div>
@@ -474,7 +499,18 @@ export default function RegisterSitePage() {
       <div className="space-y-6 mt-8">
         {Object.keys(sitesByWeek).sort().map(week => (
           <div key={week}>
-            <h3 className="text-xl font-bold mb-4 text-primary">{week}</h3>
+            <div className="flex justify-between items-center mb-4">
+                <h3 className="text-xl font-bold text-primary">{week}</h3>
+                <div className="relative w-full max-w-sm">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input 
+                        placeholder="Buscar por sigla, nome, data..." 
+                        className="pl-9"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                </div>
+            </div>
             <div className="overflow-x-auto rounded-lg border border-gray-200 shadow-md bg-white">
               <table className="w-full min-w-[1200px] border-collapse text-left text-sm text-gray-600">
                 <thead className="bg-gray-50">
@@ -490,84 +526,88 @@ export default function RegisterSitePage() {
                 </thead>
                 <tbody className="divide-y divide-gray-100">
                   {sitesLoading && <tr><td colSpan={7} className='text-center p-4'>Carregando...</td></tr>}
-                  {sitesByWeek[week].map(site => {
-                    const { planningStatus, preparationStatus, migrationStatus, currentPhase, currentStatus } = site;
-                    const meetingLink = getMeetingLink(site);
-                    
-                    const analysts = site.planejamento.v2mr || site.preparacao.v2mr || site.migracao.v2mr || [];
-                    
-                    const phaseToBadgeColor: Record<string, string> = {
-                        'Planejamento': 'bg-blue-50 text-blue-700',
-                        'Preparação': 'bg-yellow-50 text-yellow-700',
-                        'Migração': 'bg-green-50 text-green-700',
-                        'Concluído': 'bg-gray-50 text-gray-700',
-                    }
+                  {sitesByWeek[week] && sitesByWeek[week].length > 0 ? (
+                    sitesByWeek[week].map(site => {
+                      const { planningStatus, preparationStatus, migrationStatus, currentPhase, currentStatus } = site;
+                      const meetingLink = getMeetingLink(site);
+                      
+                      const analysts = site.planejamento.v2mr || site.preparacao.v2mr || site.migracao.v2mr || [];
+                      
+                      const phaseToBadgeColor: Record<string, string> = {
+                          'Planejamento': 'bg-blue-50 text-blue-700',
+                          'Preparação': 'bg-yellow-50 text-yellow-700',
+                          'Migração': 'bg-green-50 text-green-700',
+                          'Concluído': 'bg-gray-50 text-gray-700',
+                      }
 
-                    return (
-                      <tr key={site.id} className="hover:bg-gray-50 transition">
-                        <td className="px-6 py-5">
-                          <div className="flex items-center gap-4">
-                            <div className="h-10 w-16 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-md flex items-center justify-center text-white font-bold text-sm tracking-wider">
-                              {site.sigla}
+                      return (
+                        <tr key={site.id} className="hover:bg-gray-50 transition">
+                          <td className="px-6 py-5">
+                            <div className="flex items-center gap-4">
+                              <div className="h-10 w-16 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-md flex items-center justify-center text-white font-bold text-sm tracking-wider">
+                                {site.sigla}
+                              </div>
+                              <div>
+                                <div className="font-semibold text-gray-900">{site.descricaoBreve}</div>
+                                <div className="text-xs text-gray-500">{site.localidade}</div>
+                              </div>
                             </div>
-                            <div>
-                              <div className="font-semibold text-gray-900">{site.descricaoBreve}</div>
-                              <div className="text-xs text-gray-500">{site.localidade}</div>
+                          </td>
+                          <td className="px-6 py-5">
+                            <span className={cn("inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold", phaseToBadgeColor[currentPhase])}>
+                              {currentPhase}
+                            </span>
+                          </td>
+                          <td className="px-6 py-5">
+                            <span className={cn("inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold", statusClasses[currentStatus])}>
+                              <span className={cn("h-2 w-2 rounded-full", statusColors[currentStatus])}></span>
+                              {currentStatus}
+                            </span>
+                          </td>
+                          <td className="px-6 py-5">
+                            <div className="flex -space-x-2">
+                              {analysts.slice(0, 3).map(analyst => (
+                                <div key={analyst.id} title={analyst.name} className="h-8 w-8 rounded-full bg-indigo-600 text-white flex items-center justify-center text-xs font-bold ring-2 ring-white">
+                                    {getInitials(analyst.name)}
+                                </div>
+                              ))}
                             </div>
-                          </div>
-                        </td>
-                        <td className="px-6 py-5">
-                           <span className={cn("inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold", phaseToBadgeColor[currentPhase])}>
-                            {currentPhase}
-                          </span>
-                        </td>
-                        <td className="px-6 py-5">
-                           <span className={cn("inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold", statusClasses[currentStatus])}>
-                            <span className={cn("h-2 w-2 rounded-full", statusColors[currentStatus])}></span>
-                            {currentStatus}
-                          </span>
-                        </td>
-                        <td className="px-6 py-5">
-                          <div className="flex -space-x-2">
-                             {analysts.slice(0, 3).map(analyst => (
-                               <div key={analyst.id} title={analyst.name} className="h-8 w-8 rounded-full bg-indigo-600 text-white flex items-center justify-center text-xs font-bold ring-2 ring-white">
-                                   {getInitials(analyst.name)}
-                               </div>
-                             ))}
-                          </div>
-                          {analysts.length > 0 && <span className="ml-3 text-sm font-medium text-gray-700">{getAnalystsString(analysts)}</span>}
-                        </td>
-                        <td className="px-6 py-5 text-gray-600">
-                          {/* Placeholder for observation */}
-                        </td>
-                        <td className="px-6 py-5">
-                            {meetingLink ? (
+                            {analysts.length > 0 && <span className="ml-3 text-sm font-medium text-gray-700">{getAnalystsString(analysts)}</span>}
+                          </td>
+                          <td className="px-6 py-5 text-gray-600">
+                            {/* Placeholder for observation */}
+                          </td>
+                          <td className="px-6 py-5">
+                              {meetingLink ? (
+                                  <Button variant="outline" size="sm" asChild>
+                                      <Link href={meetingLink} target="_blank">
+                                          <TeamsIcon className="mr-2 h-4 w-4" />
+                                          Link
+                                      </Link>
+                                  </Button>
+                              ) : (
+                                  <Button variant="outline" size="sm" disabled>
+                                      <TeamsIcon className="mr-2 h-4 w-4" />
+                                      Link
+                                  </Button>
+                              )}
+                          </td>
+                          <td className="px-6 py-5 text-right">
+                            <div className='flex items-center justify-end gap-1 flex-shrink-0'>
                                 <Button variant="outline" size="sm" asChild>
-                                    <Link href={meetingLink} target="_blank">
-                                        <TeamsIcon className="mr-2 h-4 w-4" />
-                                        Link
+                                    <Link href={`/tarefa?siteId=${site.id}`} title="Ver Tarefas">
+                                      <ListTodo className="mr-2 h-4 w-4"/> 
+                                      Ver Tarefas
                                     </Link>
                                 </Button>
-                            ) : (
-                                <Button variant="outline" size="sm" disabled>
-                                    <TeamsIcon className="mr-2 h-4 w-4" />
-                                    Link
-                                </Button>
-                            )}
-                        </td>
-                        <td className="px-6 py-5 text-right">
-                          <div className='flex items-center justify-end gap-1 flex-shrink-0'>
-                              <Button variant="outline" size="sm" asChild>
-                                  <Link href={`/tarefa?siteId=${site.id}`} title="Ver Tarefas">
-                                     <ListTodo className="mr-2 h-4 w-4"/> 
-                                     Ver Tarefas
-                                  </Link>
-                              </Button>
-                          </div>
-                        </td>
-                      </tr>
-                    )
-                  })}
+                            </div>
+                          </td>
+                        </tr>
+                      )
+                    })
+                  ) : (
+                    <tr><td colSpan={7} className='text-center p-4 text-muted-foreground'>Nenhum site encontrado para esta busca.</td></tr>
+                  )}
                 </tbody>
               </table>
             </div>
