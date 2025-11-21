@@ -357,22 +357,22 @@ export default function RegisterSitePage() {
         <CardContent className="p-6">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <Label htmlFor="sigla" className="mb-2 block">SIGLA (máx. 5)</Label>
+              <div className="space-y-2">
+                <Label htmlFor="sigla">SIGLA (máx. 5)</Label>
                 <Input id="sigla" value={sigla} onChange={(e) => setSigla(e.target.value)} maxLength={5} placeholder="ex: ARN01" required />
                 {sigla.length > 5 && <p className="text-red-500 text-xs mt-1">Máx. 5 caracteres!</p>}
               </div>
-              <div>
-                <Label htmlFor="descricaoBreve" className="mb-2 block">DESCRIÇÃO BREVE</Label>
+              <div className="space-y-2">
+                <Label htmlFor="descricaoBreve">DESCRIÇÃO BREVE</Label>
                 <Input id="descricaoBreve" value={descricaoBreve} onChange={(e) => setDescricaoBreve(e.target.value)} placeholder="ex: Arniqueiras" required />
               </div>
-               <div>
-                <Label htmlFor="localidade" className="mb-2 block">LOCALIDADE</Label>
+               <div className="space-y-2">
+                <Label htmlFor="localidade">LOCALIDADE</Label>
                 <Input id="localidade" value={localidade} onChange={(e) => setLocalidade(e.target.value)} placeholder="ex: Taguatinga/DF" required />
               </div>
               <div className='md:col-span-3 grid grid-cols-1 md:grid-cols-[1fr_auto] gap-4 items-end'>
-                <div>
-                  <Label htmlFor="semanaSelect" className="mb-2 block">SEMANA</Label>
+                <div className="space-y-2">
+                  <Label htmlFor="semanaSelect">SEMANA</Label>
                   <Select value={semana} onValueChange={setSemana} required>
                     <SelectTrigger id="semanaSelect"><SelectValue /></SelectTrigger>
                     <SelectContent>
