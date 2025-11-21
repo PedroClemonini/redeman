@@ -36,6 +36,8 @@ interface PhaseTimer {
   isRunning: boolean;
 }
 
+type Status = 'Completo' | 'Em Andamento' | 'Pendente' | 'Não Iniciado';
+
 export default function UnifiedTasksPage() {
   const searchParams = useSearchParams();
   const siteIdFromQuery = searchParams.get('siteId');
@@ -222,17 +224,30 @@ export default function UnifiedTasksPage() {
     { id: 'migracao', title: 'Migração', date: selectedSite?.migracao?.date },
   ];
 
+  const getPhaseStatus = (site: SiteEntry, phase: 'planejamento' | 'preparacao' | 'migracao'): Status => {
+      const phaseTasks = unifiedTasks.filter(t => t.phase === phase);
+      if (phaseTasks.length === 0) return 'Completo';
+      const completedCount = phaseTasks.filter(task => completedItems.has(`${site.id}-${task.id}`)).length;
+      if (completedCount === phaseTasks.length) return 'Completo';
+      if (completedCount > 0) return 'Em Andamento';
+      return 'Não Iniciado';
+  };
+
+  const getCurrentPhaseName = (site: SiteEntry): string => {
+      const planningStatus = getPhaseStatus(site, 'planejamento');
+      if (planningStatus !== 'Completo') return 'Em planejamento';
+      
+      const preparationStatus = getPhaseStatus(site, 'preparacao');
+      if (preparationStatus !== 'Completo') return 'Em preparação';
+      
+      const migrationStatus = getPhaseStatus(site, 'migracao');
+      if (migrationStatus !== 'Completo') return 'Em migração';
+      
+      return 'Concluído';
+  };
+
   const filteredSitesForSelection = useMemo(() => {
     if (!registeredSites) return [];
-
-    const getPhaseStatus = (site: SiteEntry, phase: 'planejamento' | 'preparacao' | 'migracao') => {
-        const phaseTasks = unifiedTasks.filter(t => t.phase === phase);
-        if (phaseTasks.length === 0) return 'Completo';
-        const completedCount = phaseTasks.filter(task => completedItems.has(`${site.id}-${task.id}`)).length;
-        if (completedCount === phaseTasks.length) return 'Completo';
-        if (completedCount > 0) return 'Em Andamento';
-        return 'Não Iniciado';
-    };
 
     return registeredSites.filter(site => {
         const searchTermLower = siteSearchTerm.toLowerCase();
@@ -310,7 +325,7 @@ export default function UnifiedTasksPage() {
                             <SelectContent>
                             {filteredSitesForSelection.length > 0 ? filteredSitesForSelection.map(site => (
                                 <SelectItem key={site.id} value={site.id.toString()}>
-                                {site.sigla} - {site.descricaoBreve}
+                                {`${site.sigla} - ${site.descricaoBreve} (${getCurrentPhaseName(site)})`}
                                 </SelectItem>
                             )) : <div className="p-4 text-sm text-center text-muted-foreground">Nenhum site encontrado.</div>}
                             </SelectContent>
