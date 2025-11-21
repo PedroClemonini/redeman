@@ -3,6 +3,7 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { PageHeader } from '@/components/page-header';
 import { Card, CardContent } from '@/components/ui/card';
@@ -17,13 +18,13 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { X, Plus, ExternalLink, Video, ListTodo, Upload } from 'lucide-react';
+import { X, Plus, ListTodo, Upload } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { SiteEntry, Person } from '@/lib/registered-sites';
 import { unifiedTasks } from '@/lib/tasks-data';
-import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { useCollection, useDoc, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, doc, query } from 'firebase/firestore';
-import { setDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import { setDocumentNonBlocking, updateDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { useToast } from '@/hooks/use-toast';
 import { nomes as allAnalysts } from '@/lib/data';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -66,6 +67,16 @@ const migrationTasks = getPhaseTasks('migracao');
 export default function RegisterSitePage() {
   const firestore = useFirestore();
   const { toast } = useToast();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const siteId = searchParams.get('id');
+
+  const siteRef = useMemoFirebase(() => {
+    if (!firestore || !siteId) return null;
+    return doc(firestore, 'agencias', siteId);
+  }, [firestore, siteId]);
+  const { data: existingSite, isLoading: isSiteLoading } = useDoc<SiteEntry>(siteRef);
+
   
   const sitesQuery = useMemoFirebase(() => {
     if (!firestore) return null;
@@ -73,32 +84,55 @@ export default function RegisterSitePage() {
   }, [firestore]);
   const { data: sites, isLoading: sitesLoading } = useCollection<SiteEntry>(sitesQuery);
 
-
+  // Form state
   const [sigla, setSigla] = useState('');
   const [descricaoBreve, setDescricaoBreve] = useState('');
   const [localidade, setLocalidade] = useState('');
   const [semana, setSemana] = useState('Semana 2');
-
   const [dataPlanejamento, setDataPlanejamento] = useState('');
   const [linkPlanejamento, setLinkPlanejamento] = useState('');
   const [v2mrPlanejamento, setV2mrPlanejamento] = useState<Person[]>([]);
-  
   const [dataPreparacao, setDataPreparacao] = useState('');
   const [linkPreparacao, setLinkPreparacao] = useState('');
   const [zoomPreparacao, setZoomPreparacao] = useState<Person[]>([]);
   const [btsPreparacao, setBtsPreparacao] = useState<Person[]>([]);
   const [v2mrPreparacao, setV2mrPreparacao] = useState<Person[]>([]);
-
   const [dataMigracao, setDataMigracao] = useState('');
   const [linkMigracao, setLinkMigracao] = useState('');
   const [zoomMigracao, setZoomMigracao] = useState<Person[]>([]);
   const [btsMigracao, setBtsMigracao] = useState<Person[]>([]);
   const [v2mrMigracao, setV2mrMigracao] = useState<Person[]>([]);
-
   const [linkWhatsapp, setLinkWhatsapp] = useState('');
 
   const [completedTasks, setCompletedTasks] = useState<Set<string>>(new Set());
   const [isImportMigrationOpen, setIsImportMigrationOpen] = useState(false);
+
+  useEffect(() => {
+    if (siteId && existingSite) {
+        setSigla(existingSite.sigla || '');
+        setDescricaoBreve(existingSite.descricaoBreve || '');
+        setLocalidade(existingSite.localidade || '');
+        setSemana(existingSite.semana || 'Semana 2');
+        setLinkWhatsapp(existingSite.linkWhatsapp || '');
+
+        setDataPlanejamento(existingSite.planejamento?.date || '');
+        setLinkPlanejamento(existingSite.planejamento?.link || '');
+        setV2mrPlanejamento(existingSite.planejamento?.v2mr || []);
+
+        setDataPreparacao(existingSite.preparacao?.date || '');
+        setLinkPreparacao(existingSite.preparacao?.link || '');
+        setZoomPreparacao(existingSite.preparacao?.zoom || []);
+        setBtsPreparacao(existingSite.preparacao?.bts || []);
+        setV2mrPreparacao(existingSite.preparacao?.v2mr || []);
+
+        setDataMigracao(existingSite.migracao?.date || '');
+        setLinkMigracao(existingSite.migracao?.link || '');
+        setZoomMigracao(existingSite.migracao?.zoom || []);
+        setBtsMigracao(existingSite.migracao?.bts || []);
+        setV2mrMigracao(existingSite.migracao?.v2mr || []);
+    }
+  }, [siteId, existingSite]);
+
 
   useEffect(() => {
     const syncTasks = () => {
@@ -111,22 +145,6 @@ export default function RegisterSitePage() {
     window.addEventListener('storage', syncTasks);
     return () => window.removeEventListener('storage', syncTasks);
   }, []);
-  
-  const addPerson = (
-    list: Person[],
-    setter: React.Dispatch<React.SetStateAction<Person[]>>,
-    inputElementId: string
-  ) => {
-    const input = document.getElementById(inputElementId) as HTMLInputElement;
-    if (input && input.value.trim()) {
-      setter([...list, { id: Date.now(), name: input.value.trim() }]);
-      input.value = '';
-    }
-  };
-
-  const removePerson = (list: Person[], setter: React.Dispatch<React.SetStateAction<Person[]>>, id: number) => {
-    setter(list.filter((p) => p.id !== id));
-  };
   
   const handleAnalystSelection = (
     analystName: string, 
@@ -141,14 +159,15 @@ export default function RegisterSitePage() {
       }
   };
 
-  const addSite = (e: React.FormEvent<HTMLFormElement>) => {
+  const removePerson = (list: Person[], setter: React.Dispatch<React.SetStateAction<Person[]>>, id: number) => {
+    setter(list.filter((p) => p.id !== id));
+  };
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!firestore || sigla.length > 5 || !sigla || !descricaoBreve || !semana) return;
 
-    const newSiteId = doc(collection(firestore, 'agencias')).id;
-
-    const newSite: SiteEntry = {
-      id: newSiteId,
+    const siteData: Omit<SiteEntry, 'id'> = {
       sigla: sigla.toUpperCase(),
       descricaoBreve,
       localidade,
@@ -174,36 +193,26 @@ export default function RegisterSitePage() {
       },
       linkWhatsapp,
     };
-    
-    const docRef = doc(firestore, 'agencias', newSiteId);
-    setDocumentNonBlocking(docRef, newSite, { merge: false });
 
-    toast({
-        title: "Site Cadastrado!",
-        description: `O site ${newSite.sigla} foi adicionado com sucesso.`
-    });
-    
-    e.currentTarget.reset();
-    
-    // Clear state
-    setSigla('');
-    setDescricaoBreve('');
-    setLocalidade('');
-    setSemana('Semana 2');
-    setDataPlanejamento('');
-    setLinkPlanejamento('');
-    setV2mrPlanejamento([]);
-    setDataPreparacao('');
-    setLinkPreparacao('');
-    setZoomPreparacao([]);
-    setBtsPreparacao([]);
-    setV2mrPreparacao([]);
-    setDataMigracao('');
-    setLinkMigracao('');
-    setZoomMigracao([]);
-    setBtsMigracao([]);
-    setV2mrMigracao([]);
-    setLinkWhatsapp('');
+    if (siteId && siteRef) { // Update existing site
+      updateDocumentNonBlocking(siteRef, siteData);
+      toast({
+          title: "Site Atualizado!",
+          description: `O site ${siteData.sigla} foi atualizado com sucesso.`
+      });
+    } else { // Create new site
+      const newSiteId = doc(collection(firestore, 'agencias')).id;
+      const newSite: SiteEntry = { id: newSiteId, ...siteData };
+      const docRef = doc(firestore, 'agencias', newSiteId);
+      setDocumentNonBlocking(docRef, newSite, { merge: false });
+
+      toast({
+          title: "Site Cadastrado!",
+          description: `O site ${newSite.sigla} foi adicionado com sucesso.`
+      });
+    }
+
+    router.push('/sites');
   };
 
   const siteProgress = useMemo(() => {
@@ -274,25 +283,6 @@ export default function RegisterSitePage() {
     }, {} as Record<string, typeof siteProgress>);
   }, [siteProgress]);
 
-  const PersonInput = ({ list, setter, inputId, buttonColor, placeholder }: { list: Person[], setter: React.Dispatch<React.SetStateAction<Person[]>>, inputId: string, buttonColor: string, placeholder: string }) => (
-    <>
-      <div className="flex flex-wrap gap-2 mb-2 min-h-[24px]">
-        {list.map(p => (
-          <Badge key={p.id} variant="secondary" className={cn("flex items-center gap-1.5", buttonColor)}>
-            {p.name}
-            <button type="button" onClick={() => removePerson(list, setter, p.id)} className="rounded-full hover:bg-black/10">
-              <X className="h-3 w-3" />
-            </button>
-          </Badge>
-        ))}
-      </div>
-      <div className="flex gap-2">
-        <Input id={inputId} placeholder={placeholder} className="h-9 text-sm" onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addPerson(list, setter, inputId); }}}/>
-        <Button type="button" size="icon" className={cn("h-9 w-9", buttonColor)} onClick={() => addPerson(list, setter, inputId)}><Plus className="h-4 w-4" /></Button>
-      </div>
-    </>
-  );
-
   const AnalystSelector = ({ list, setter, buttonColor }: { list: Person[], setter: React.Dispatch<React.SetStateAction<Person[]>>, buttonColor: string }) => (
     <div>
         <div className="flex flex-wrap gap-2 mb-2 min-h-[24px]">
@@ -351,13 +341,17 @@ export default function RegisterSitePage() {
     }
     return site.planejamento.link || site.preparacao.link || site.migracao.link || '';
   };
+  
+  if (isSiteLoading && siteId) {
+      return <div className="text-center p-8">Carregando dados do site...</div>;
+  }
 
   return (
     <div className="space-y-8">
       <div className='flex flex-wrap items-center justify-between gap-4'>
         <PageHeader
-          title="Cadastro de Sites"
-          description="Fluxo: Planejamento → Preparação → Migração"
+          title={siteId ? "Editar Site" : "Cadastro de Sites"}
+          description={siteId ? "Atualize as informações do site." : "Fluxo: Planejamento → Preparação → Migração"}
         />
         <Button variant="outline" onClick={() => setIsImportMigrationOpen(true)}>
             <Upload className="mr-2" />
@@ -366,7 +360,7 @@ export default function RegisterSitePage() {
       </div>
       <Card>
         <CardContent className="p-6">
-          <form onSubmit={addSite} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <Label htmlFor="sigla" className="mb-2 block">SIGLA (máx. 5)</Label>
@@ -417,18 +411,18 @@ export default function RegisterSitePage() {
                   <Input type="date" value={dataPreparacao} onChange={e => setDataPreparacao(e.target.value)} />
                   <Input type="url" value={linkPreparacao} onChange={e => setLinkPreparacao(e.target.value)} placeholder="Link da Reunião" />
                 </div>
-                <div className="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
                     <Label className="block text-sm font-medium mb-2">Analistas V2MR</Label>
                     <AnalystSelector list={v2mrPreparacao} setter={setV2mrPreparacao} buttonColor="bg-blue-600 hover:bg-blue-700 text-white" />
                   </div>
                   <div>
                     <Label className="block text-sm font-medium mb-2">Técnicos Zoomtech</Label>
-                    <PersonInput list={zoomPreparacao} setter={setZoomPreparacao} inputId="zoom-input-preparacao" placeholder="Nome do técnico" buttonColor="bg-green-600 hover:bg-green-700 text-white" />
+                    <AnalystSelector list={zoomPreparacao} setter={setZoomPreparacao} buttonColor="bg-green-600 hover:bg-green-700 text-white" />
                   </div>
                    <div>
                     <Label className="block text-sm font-medium mb-2">Técnicos BBTS (In Loco)</Label>
-                    <PersonInput list={btsPreparacao} setter={setBtsPreparacao} inputId="bts-input-preparacao" placeholder="Nome do técnico" buttonColor="bg-purple-600 hover:bg-purple-700 text-white" />
+                    <AnalystSelector list={btsPreparacao} setter={setBtsPreparacao} buttonColor="bg-purple-600 hover:bg-purple-700 text-white" />
                   </div>
                 </div>
               </div>
@@ -440,18 +434,18 @@ export default function RegisterSitePage() {
                   <Input type="date" value={dataMigracao} onChange={e => setDataMigracao(e.target.value)} />
                   <Input type="url" value={linkMigracao} onChange={e => setLinkMigracao(e.target.value)} placeholder="Link da Reunião" />
                 </div>
-                <div className="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
                     <Label className="block text-sm font-medium mb-2">Analistas V2MR</Label>
                     <AnalystSelector list={v2mrMigracao} setter={setV2mrMigracao} buttonColor="bg-blue-600 hover:bg-blue-700 text-white" />
                   </div>
                   <div>
                     <Label className="block text-sm font-medium mb-2">Técnicos Zoomtech</Label>
-                    <PersonInput list={zoomMigracao} setter={setZoomMigracao} inputId="zoom-input-migracao" placeholder="Nome do técnico" buttonColor="bg-green-600 hover:bg-green-700 text-white" />
+                    <AnalystSelector list={zoomMigracao} setter={setZoomMigracao} buttonColor="bg-green-600 hover:bg-green-700 text-white" />
                   </div>
                    <div>
                     <Label className="block text-sm font-medium mb-2">Técnicos BBTS (In Loco)</Label>
-                    <PersonInput list={btsMigracao} setter={setBtsMigracao} inputId="bts-input-migracao" placeholder="Nome do técnico" buttonColor="bg-purple-600 hover:bg-purple-700 text-white" />
+                    <AnalystSelector list={btsMigracao} setter={setBtsMigracao} buttonColor="bg-purple-600 hover:bg-purple-700 text-white" />
                   </div>
                 </div>
               </div>
@@ -462,7 +456,7 @@ export default function RegisterSitePage() {
                 <Input id="linkWhatsapp" type="url" value={linkWhatsapp} onChange={e => setLinkWhatsapp(e.target.value)} placeholder="https://chat.whatsapp.com/..." />
             </div>
 
-            <Button type="submit" className="w-full text-lg h-12">CADASTRAR SITE</Button>
+            <Button type="submit" className="w-full text-lg h-12">{siteId ? "ATUALIZAR SITE" : "CADASTRAR SITE"}</Button>
           </form>
         </CardContent>
       </Card>

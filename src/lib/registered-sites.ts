@@ -9,7 +9,7 @@ export type Stage = {
 };
 
 export type SiteEntry = {
-  id: number;
+  id: string;
   sigla: string;
   descricaoBreve: string;
   localidade: string;
@@ -38,7 +38,7 @@ const parseAnalysts = (analystString: string | null): Person[] => {
 
 export const registeredSites: SiteEntry[] = [
     { 
-        id: 1, 
+        id: "site_1", 
         sigla: "ARN01", 
         descricaoBreve: "Arniqueiras", 
         localidade: "Taguatinga/DF",
@@ -49,7 +49,7 @@ export const registeredSites: SiteEntry[] = [
         linkWhatsapp: '' 
     },
     { 
-        id: 2, 
+        id: "site_2", 
         sigla: "BVA02", 
         descricaoBreve: "Bela Vista", 
         localidade: "Goiânia/GO",
@@ -60,7 +60,7 @@ export const registeredSites: SiteEntry[] = [
         linkWhatsapp: '' 
     },
     { 
-        id: 3, 
+        id: "site_3", 
         sigla: "JBN01", 
         descricaoBreve: "Jardim Botânico",
         localidade: "Brasília/DF",
@@ -71,7 +71,7 @@ export const registeredSites: SiteEntry[] = [
         linkWhatsapp: '' 
     },
     {
-        id: 4,
+        id: "site_4",
         sigla: "PAE15",
         descricaoBreve: "Pacaembu",
         localidade: "São Paulo/SP",
@@ -82,7 +82,7 @@ export const registeredSites: SiteEntry[] = [
         linkWhatsapp: ''
     },
     {
-        id: 5,
+        id: "site_5",
         sigla: "RVD03",
         descricaoBreve: "Rio Verde",
         localidade: "Goiás/GO",
@@ -93,7 +93,7 @@ export const registeredSites: SiteEntry[] = [
         linkWhatsapp: ''
     },
     {
-        id: 6,
+        id: "site_6",
         sigla: "SNO01",
         descricaoBreve: "Sinop",
         localidade: "Mato Grosso/MT",
@@ -104,7 +104,7 @@ export const registeredSites: SiteEntry[] = [
         linkWhatsapp: ''
     },
     {
-        id: 7,
+        id: "site_7",
         sigla: "SPO27",
         descricaoBreve: "São Paulo",
         localidade: "São Paulo/SP",
@@ -115,7 +115,7 @@ export const registeredSites: SiteEntry[] = [
         linkWhatsapp: ''
     },
     {
-        id: 8,
+        id: "site_8",
         sigla: "BRS02",
         descricaoBreve: "Feira de Santana",
         localidade: "Bahia/BA",
@@ -126,7 +126,7 @@ export const registeredSites: SiteEntry[] = [
         linkWhatsapp: ''
     },
     {
-        id: 9,
+        id: "site_9",
         sigla: "BRS02",
         descricaoBreve: "Feira de Santana",
         localidade: "Bahia/BA",
@@ -137,7 +137,7 @@ export const registeredSites: SiteEntry[] = [
         linkWhatsapp: ''
     },
     {
-        id: 10,
+        id: "site_10",
         sigla: "DOS01",
         descricaoBreve: "Dourados",
         localidade: "Mato Grosso do Sul/MS",
@@ -148,7 +148,7 @@ export const registeredSites: SiteEntry[] = [
         linkWhatsapp: ''
     },
     {
-        id: 11,
+        id: "site_11",
         sigla: "FNS47",
         descricaoBreve: "Fortaleza",
         localidade: "Ceará/CE",
@@ -159,7 +159,7 @@ export const registeredSites: SiteEntry[] = [
         linkWhatsapp: ''
     },
     {
-        id: 12,
+        id: "site_12",
         sigla: "SLA01",
         descricaoBreve: "Santo Antonio de Jesus",
         localidade: "Bahia/BA",
@@ -170,7 +170,7 @@ export const registeredSites: SiteEntry[] = [
         linkWhatsapp: ''
     },
     {
-        id: 13,
+        id: "site_13",
         sigla: "BRU04",
         descricaoBreve: "Bauru",
         localidade: "São Paulo/SP",
@@ -181,7 +181,7 @@ export const registeredSites: SiteEntry[] = [
         linkWhatsapp: ''
     },
     {
-        id: 14,
+        id: "site_14",
         sigla: "CAS05",
         descricaoBreve: "Cascavel",
         localidade: "Paraná/PR",
@@ -192,7 +192,7 @@ export const registeredSites: SiteEntry[] = [
         linkWhatsapp: ''
     },
     {
-        id: 15,
+        id: "site_15",
         sigla: "CTA36",
         descricaoBreve: "Curitiba",
         localidade: "Paraná/PR",
@@ -203,7 +203,7 @@ export const registeredSites: SiteEntry[] = [
         linkWhatsapp: ''
     },
     {
-        id: 16,
+        id: "site_16",
         sigla: "IUB01",
         descricaoBreve: "Itumbiara",
         localidade: "Goiás/GO",
@@ -214,7 +214,7 @@ export const registeredSites: SiteEntry[] = [
         linkWhatsapp: ''
     },
     {
-        id: 17,
+        id: "site_17",
         sigla: "MCO02",
         descricaoBreve: "Maceió",
         localidade: "Alagoas/AL",
@@ -225,7 +225,7 @@ export const registeredSites: SiteEntry[] = [
         linkWhatsapp: ''
     },
     {
-        id: 18,
+        id: "site_18",
         sigla: "RVD07",
         descricaoBreve: "Rio Verde",
         localidade: "Goiás/GO",
@@ -236,7 +236,7 @@ export const registeredSites: SiteEntry[] = [
         linkWhatsapp: ''
     },
     {
-        id: 19,
+        id: "site_19",
         sigla: "ANS01",
         descricaoBreve: "Anápolis",
         localidade: "Goiás/GO",
@@ -247,7 +247,7 @@ export const registeredSites: SiteEntry[] = [
         linkWhatsapp: ''
     },
     {
-        id: 20,
+        id: "site_20",
         sigla: "PAE77",
         descricaoBreve: "Pacaembu",
         localidade: "São Paulo/SP",
@@ -258,7 +258,7 @@ export const registeredSites: SiteEntry[] = [
         linkWhatsapp: ''
     },
     {
-        id: 21,
+        id: "site_21",
         sigla: "TSA02",
         descricaoBreve: "Teresina",
         localidade: "Piauí/PI",
@@ -269,7 +269,7 @@ export const registeredSites: SiteEntry[] = [
         linkWhatsapp: ''
     },
     {
-        id: 22,
+        id: "site_22",
         sigla: "ARC01",
         descricaoBreve: "Aracaju",
         localidade: "Sergipe/SE",
@@ -280,7 +280,7 @@ export const registeredSites: SiteEntry[] = [
         linkWhatsapp: ''
     },
     {
-        id: 23,
+        id: "site_23",
         sigla: "BRU01",
         descricaoBreve: "Brusque",
         localidade: "Santa Catarina/SC",
@@ -291,7 +291,7 @@ export const registeredSites: SiteEntry[] = [
         linkWhatsapp: ''
     },
     {
-        id: 24,
+        id: "site_24",
         sigla: "JFA01",
         descricaoBreve: "Juiz de Fora",
         localidade: "Minas Gerais/MG",
@@ -302,7 +302,7 @@ export const registeredSites: SiteEntry[] = [
         linkWhatsapp: ''
     },
     {
-        id: 25,
+        id: "site_25",
         sigla: "MCL01",
         descricaoBreve: "Montes Claros",
         localidade: "Minas Gerais/MG",
@@ -313,7 +313,7 @@ export const registeredSites: SiteEntry[] = [
         linkWhatsapp: ''
     },
     {
-        id: 26,
+        id: "site_26",
         sigla: "PAS01",
         descricaoBreve: "Passo Fundo",
         localidade: "Rio Grande do Sul/RS",
@@ -324,7 +324,7 @@ export const registeredSites: SiteEntry[] = [
         linkWhatsapp: ''
     },
     {
-        id: 27,
+        id: "site_27",
         sigla: "VTA01",
         descricaoBreve: "Vitória",
         localidade: "Espírito Santo/ES",
@@ -335,7 +335,7 @@ export const registeredSites: SiteEntry[] = [
         linkWhatsapp: ''
     },
     {
-        id: 28,
+        id: "site_28",
         sigla: "BHE05",
         descricaoBreve: "Belo Horizonte",
         localidade: "Minas Gerais/MG",
@@ -346,7 +346,7 @@ export const registeredSites: SiteEntry[] = [
         linkWhatsapp: ''
     },
     {
-        id: 29,
+        id: "site_29",
         sigla: "BLM31",
         descricaoBreve: "Belém",
         localidade: "Pará/PA",
@@ -357,7 +357,7 @@ export const registeredSites: SiteEntry[] = [
         linkWhatsapp: ''
     },
     {
-        id: 30,
+        id: "site_30",
         sigla: "AJU01",
         descricaoBreve: "Aracaju",
         localidade: "Sergipe/SE",
@@ -368,7 +368,7 @@ export const registeredSites: SiteEntry[] = [
         linkWhatsapp: ''
     },
     {
-        id: 31,
+        id: "site_31",
         sigla: "TSA01",
         descricaoBreve: "Teresina",
         localidade: "Piauí/PI",

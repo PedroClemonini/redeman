@@ -24,17 +24,30 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Download, MoreHorizontal, Plus, Search, Upload } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, query } from 'firebase/firestore';
+import { collection, doc, query } from 'firebase/firestore';
 import type { Site } from '@/lib/types';
 import { ImportDialog } from '@/components/import-dialog';
-
+import { deleteDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import { useToast } from '@/hooks/use-toast';
 
 export default function SitesPage() {
   const firestore = useFirestore();
   const router = useRouter();
+  const { toast } = useToast();
+  
   const sitesQuery = useMemoFirebase(() => {
     if (!firestore) return null;
     return query(collection(firestore, 'agencias'));
@@ -42,7 +55,29 @@ export default function SitesPage() {
 
   const { data: sites, isLoading } = useCollection<Site>(sitesQuery);
   const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
-  
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [selectedSite, setSelectedSite] = useState<Site | null>(null);
+
+  const handleDeleteClick = (site: Site) => {
+    setSelectedSite(site);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (!selectedSite || !firestore) return;
+    
+    const siteRef = doc(firestore, 'agencias', selectedSite.id);
+    deleteDocumentNonBlocking(siteRef);
+
+    toast({
+        title: "Site Deletado",
+        description: `O site ${selectedSite.nome} foi deletado com sucesso.`
+    });
+
+    setIsDeleteDialogOpen(false);
+    setSelectedSite(null);
+  };
+
   return (
     <div>
       <PageHeader
@@ -89,7 +124,16 @@ export default function SitesPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {isLoading && <TableRow><TableCell colSpan={5} className='text-center'>Carregando sites...</TableCell></TableRow>}
+              {isLoading && (
+                <TableRow>
+                    <TableCell colSpan={5} className='text-center text-muted-foreground'>Carregando sites...</TableCell>
+                </TableRow>
+              )}
+              {!isLoading && sites?.length === 0 && (
+                <TableRow>
+                    <TableCell colSpan={5} className='text-center text-muted-foreground'>Nenhum site cadastrado.</TableCell>
+                </TableRow>
+              )}
               {sites && sites.map((site) => (
                 <TableRow key={site.id}>
                   <TableCell className="font-medium">{site.codigo}</TableCell>
@@ -105,9 +149,8 @@ export default function SitesPage() {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem>Editar</DropdownMenuItem>
-                        <DropdownMenuItem>Ver Detalhes</DropdownMenuItem>
-                        <DropdownMenuItem className="text-red-600 dark:text-red-500">
+                        <DropdownMenuItem onClick={() => router.push(`/sites/register?id=${site.id}`)}>Editar</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleDeleteClick(site)} className="text-red-600 dark:text-red-500 focus:text-red-600 dark:focus:text-red-500">
                           Deletar
                         </DropdownMenuItem>
                       </DropdownMenuContent>
@@ -120,6 +163,22 @@ export default function SitesPage() {
         </CardContent>
       </Card>
       <ImportDialog modelName="Site" open={isImportDialogOpen} onOpenChange={setIsImportDialogOpen} />
+
+      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialogContent>
+            <AlertDialogHeader>
+                <AlertDialogTitle>Você tem certeza?</AlertDialogTitle>
+                <AlertDialogDescription>
+                    Esta ação não pode ser desfeita. Isso irá deletar permanentemente o site
+                    <span className='font-bold'> {selectedSite?.nome}</span>.
+                </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                <AlertDialogAction onClick={handleConfirmDelete} className="bg-destructive hover:bg-destructive/90">Deletar</AlertDialogAction>
+            </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

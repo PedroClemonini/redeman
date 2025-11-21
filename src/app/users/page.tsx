@@ -24,6 +24,16 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Badge } from '@/components/ui/badge';
 import { Download, MoreHorizontal, Plus, Upload } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -47,7 +57,7 @@ import {
 import type { User } from '@/lib/types';
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, doc, query } from 'firebase/firestore';
-import { addDocumentNonBlocking, updateDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import { addDocumentNonBlocking, updateDocumentNonBlocking, deleteDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { ImportDialog } from '@/components/import-dialog';
 import { useToast } from '@/hooks/use-toast';
 
@@ -63,11 +73,32 @@ export default function UsersPage() {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
   const handleEditClick = (user: User) => {
     setSelectedUser(user);
     setIsEditDialogOpen(true);
+  };
+  
+  const handleDeleteClick = (user: User) => {
+    setSelectedUser(user);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (!selectedUser || !firestore) return;
+    
+    const userRef = doc(firestore, 'users', selectedUser.id);
+    deleteDocumentNonBlocking(userRef);
+
+    toast({
+        title: "Usuário Deletado",
+        description: `O usuário ${selectedUser.nome} foi deletado com sucesso.`
+    });
+
+    setIsDeleteDialogOpen(false);
+    setSelectedUser(null);
   };
 
   const handleEditSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -112,7 +143,10 @@ export default function UsersPage() {
       status: formData.get('status') as User['status'],
     };
     
-    addDocumentNonBlocking(usersCollection, newUser);
+    // Use setDoc with the new ID
+    const userDocRef = doc(firestore, 'users', newUser.id);
+    addDocumentNonBlocking(userDocRef, newUser);
+
 
     toast({
       title: 'Usuário Adicionado',
@@ -160,7 +194,16 @@ export default function UsersPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {isLoading && <TableRow><TableCell colSpan={5} className='text-center'>Carregando usuários...</TableCell></TableRow>}
+              {isLoading && (
+                <TableRow>
+                    <TableCell colSpan={5} className='text-center text-muted-foreground'>Carregando usuários...</TableCell>
+                </TableRow>
+              )}
+              {!isLoading && users?.length === 0 && (
+                <TableRow>
+                    <TableCell colSpan={5} className='text-center text-muted-foreground'>Nenhum usuário cadastrado.</TableCell>
+                </TableRow>
+              )}
               {users && users.map((user) => (
                 <TableRow key={user.id}>
                   <TableCell className="font-medium">
@@ -204,9 +247,8 @@ export default function UsersPage() {
                         <DropdownMenuItem onClick={() => handleEditClick(user)}>
                           Editar
                         </DropdownMenuItem>
-                        <DropdownMenuItem>Ver Detalhes</DropdownMenuItem>
-                        <DropdownMenuItem className="text-red-600 dark:text-red-500">
-                          Desativar
+                        <DropdownMenuItem onClick={() => handleDeleteClick(user)} className="text-red-600 dark:text-red-500 focus:text-red-600 dark:focus:text-red-500">
+                          Deletar
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -368,11 +410,26 @@ export default function UsersPage() {
           </form>
         </DialogContent>
       </Dialog>
+      
+      {/* Delete User Dialog */}
+       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialogContent>
+            <AlertDialogHeader>
+                <AlertDialogTitle>Você tem certeza?</AlertDialogTitle>
+                <AlertDialogDescription>
+                    Esta ação não pode ser desfeita. Isso irá deletar permanentemente o usuário
+                    <span className='font-bold'> {selectedUser?.nome}</span>.
+                </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                <AlertDialogAction onClick={handleConfirmDelete} className="bg-destructive hover:bg-destructive/90">Deletar</AlertDialogAction>
+            </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
 
       <ImportDialog modelName="User" open={isImportDialogOpen} onOpenChange={setIsImportDialogOpen} />
     </div>
   );
 }
-
-    

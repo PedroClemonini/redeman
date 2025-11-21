@@ -17,18 +17,31 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, query } from 'firebase/firestore';
+import { collection, doc, query } from 'firebase/firestore';
 import type { Site, Switch } from '@/lib/types';
 import { Download, Plus, Upload, MoreHorizontal, Search } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { ImportDialog } from '@/components/import-dialog';
 import { Input } from '@/components/ui/input';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu';
+import { useToast } from '@/hooks/use-toast';
+import { deleteDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 
 
 export default function SwitchesPage() {
   const firestore = useFirestore();
+  const { toast } = useToast();
   
   const switchesQuery = useMemoFirebase(() => {
     if (!firestore) return null;
@@ -44,11 +57,33 @@ export default function SwitchesPage() {
   const { data: agencias, isLoading: isLoadingAgencias } = useCollection<Site>(agenciasQuery);
 
   const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [selectedSwitch, setSelectedSwitch] = useState<Switch | null>(null);
 
   const getSiteInfo = (agenciaId: string) => {
     if (!agencias) return { nome: 'Carregando...', estado: '...' };
     const agencia = agencias.find(a => a.id === agenciaId);
     return agencia ? { nome: agencia.nome, estado: agencia.estado } : { nome: 'Não encontrado', estado: 'N/A' };
+  };
+
+  const handleDeleteClick = (sw: Switch) => {
+    setSelectedSwitch(sw);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (!selectedSwitch || !firestore) return;
+    
+    const switchRef = doc(firestore, 'switches', selectedSwitch.id);
+    deleteDocumentNonBlocking(switchRef);
+
+    toast({
+        title: "Switch Deletado",
+        description: `O switch ${selectedSwitch.hostname} foi deletado com sucesso.`
+    });
+
+    setIsDeleteDialogOpen(false);
+    setSelectedSwitch(null);
   };
 
   return (
@@ -71,7 +106,7 @@ export default function SwitchesPage() {
               <Upload className="mr-2" />
               Importar
             </Button>
-            <Button>
+            <Button disabled>
               <Plus className="mr-2" />
               Adicionar Switch
             </Button>
@@ -97,10 +132,15 @@ export default function SwitchesPage() {
             <TableBody>
               {(isLoadingSwitches || isLoadingAgencias) && (
                   <TableRow>
-                      <TableCell colSpan={5} className="text-center">
+                      <TableCell colSpan={5} className="text-center text-muted-foreground">
                           Carregando switches...
                       </TableCell>
                   </TableRow>
+              )}
+              {!isLoadingSwitches && switches?.length === 0 && (
+                <TableRow>
+                    <TableCell colSpan={5} className='text-center text-muted-foreground'>Nenhum switch cadastrado.</TableCell>
+                </TableRow>
               )}
               {switches && switches.map((sw) => {
                 const siteInfo = getSiteInfo(sw.id);
@@ -125,9 +165,9 @@ export default function SwitchesPage() {
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
-                            <DropdownMenuItem>Editar</DropdownMenuItem>
-                            <DropdownMenuItem>Ver Detalhes</DropdownMenuItem>
-                            <DropdownMenuItem className="text-red-600 dark:text-red-500">
+                            <DropdownMenuItem disabled>Editar</DropdownMenuItem>
+                            <DropdownMenuItem disabled>Ver Detalhes</DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleDeleteClick(sw)} className="text-red-600 dark:text-red-500 focus:text-red-600 dark:focus:text-red-500">
                               Deletar
                             </DropdownMenuItem>
                           </DropdownMenuContent>
@@ -141,7 +181,22 @@ export default function SwitchesPage() {
         </CardContent>
       </Card>
       <ImportDialog modelName="Switch" open={isImportDialogOpen} onOpenChange={setIsImportDialogOpen} />
+
+      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialogContent>
+            <AlertDialogHeader>
+                <AlertDialogTitle>Você tem certeza?</AlertDialogTitle>
+                <AlertDialogDescription>
+                    Esta ação não pode ser desfeita. Isso irá deletar permanentemente o switch
+                    <span className='font-bold'> {selectedSwitch?.hostname}</span>.
+                </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                <AlertDialogAction onClick={handleConfirmDelete} className="bg-destructive hover:bg-destructive/90">Deletar</AlertDialogAction>
+            </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
-
