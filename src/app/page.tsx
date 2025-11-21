@@ -22,7 +22,7 @@ import { unifiedTasks } from '@/lib/tasks-data';
 import { useCollection, useMemoFirebase } from '@/firebase';
 import { collection, query } from 'firebase/firestore';
 import { useFirestore } from '@/firebase/provider';
-import type { Site } from '@/lib/types';
+import type { SiteEntry } from '@/lib/registered-sites';
 
 type Status = 'Completo' | 'Em Andamento' | 'Pendente' | 'Não Iniciado';
 
@@ -49,7 +49,7 @@ export default function Dashboard() {
     if (!firestore) return null;
     return query(collection(firestore, 'agencias'));
   }, [firestore]);
-  const { data: registeredSites, isLoading: sitesLoading } = useCollection<Site>(sitesQuery);
+  const { data: registeredSites, isLoading: sitesLoading } = useCollection<SiteEntry>(sitesQuery);
 
 
   useEffect(() => {
@@ -105,7 +105,7 @@ export default function Dashboard() {
 
       return {
         id: site.id,
-        siteName: `${site.codigo} - ${site.nome}`,
+        siteName: `${site.sigla} - ${site.descricaoBreve}`,
         planning: planningStatus,
         preparation: preparationStatus,
         migration: migrationStatus,
