@@ -68,7 +68,7 @@ service cloud.firestore {
     match /users/{userId} {
       allow get: if isOwner(userId) || isAdmin();
       allow list: if isSignedIn();
-      allow create: if isOwner(userId) && request.resource.data.id == userId;
+      allow create: if isSignedIn();
       allow update: if isOwner(userId) || isAdmin();
       allow delete: if isOwner(userId) || isAdmin();
     }
@@ -87,9 +87,7 @@ service cloud.firestore {
      */
     match /agencias/{agenciaId} {
       allow read: if isSignedIn();
-      allow create: if isAdmin() && request.resource.data.id == agenciaId;
-      allow update: if isAdmin() && resource != null && request.resource.data.id == resource.data.id;
-      allow delete: if isAdmin() && resource != null;
+      allow write: if isSignedIn();
     }
 
     // -------------------------------------------------------------------------
@@ -106,9 +104,7 @@ service cloud.firestore {
      */
     match /switches/{switchId} {
       allow read: if isSignedIn();
-      allow create: if isAdmin() && request.resource.data.id == switchId;
-      allow update: if isAdmin() && resource != null && request.resource.data.id == resource.data.id;
-      allow delete: if isAdmin() && resource != null;
+      allow write: if isSignedIn();
     }
 
     // -------------------------------------------------------------------------
