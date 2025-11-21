@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Download } from 'lucide-react';
 import { alocacao, disponibilidade, analistas, nomes } from '@/lib/data';
 import { TimecardGrid } from './timecard-grid';
+import { WeeklyTimecard } from './weekly-timecard';
 
 export default function AlocacaoPage() {
 
@@ -22,8 +23,8 @@ export default function AlocacaoPage() {
   return (
     <div>
       <PageHeader
-        title="REDEMAP – Semana 2"
-        description="17 a 22 de novembro de 2025"
+        title="REDEMAP – Alocação & Ponto"
+        description="Planejamento de alocação e registro de horas dos analistas."
       />
       <div className="mb-4 flex justify-end">
         <Button onClick={handleExport}>
@@ -32,10 +33,11 @@ export default function AlocacaoPage() {
         </Button>
       </div>
       <Tabs defaultValue="allocation">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="allocation">Alocação por Analista</TabsTrigger>
           <TabsTrigger value="availability">Grade de Disponibilidade</TabsTrigger>
-          <TabsTrigger value="timecard">Cartão de Ponto</TabsTrigger>
+          <TabsTrigger value="timecard">Cartão de Ponto (Grid)</TabsTrigger>
+          <TabsTrigger value="timecard-weekly">Cartão de Ponto (Semanal)</TabsTrigger>
         </TabsList>
         <TabsContent value="allocation">
           <AllocationTable alocacao={alocacao} analistas={analistas} nomes={nomes} />
@@ -45,6 +47,9 @@ export default function AlocacaoPage() {
         </TabsContent>
         <TabsContent value="timecard">
             <TimecardGrid analistas={analistas} nomes={nomes} />
+        </TabsContent>
+         <TabsContent value="timecard-weekly">
+            <WeeklyTimecard analistas={analistas} nomes={nomes} />
         </TabsContent>
       </Tabs>
     </div>
