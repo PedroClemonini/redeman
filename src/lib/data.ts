@@ -199,21 +199,162 @@ export const alocacao = {
 };
 
 export const disponibilidade = {
-  "paulo": {"17/11 a 22/11/2025": [[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[true,true,true,true,false,false,false,false,false,false,false,false,true,true,true,true,true,true,true,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[true,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]]},
-  "raissa": {"17/11 a 22/11/2025": [[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,true,true,true,false,false,false,true,true,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,true,true,true,true,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[true,true,true,true,false,false,false,false,false,false,false,true,true,true,true,true,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,true,true,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]]},
-  "pedro": {"17/11 a 22/11/2025": [[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[true,true,true,true,false,false,false,false,false,false,false,false,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]]},
-  "marcelo": {"17/11 a 22/11/2025": [[false,false,false,false,false,false,false,false,false,true,true,false,false,false,false,false,false,false,false,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[true,true,true,true,false,false,false,false,false,true,true,false,false,false,false,false,false,false,false,false,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[true,true,true,true,false,false,false,false,false,true,true,false,false,false,false,false,false,false,true,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[true,true,true,true,false,false,false,false,false,true,true,false,false,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]]},
-  "lailton": {"17/11 a 22/11/2025": [[true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[true,true,true,true,false,false,false,false,false,false,false,false,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]]},
+  "nicolas": {
+    "Semana 1 (10/11 a 15/11/2025)": [
+      [false, false, false, false, false, false, true, true, true, true, true, true, true, true, false, false],
+      [false, false, false, false, false, false, true, true, true, true, true, true, true, true, false, false],
+      [false, false, false, false, false, false, true, true, true, true, true, true, true, true, false, false],
+      [false, false, false, false, false, false, true, true, false, true, true, true, true, true, false, false],
+      [false, false, false, false, false, false, true, true, true, true, true, true, true, true, false, false],
+      [true, true, true, true, true, false, false, false, false, false, false, false, false, false, false, false]
+    ]
+  },
+  "pedro": {
+    "Semana 1 (10/11 a 15/11/2025)": [
+      Array(16).fill(false),
+      Array(16).fill(false),
+      [true, true, true, true, true, true, true, true, true, true, true, true, true, false, false, false],
+      [true, true, true, true, true, true, true, true, true, true, true, true, true, false, false, false],
+      Array(16).fill(false),
+      [true, true, true, true, true, false, false, false, false, false, false, false, false, false, false, false]
+    ]
+  },
+  "joaog": {
+    "Semana 1 (10/11 a 15/11/2025)": [
+      [false, true, true, true, false, false, false, false, false, false, false, false, false, false, false, false],
+      [false, false, false, false, false, false, false, false, false, true, true, false, false, false, false, false],
+      [false, false, false, false, false, false, false, false, false, true, true, false, false, false, false, false],
+      [false, false, false, false, false, false, false, false, false, true, true, false, false, false, false, false],
+      [false, true, true, true, true, false, false, false, false, false, false, false, false, false, false, false],
+      Array(16).fill(false)
+    ]
+  },
+  "samuel": {
+    "Semana 1 (10/11 a 15/11/2025)": [
+      [false, false, false, false, false, false, false, false, false, false, false, true, true, true, true, false],
+      [false, false, false, false, false, false, false, false, false, false, false, true, true, true, true, false],
+      [false, false, false, false, false, false, false, false, false, false, false, true, true, true, true, false],
+      [false, false, false, false, false, false, false, false, false, false, false, true, true, true, true, false],
+      [false, false, false, false, false, false, false, false, false, false, false, true, true, true, true, false],
+      [true, true, true, true, true, false, false, false, false, false, false, false, false, false, false, false]
+    ]
+  },
+  "joao": {
+    "Semana 1 (10/11 a 15/11/2025)": [
+      [false, false, false, false, false, false, false, false, false, false, false, true, true, true, false, false],
+      [true, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+      [true, true, true, true, true, true, true, true, true, false, false, false, false, false, false, false],
+      [true, true, true, true, true, true, true, true, true, false, false, false, false, false, false, false],
+      Array(16).fill(false),
+      [true, true, true, true, false, false, false, false, false, false, false, false, false, false, false, false]
+    ]
+  },
+  "paulo": {
+    "Semana 1 (10/11 a 15/11/2025)": [
+      [false, false, false, false, false, false, false, false, false, false, false, true, true, true, true, false],
+      [false, false, false, false, false, false, false, false, false, false, false, true, true, true, true, false],
+      [true, true, true, true, false, false, false, false, false, false, false, true, true, true, true, false],
+      [false, false, false, false, false, false, false, false, false, false, false, true, true, true, true, false],
+      [true, true, true, true, false, false, false, false, false, false, false, true, true, true, true, false],
+      [true, true, true, true, true, false, false, false, false, false, false, false, false, false, false, false]
+    ]
+  },
+  "lailton": {
+    "Semana 1 (10/11 a 15/11/2025)": [
+      [true, true, true, true, false, false, false, false, false, false, false, false, false, false, false, false],
+      [true, true, true, true, false, false, false, false, false, false, false, false, false, false, false, false],
+      [true, true, true, true, false, false, false, false, false, false, false, false, false, false, false, false],
+      Array(16).fill(false),
+      Array(16).fill(false),
+      Array(16).fill(false)
+    ]
+  },
+  "augusto": {
+    "Semana 1 (10/11 a 15/11/2025)": [
+      [false, false, false, false, false, false, false, false, false, false, false, true, true, true, true, false],
+      [false, false, false, false, false, false, false, false, false, false, false, true, true, true, true, false],
+      [true, true, true, true, true, true, true, false, false, false, false, false, false, false, false, false],
+      [false, false, false, false, false, false, false, false, false, false, false, true, true, true, true, false],
+      [false, false, false, false, false, false, false, false, false, false, false, true, true, true, true, false],
+      [true, true, true, true, true, false, false, false, false, false, false, false, false, false, false, false]
+    ]
+  },
+  "marcelo": {
+    "Semana 1 (10/11 a 15/11/2025)": [
+      [false, false, true, true, false, false, false, false, false, false, false, true, true, true, true, false],
+      [true, true, false, false, false, false, false, false, false, false, false, true, true, true, true, false],
+      [false, false, false, false, false, false, false, false, false, false, false, true, true, true, true, false],
+      [false, false, false, false, false, false, false, false, false, false, false, true, true, true, true, false],
+      [false, false, false, false, false, false, false, false, false, false, false, true, true, true, true, false],
+      [true, true, true, true, true, false, false, false, false, false, false, false, false, false, false, false]
+    ]
+  },
+  "vandenilson": {
+    "Semana 1 (10/11 a 15/11/2025)": [
+      [false, false, false, false, false, false, false, false, false, false, false, true, true, true, true, false],
+      [false, false, false, false, false, false, false, false, false, false, false, true, true, true, true, false],
+      [false, false, false, false, false, false, false, false, false, false, false, true, true, true, true, false],
+      [false, false, false, false, false, false, false, false, false, false, false, true, true, true, true, false],
+      Array(16).fill(false),
+      [true, true, true, false, false, false, false, false, false, false, false, false, false, false, false, false]
+    ]
+  },
+  "heloisa": {
+    "Semana 1 (10/11 a 15/11/2025)": [
+      [false, false, false, false, false, true, false, false, false, false, false, true, true, true, false, false],
+      [true, true, true, true, false, false, false, false, false, false, false, false, false, false, false, false],
+      [true, true, true, true, false, false, false, false, false, false, false, false, false, false, false, false],
+      [false, false, false, false, false, true, false, false, false, false, false, true, true, true, false, false],
+      [false, false, false, false, false, true, false, false, false, false, false, true, true, true, false, false],
+      [true, true, true, true, true, false, false, false, false, false, false, false, false, false, false, false]
+    ]
+  },
+  "abilio": {
+    "Semana 1 (10/11 a 15/11/2025)": [
+      [false, false, false, false, false, true, true, true, true, false, false, false, false, false, false, false],
+      [false, false, false, false, false, true, true, true, true, false, false, false, false, false, false, false],
+      [false, false, false, false, false, true, true, true, true, false, false, false, false, false, false, false],
+      [false, false, false, false, false, true, true, true, true, false, false, false, false, false, false, false],
+      [false, false, false, false, false, true, true, true, true, false, false, false, false, false, false, false],
+      [false, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false]
+    ]
+  },
+  "raissa": {
+    "Semana 1 (10/11 a 15/11/2025)": [
+      [false, false, false, false, false, false, false, true, true, true, false, false, false, false, false, false],
+      [false, false, true, true, false, false, true, true, true, true, true, true, false, false, false, false],
+      [false, true, true, true, false, false, true, true, true, true, true, false, false, false, false, false],
+      [false, true, true, true, false, false, true, true, true, true, true, true, true, false, false, false],
+      [false, false, false, false, false, false, true, true, true, true, false, false, false, false, false, false],
+      [true, true, true, true, true, false, false, false, false, false, false, false, false, false, false, false]
+    ]
+  },
+  "gloria": {
+    "Semana 1 (10/11 a 15/11/2025)": [
+      [true, false, false, false, false, false, false, false, false, false, false, true, true, true, false, false],
+      [false, false, false, false, false, false, false, false, false, false, false, true, true, true, false, false],
+      [false, false, false, false, false, false, false, false, false, false, false, false, true, true, true, false],
+      [false, false, false, false, false, false, false, false, false, false, false, true, true, true, false, false],
+      [false, false, false, false, false, false, false, false, false, false, false, true, true, true, false, false],
+      Array(16).fill(false)
+    ]
+  },
+  "lucas": {
+    "Semana 1 (10/11 a 15/11/2025)": [
+      [false, false, false, false, false, true, true, true, true, true, false, false, false, false, false, false],
+      [true, true, true, true, false, false, true, true, true, true, false, false, false, false, false, false],
+      [false, false, false, false, false, false, true, true, true, true, false, false, false, false, false, false],
+      [true, true, true, true, false, false, true, true, true, false, false, false, false, false, false, false],
+      [true, true, true, true, true, true, false, false, false, false, false, false, false, false, false, false],
+      [true, true, true, true, false, false, false, false, false, false, false, false, false, false, false, false]
+    ]
+  },
   "fernando": {"17/11 a 22/11/2025": [[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]]},
-  "augusto": {"17/11 a 22/11/2025": [[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[true,true,true,true,false,false,false,false,false,false,false,false,true,true,true,true,true,false,true,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[true,true,true,true,false,false,false,false,false,false,false,false,true,true,true,true,true,true,true,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[true,true,true,true,false,false,false,false,false,false,false,false,true,true,true,true,true,true,true,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[true,true,true,true,false,false,false,false,false,false,false,false,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]]},
-  "nicolas": {"17/11 a 22/11/2025": [[false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,true,true,true,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,true,true,true,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,true,true,true,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,true,true,true,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,true,true,true,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[true,true,true,true,false,false,false,false,false,false,false,false,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]]},
-  "angel": {"17/11 a 22/11/2025": [[true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[true,true,true,true,false,false,false,false,false,false,false,false,false,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]]},
-  "gloria": {"17/11 a 22/11/2025": [[true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]]},
-  "joao": {"17/11 a 22/11/2025": [[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[true,true,true,true,false,false,false,false,false,false,false,false,true,true,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[true,true,true,true,false,false,false,false,false,false,false,false,true,true,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]]},
-  "heloisa": {"17/11 a 22/11/2025": [[false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[true,true,true,true,false,false,false,false,false,false,false,false,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]]}
+  "angel": {"17/11 a 22/11/2025": [[true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[true,true,true,true,false,false,false,false,false,false,false,false,false,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false]]}
 };
 
 
     
 
     
+
