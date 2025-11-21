@@ -351,12 +351,7 @@ export default function RegisterSitePage() {
       <div className='flex flex-wrap items-center justify-between gap-4'>
         <PageHeader
           title={siteId ? "Editar Site" : "Cadastro de Sites"}
-          description={siteId ? "Atualize as informações do site." : ""}
         />
-        <Button variant="outline" onClick={() => setIsImportMigrationOpen(true)}>
-            <Upload className="mr-2" />
-            Importar Migração (JSON)
-        </Button>
       </div>
       <Card>
         <CardContent className="p-6">
@@ -375,17 +370,23 @@ export default function RegisterSitePage() {
                 <Label htmlFor="localidade" className="mb-2 block">LOCALIDADE</Label>
                 <Input id="localidade" value={localidade} onChange={(e) => setLocalidade(e.target.value)} placeholder="ex: Taguatinga/DF" required />
               </div>
-              <div>
-                <Label htmlFor="semanaSelect" className="mb-2 block">SEMANA</Label>
-                <Select value={semana} onValueChange={setSemana} required>
-                  <SelectTrigger id="semanaSelect"><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Semana 1">Semana 1</SelectItem>
-                    <SelectItem value="Semana 2">Semana 2</SelectItem>
-                    <SelectItem value="Semana 3">Semana 3</SelectItem>
-                    <SelectItem value="Semana 4">Semana 4</SelectItem>
-                  </SelectContent>
-                </Select>
+              <div className='md:col-span-3 grid grid-cols-1 md:grid-cols-[1fr_auto] gap-4 items-end'>
+                <div>
+                  <Label htmlFor="semanaSelect" className="mb-2 block">SEMANA</Label>
+                  <Select value={semana} onValueChange={setSemana} required>
+                    <SelectTrigger id="semanaSelect"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Semana 1">Semana 1</SelectItem>
+                      <SelectItem value="Semana 2">Semana 2</SelectItem>
+                      <SelectItem value="Semana 3">Semana 3</SelectItem>
+                      <SelectItem value="Semana 4">Semana 4</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <Button variant="outline" type="button" onClick={() => setIsImportMigrationOpen(true)}>
+                    <Upload className="mr-2" />
+                    Importar Migração (JSON)
+                </Button>
               </div>
             </div>
 
@@ -571,3 +572,5 @@ export default function RegisterSitePage() {
     </div>
   );
 }
+
+    
