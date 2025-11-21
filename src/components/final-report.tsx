@@ -8,20 +8,29 @@ import {
   CardHeader,
   CardTitle,
   CardDescription,
+  CardFooter,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Download } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import type { SiteEntry } from '@/lib/registered-sites';
 import { RichTextEditor } from './rich-text-editor';
+import { nomes as analistasNomes } from '@/lib/data';
 
 interface FinalReportProps {
   phase: string | null;
   title: string;
   site: SiteEntry | null;
 }
+
+// Mock de emails, em um app real viria de um backend
+const preRegisteredEmails = Object.values(analistasNomes).map(nome => ({
+    name: `${nome} (V2MR)`,
+    email: `${nome.toLowerCase().split(' ')[0]}@v2mr.com`
+}));
+preRegisteredEmails.push({ name: 'Irlei Rodrigues (ZOOM)', email: 'irlei@zoom.com'});
+
 
 export function FinalReport({ phase, title, site }: FinalReportProps) {
   const [reportContent, setReportContent] = useState('');
@@ -30,69 +39,42 @@ export function FinalReport({ phase, title, site }: FinalReportProps) {
   const [endTime, setEndTime] = useState('');
   const [breakTime, setBreakTime] = useState('');
   const [fieldTechs, setFieldTechs] = useState('');
+  const [additionalEmails, setAdditionalEmails] = useState('');
+  const [selectedEmails, setSelectedEmails] = useState<string[]>([]);
   const { toast } = useToast();
 
   if (!phase || !site) return null;
 
-  const generateAndDownload = () => {
-    if (!reportContent.trim() || !status.trim()) {
+  const handleEmailSubmit = () => {
+     if (selectedEmails.length === 0 && !additionalEmails.trim()) {
        toast({
             variant: "destructive",
-            title: "Campos Obrigatórios",
-            description: "Status e o corpo do relatório são obrigatórios.",
+            title: "Nenhum email selecionado",
+            description: "Selecione ao menos um destinatário ou adicione um email.",
         });
       return;
     }
-      
-    const phaseKey = phase as keyof Pick<SiteEntry, 'planejamento' | 'preparacao' | 'migracao'>;
-    const phaseData = site[phaseKey];
-    
-    const responsavelTecnico = [
-      ...(phaseData?.v2mr?.map(p => p.name) || []),
-    ].join(', ');
-
-    const reportFileContent = `
-###[${phase.charAt(0).toUpperCase() + phase.slice(1)}] – ${site.sigla} Finalização ###
-
-**Hora de Inicio:** ${startTime || new Date(phaseData.date + 'T08:00:00').toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit'})}
-**Intervalo:** ${breakTime || 'N/A'}
-**Hora de Término:** ${endTime || new Date(phaseData.date + 'T18:00:00').toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit'})}
-**Data:** ${phaseData?.date ? new Date(phaseData.date + 'T00:00:00').toLocaleDateString('pt-BR') : 'N/A'}
-**Local:** ${site.sigla} - ${site.descricaoBreve}
-**Template:** N/A
-**Switches novos:** N/A
-**Status:** ${status}
-**Técnico em campo:** ${fieldTechs || 'N/A'}
-**Responsável técnico:** ${responsavelTecnico || 'N/A'}
-
----
-**RELATÓRIO DE ATIVIDADES:**
-
-${reportContent}
-
----
-**Atualizado por:** [Nome do Usuário Logado]
-    `.trim();
-
-    const blob = new Blob([reportFileContent], { type: 'text/markdown;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `Relatorio_${phase}_${site.sigla}.md`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-    
     toast({
-        title: "Relatório Gerado",
-        description: "O download do seu arquivo de relatório foi iniciado.",
+        title: "Funcionalidade em Desenvolvimento",
+        description: "O envio de email ainda não foi implementado.",
     });
-  };
+    console.log({
+        selectedEmails,
+        additionalEmails,
+        reportContent,
+    });
+  }
+
+  const handleSave = () => {
+       toast({
+        title: "Atualização Salva",
+        description: "As informações do relatório foram salvas.",
+    });
+  }
 
   return (
     <>
-      <Card>
+      <Card className="border-0 shadow-none">
         <CardHeader>
           <CardTitle>{title}</CardTitle>
           <CardDescription>
@@ -136,7 +118,7 @@ ${reportContent}
            </div>
           
           <div>
-            <Label>Relatório de Atividades (Obrigatório)</Label>
+            <Label htmlFor="report-notes">Notas</Label>
             <div className='mt-2'>
               <RichTextEditor
                   content={reportContent}
@@ -144,12 +126,55 @@ ${reportContent}
                   placeholder="Descreva as atividades, insira checklists e observações aqui..."
               />
             </div>
+            <p className="mt-4 text-sm text-muted-foreground text-center">
+              Obrigado pela atenção e colaboração na execução desta atividade!
+              <br/>
+              Para atualizações, contate o responsável técnico.
+            </p>
           </div>
-          <Button onClick={generateAndDownload} className="w-full">
-            <Download className="mr-2" />
-            Gerar e Baixar Relatório
-          </Button>
+          
+          <Card>
+            <CardHeader className="text-center">
+              <CardTitle>Enviar Relatório por Email</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+               <div>
+                  <Label htmlFor="pre-registered-emails">Emails Pré-Cadastrados:</Label>
+                  <select
+                    id="pre-registered-emails"
+                    multiple
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm h-32 border p-2 bg-background"
+                    value={selectedEmails}
+                    onChange={(e) => setSelectedEmails(Array.from(e.target.selectedOptions, option => option.value))}
+                  >
+                    {preRegisteredEmails.map(person => (
+                      <option key={person.email} value={person.email}>{person.name}</option>
+                    ))}
+                  </select>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    Segure Ctrl (ou Cmd no Mac) para selecionar múltiplos.
+                  </p>
+               </div>
+               <div>
+                 <Label htmlFor="additional-emails">Adicionar Email na Hora (separados por vírgula):</Label>
+                  <Input
+                    id="additional-emails"
+                    placeholder="ex: novo@email.com, outro@email.com"
+                    value={additionalEmails}
+                    onChange={(e) => setAdditionalEmails(e.target.value)}
+                  />
+               </div>
+               <Button onClick={handleEmailSubmit} className="w-full">
+                 Enviar por Email
+               </Button>
+            </CardContent>
+          </Card>
+
         </CardContent>
+        <CardFooter className="flex justify-end gap-2">
+            <Button variant="secondary">Fechar</Button>
+            <Button onClick={handleSave} className="bg-green-600 hover:bg-green-700">Salvar Atualização</Button>
+        </CardFooter>
       </Card>
     </>
   );
