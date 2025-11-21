@@ -1,0 +1,165 @@
+
+[
+  {
+    "id": "usr_101",
+    "nome": "Fabrício Costa do Nascimento ",
+    "email": "fabriciocostadn@gmail.com",
+    "cargo": "Analista",
+    "nivel": "Júnior",
+    "status": "ativo",
+    "telefone": ""
+  },
+  {
+    "id": "usr_102",
+    "nome": "Fernando Luis Da Silva Loiola",
+    "email": "fernando.l.s.loiola@gmail.com ",
+    "cargo": "Analista",
+    "nivel": "Júnior",
+    "status": "ativo",
+    "telefone": ""
+  },
+  {
+    "id": "usr_103",
+    "nome": "Glória Maria de Andrade Alves ",
+    "email": "gloria.alves61@aluno.ifce.edu.br",
+    "cargo": "Analista",
+    "nivel": "Júnior",
+    "status": "ativo",
+    "telefone": ""
+  },
+  {
+    "id": "usr_104",
+    "nome": "Heloisa Silva Carvalho",
+    "email": "heloisa2006carvalho@gmail.com",
+    "cargo": "Analista",
+    "nivel": "Júnior",
+    "status": "ativo",
+    "telefone": ""
+  },
+  {
+    "id": "usr_105",
+    "nome": "João Guilherme Assis da Silva Alves",
+    "email": "guilherme.alves09@aluno.ifce.edu.br",
+    "cargo": "Analista",
+    "nivel": "Júnior",
+    "status": "ativo",
+    "telefone": ""
+  },
+  {
+    "id": "usr_106",
+    "nome": "João Ruffino dos Santos",
+    "email": "ruffino.joaoo@gmail.com",
+    "cargo": "Analista",
+    "nivel": "Júnior",
+    "status": "ativo",
+    "telefone": ""
+  },
+  {
+    "id": "usr_107",
+    "nome": "Lailton Bezerra de Abreu",
+    "email": "lailtonabreu28@gmal.com",
+    "cargo": "Analista",
+    "nivel": "Júnior",
+    "status": "ativo",
+    "telefone": ""
+  },
+  {
+    "id": "usr_108",
+    "nome": "Lucas de Lima Araújo",
+    "email": "llucas.lima03@gmail.com",
+    "cargo": "Analista",
+    "nivel": "Júnior",
+    "status": "ativo",
+    "telefone": ""
+  },
+  {
+    "id": "usr_109",
+    "nome": "Marcelo dos Anjos Fernandes",
+    "email": "marceloadm79@gmail.com",
+    "cargo": "Analista",
+    "nivel": "Júnior",
+    "status": "ativo",
+    "telefone": ""
+  },
+  {
+    "id": "usr_110",
+    "nome": "Nicolas de Sousa Soares",
+    "email": "nickisoarez@gmail.com",
+    "cargo": "Analista",
+    "nivel": "Júnior",
+    "status": "ativo",
+    "telefone": ""
+  },
+  {
+    "id": "usr_111",
+    "nome": "Paulo Borges",
+    "email": "borgespaulo026@gmail.com",
+    "cargo": "Analista",
+    "nivel": "Júnior",
+    "status": "ativo",
+    "telefone": ""
+  },
+  {
+    "id": "usr_112",
+    "nome": "Pedro Abílio Dota de Mesquita",
+    "email": "pedroabilio0303@gmail.com",
+    "cargo": "Analista",
+    "nivel": "Júnior",
+    "status": "ativo",
+    "telefone": ""
+  },
+  {
+    "id": "usr_113",
+    "nome": "Pedro Marques Clemonini",
+    "email": "pclemonini-00@hotmail.com",
+    "cargo": "Analista",
+    "nivel": "Júnior",
+    "status": "ativo",
+    "telefone": ""
+  },
+  {
+    "id": "usr_114",
+    "nome": "Raissa Moreira Martins",
+    "email": "moreiraraissa81@gmail.com",
+    "cargo": "Analista",
+    "nivel": "Júnior",
+    "status": "ativo",
+    "telefone": ""
+  },
+  {
+    "id": "usr_115",
+    "nome": "Ruan Italo da Silva Carvalho",
+    "email": "ruanitalo5@gmail.com",
+    "cargo": "Analista",
+    "nivel": "Júnior",
+    "status": "ativo",
+    "telefone": ""
+  },
+  {
+    "id": "usr_116",
+    "nome": "Samuel Pereira ",
+    "email": "s.pereira@outlook.com",
+    "cargo": "Analista",
+    "nivel": "Júnior",
+    "status": "ativo",
+    "telefone": ""
+  },
+  {
+    "id": "usr_117",
+    "nome": "Vandenilson Araújo dos Santos",
+    "email": "vhmg7705@gmail.com",
+    "cargo": "Analista",
+    "nivel": "Júnior",
+    "status": "ativo",
+    "telefone": ""
+  },
+  {
+    "id": "usr_118",
+    "nome": "vandenilson araujo",
+    "email": "vhmg7705@gmial.com",
+    "cargo": "Analista",
+    "nivel": "Júnior",
+    "status": "ativo",
+    "telefone": ""
+  }
+]
