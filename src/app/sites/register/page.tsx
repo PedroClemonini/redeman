@@ -6,7 +6,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { PageHeader } from '@/components/page-header';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -30,6 +30,8 @@ import { nomes as allAnalysts } from '@/lib/data';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ImportDialog } from '@/components/import-dialog';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+
 
 type Status = 'Completo' | 'Em Andamento' | 'Pendente' | 'Não Iniciado';
 
@@ -302,15 +304,15 @@ export default function RegisterSitePage() {
                 </Button>
             </PopoverTrigger>
             <PopoverContent className="w-64 p-0">
-                <div className="p-2 space-y-2 max-h-60 overflow-y-auto">
+                <div className="p-2 space-y-1 max-h-60 overflow-y-auto">
                     {Object.entries(allAnalysts).map(([key, name]) => (
-                        <div key={key} className="flex items-center space-x-2">
+                        <div key={key} className="flex items-center space-x-2 p-1">
                             <Checkbox 
                                 id={`analyst-${key}`}
                                 checked={list.some(p => p.name === name)}
                                 onCheckedChange={(checked) => handleAnalystSelection(name, !!checked, list, setter)}
                             />
-                            <Label htmlFor={`analyst-${key}`} className="font-normal">{name}</Label>
+                            <Label htmlFor={`analyst-${key}`} className="font-normal text-sm">{name}</Label>
                         </div>
                     ))}
                 </div>
@@ -348,116 +350,121 @@ export default function RegisterSitePage() {
 
   return (
     <div className="space-y-8">
-      <div className='flex flex-wrap items-center justify-between gap-4'>
-        <PageHeader
-          title={siteId ? "Editar Site" : "Cadastro de Sites"}
-        />
-      </div>
+      <PageHeader title={siteId ? "Editar Site" : "Cadastro de Sites"} />
       <Card>
         <CardContent className="p-6">
           <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="sigla">SIGLA (máx. 5)</Label>
-                <Input id="sigla" value={sigla} onChange={(e) => setSigla(e.target.value)} maxLength={5} placeholder="ex: ARN01" required />
-                {sigla.length > 5 && <p className="text-red-500 text-xs mt-1">Máx. 5 caracteres!</p>}
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="descricaoBreve">DESCRIÇÃO BREVE</Label>
-                <Input id="descricaoBreve" value={descricaoBreve} onChange={(e) => setDescricaoBreve(e.target.value)} placeholder="ex: Arniqueiras" required />
-              </div>
-               <div className="space-y-2">
-                <Label htmlFor="localidade">LOCALIDADE</Label>
-                <Input id="localidade" value={localidade} onChange={(e) => setLocalidade(e.target.value)} placeholder="ex: Taguatinga/DF" required />
-              </div>
-              <div className='md:col-span-3 grid grid-cols-1 md:grid-cols-[1fr_auto] gap-4 items-end'>
-                <div className="space-y-2">
-                  <Label htmlFor="semanaSelect">SEMANA</Label>
-                  <Select value={semana} onValueChange={setSemana} required>
-                    <SelectTrigger id="semanaSelect"><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Semana 1">Semana 1</SelectItem>
-                      <SelectItem value="Semana 2">Semana 2</SelectItem>
-                      <SelectItem value="Semana 3">Semana 3</SelectItem>
-                      <SelectItem value="Semana 4">Semana 4</SelectItem>
-                    </SelectContent>
-                  </Select>
+             <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-8 gap-y-6">
+                {/* Coluna da Esquerda: Informações Gerais */}
+                <div className="space-y-4">
+                  <CardTitle>Informações Gerais</CardTitle>
+                  <div className="space-y-2">
+                    <Label htmlFor="sigla">SIGLA (máx. 5)</Label>
+                    <Input id="sigla" value={sigla} onChange={(e) => setSigla(e.target.value)} maxLength={5} placeholder="ex: ARN01" required />
+                    {sigla.length > 5 && <p className="text-red-500 text-xs mt-1">Máx. 5 caracteres!</p>}
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="descricaoBreve">DESCRIÇÃO BREVE</Label>
+                    <Input id="descricaoBreve" value={descricaoBreve} onChange={(e) => setDescricaoBreve(e.target.value)} placeholder="ex: Arniqueiras" required />
+                  </div>
+                   <div className="space-y-2">
+                    <Label htmlFor="localidade">LOCALIDADE</Label>
+                    <Input id="localidade" value={localidade} onChange={(e) => setLocalidade(e.target.value)} placeholder="ex: Taguatinga/DF" required />
+                  </div>
+                  <div className='grid grid-cols-1 md:grid-cols-2 gap-4 items-end'>
+                    <div className="space-y-2">
+                      <Label htmlFor="semanaSelect">SEMANA</Label>
+                      <Select value={semana} onValueChange={setSemana} required>
+                        <SelectTrigger id="semanaSelect"><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Semana 1">Semana 1</SelectItem>
+                          <SelectItem value="Semana 2">Semana 2</SelectItem>
+                          <SelectItem value="Semana 3">Semana 3</SelectItem>
+                          <SelectItem value="Semana 4">Semana 4</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <Button variant="outline" type="button" onClick={() => setIsImportMigrationOpen(true)}>
+                        <Upload className="mr-2" />
+                        Importar JSON
+                    </Button>
+                  </div>
+                   <div className="space-y-2">
+                    <Label htmlFor="linkWhatsapp">Grupo WhatsApp do Site</Label>
+                    <Input id="linkWhatsapp" type="url" value={linkWhatsapp} onChange={e => setLinkWhatsapp(e.target.value)} placeholder="https://chat.whatsapp.com/..." />
                 </div>
-                <Button variant="outline" type="button" onClick={() => setIsImportMigrationOpen(true)}>
-                    <Upload className="mr-2" />
-                    Importar Migração (JSON)
-                </Button>
-              </div>
-            </div>
+                </div>
 
-            {/* Etapas */}
-            <div className="space-y-4">
-              {/* Planejamento */}
-              <div className="border bg-muted/20 rounded-lg p-4">
-                <h3 className="text-lg font-bold mb-3 flex items-center gap-3"><span className="flex size-8 items-center justify-center rounded-full bg-blue-600 text-sm font-bold text-white">1</span>PLANEJAMENTO</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Input type="date" value={dataPlanejamento} onChange={e => setDataPlanejamento(e.target.value)} />
-                  <Input type="url" value={linkPlanejamento} onChange={e => setLinkPlanejamento(e.target.value)} placeholder="Link da Reunião" />
+                {/* Coluna da Direita: Etapas */}
+                <div className="space-y-4">
+                   <CardTitle>Etapas da Migração</CardTitle>
+                   <Tabs defaultValue="planejamento">
+                      <TabsList className="grid w-full grid-cols-3">
+                          <TabsTrigger value="planejamento">Planejamento</TabsTrigger>
+                          <TabsTrigger value="preparacao">Preparação</TabsTrigger>
+                          <TabsTrigger value="migracao">Migração</TabsTrigger>
+                      </TabsList>
+                      <TabsContent value="planejamento" className="border rounded-b-lg rounded-tr-lg p-4">
+                        <div className="space-y-4">
+                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <Input type="date" value={dataPlanejamento} onChange={e => setDataPlanejamento(e.target.value)} />
+                            <Input type="url" value={linkPlanejamento} onChange={e => setLinkPlanejamento(e.target.value)} placeholder="Link da Reunião" />
+                          </div>
+                          <div>
+                            <Label>Analistas V2MR</Label>
+                            <AnalystSelector list={v2mrPlanejamento} setter={setV2mrPlanejamento} buttonColor="bg-blue-600 hover:bg-blue-700 text-white" />
+                          </div>
+                        </div>
+                      </TabsContent>
+                      <TabsContent value="preparacao" className="border rounded-b-lg rounded-tr-lg p-4">
+                        <div className="space-y-4">
+                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <Input type="date" value={dataPreparacao} onChange={e => setDataPreparacao(e.target.value)} />
+                            <Input type="url" value={linkPreparacao} onChange={e => setLinkPreparacao(e.target.value)} placeholder="Link da Reunião" />
+                          </div>
+                          <div className="space-y-4">
+                            <div>
+                              <Label>Analistas V2MR</Label>
+                              <AnalystSelector list={v2mrPreparacao} setter={setV2mrPreparacao} buttonColor="bg-blue-600 hover:bg-blue-700 text-white" />
+                            </div>
+                            <div>
+                              <Label>Técnicos Zoomtech</Label>
+                              <AnalystSelector list={zoomPreparacao} setter={setZoomPreparacao} buttonColor="bg-green-600 hover:bg-green-700 text-white" />
+                            </div>
+                             <div>
+                              <Label>Técnicos BBTS (In Loco)</Label>
+                              <AnalystSelector list={btsPreparacao} setter={setBtsPreparacao} buttonColor="bg-purple-600 hover:bg-purple-700 text-white" />
+                            </div>
+                          </div>
+                        </div>
+                      </TabsContent>
+                      <TabsContent value="migracao" className="border rounded-b-lg rounded-tr-lg p-4">
+                        <div className="space-y-4">
+                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <Input type="date" value={dataMigracao} onChange={e => setDataMigracao(e.target.value)} />
+                            <Input type="url" value={linkMigracao} onChange={e => setLinkMigracao(e.target.value)} placeholder="Link da Reunião" />
+                          </div>
+                          <div className="space-y-4">
+                             <div>
+                              <Label>Analistas V2MR</Label>
+                              <AnalystSelector list={v2mrMigracao} setter={setV2mrMigracao} buttonColor="bg-blue-600 hover:bg-blue-700 text-white" />
+                            </div>
+                            <div>
+                              <Label>Técnicos Zoomtech</Label>
+                              <AnalystSelector list={zoomMigracao} setter={setZoomMigracao} buttonColor="bg-green-600 hover:bg-green-700 text-white" />
+                            </div>
+                             <div>
+                              <Label>Técnicos BBTS (In Loco)</Label>
+                              <AnalystSelector list={btsMigracao} setter={setBtsMigracao} buttonColor="bg-purple-600 hover:bg-purple-700 text-white" />
+                            </div>
+                          </div>
+                        </div>
+                      </TabsContent>
+                   </Tabs>
                 </div>
-                <div className="mt-4">
-                  <Label className="block text-sm font-medium mb-2">Analistas V2MR</Label>
-                  <AnalystSelector list={v2mrPlanejamento} setter={setV2mrPlanejamento} buttonColor="bg-blue-600 hover:bg-blue-700 text-white" />
-                </div>
-              </div>
-
-              {/* Preparação */}
-              <div className="border bg-muted/20 rounded-lg p-4">
-                <h3 className="text-lg font-bold mb-3 flex items-center gap-3"><span className="flex size-8 items-center justify-center rounded-full bg-yellow-500 text-sm font-bold text-white">2</span>PREPARAÇÃO</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Input type="date" value={dataPreparacao} onChange={e => setDataPreparacao(e.target.value)} />
-                  <Input type="url" value={linkPreparacao} onChange={e => setLinkPreparacao(e.target.value)} placeholder="Link da Reunião" />
-                </div>
-                <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div>
-                    <Label className="block text-sm font-medium mb-2">Analistas V2MR</Label>
-                    <AnalystSelector list={v2mrPreparacao} setter={setV2mrPreparacao} buttonColor="bg-blue-600 hover:bg-blue-700 text-white" />
-                  </div>
-                  <div>
-                    <Label className="block text-sm font-medium mb-2">Técnicos Zoomtech</Label>
-                    <AnalystSelector list={zoomPreparacao} setter={setZoomPreparacao} buttonColor="bg-green-600 hover:bg-green-700 text-white" />
-                  </div>
-                   <div>
-                    <Label className="block text-sm font-medium mb-2">Técnicos BBTS (In Loco)</Label>
-                    <AnalystSelector list={btsPreparacao} setter={setBtsPreparacao} buttonColor="bg-purple-600 hover:bg-purple-700 text-white" />
-                  </div>
-                </div>
-              </div>
-              
-              {/* Migração */}
-              <div className="border bg-muted/20 rounded-lg p-4">
-                 <h3 className="text-lg font-bold mb-3 flex items-center gap-3"><span className="flex size-8 items-center justify-center rounded-full bg-green-600 text-sm font-bold text-white">3</span>MIGRAÇÃO</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Input type="date" value={dataMigracao} onChange={e => setDataMigracao(e.target.value)} />
-                  <Input type="url" value={linkMigracao} onChange={e => setLinkMigracao(e.target.value)} placeholder="Link da Reunião" />
-                </div>
-                <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div>
-                    <Label className="block text-sm font-medium mb-2">Analistas V2MR</Label>
-                    <AnalystSelector list={v2mrMigracao} setter={setV2mrMigracao} buttonColor="bg-blue-600 hover:bg-blue-700 text-white" />
-                  </div>
-                  <div>
-                    <Label className="block text-sm font-medium mb-2">Técnicos Zoomtech</Label>
-                    <AnalystSelector list={zoomMigracao} setter={setZoomMigracao} buttonColor="bg-green-600 hover:bg-green-700 text-white" />
-                  </div>
-                   <div>
-                    <Label className="block text-sm font-medium mb-2">Técnicos BBTS (In Loco)</Label>
-                    <AnalystSelector list={btsMigracao} setter={setBtsMigracao} buttonColor="bg-purple-600 hover:bg-purple-700 text-white" />
-                  </div>
-                </div>
-              </div>
             </div>
             
-            <div className="border bg-muted/20 rounded-lg p-4">
-                <Label htmlFor="linkWhatsapp" className="block text-sm font-medium mb-2">Grupo WhatsApp do Site</Label>
-                <Input id="linkWhatsapp" type="url" value={linkWhatsapp} onChange={e => setLinkWhatsapp(e.target.value)} placeholder="https://chat.whatsapp.com/..." />
-            </div>
-
-            <Button type="submit" className="w-full text-lg h-12">{siteId ? "ATUALIZAR SITE" : "CADASTRAR SITE"}</Button>
+            <Button type="submit" className="w-full text-lg h-12 mt-6">{siteId ? "ATUALIZAR SITE" : "CADASTRAR SITE"}</Button>
           </form>
         </CardContent>
       </Card>
@@ -572,5 +579,3 @@ export default function RegisterSitePage() {
     </div>
   );
 }
-
-    
