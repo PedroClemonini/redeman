@@ -10,20 +10,12 @@ import {
   CardDescription,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Download, AlertCircle } from 'lucide-react';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from '@/components/ui/dialog';
+import { Download } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import type { SiteEntry } from '@/lib/registered-sites';
+import { RichTextEditor } from './rich-text-editor';
 
 interface FinalReportProps {
   phase: string | null;
@@ -32,64 +24,57 @@ interface FinalReportProps {
 }
 
 export function FinalReport({ phase, title, site }: FinalReportProps) {
-  const [notes, setNotes] = useState('');
+  const [reportContent, setReportContent] = useState('');
   const [status, setStatus] = useState('');
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [startTime, setStartTime] = useState('');
+  const [endTime, setEndTime] = useState('');
+  const [breakTime, setBreakTime] = useState('');
+  const [fieldTechs, setFieldTechs] = useState('');
   const { toast } = useToast();
 
   if (!phase || !site) return null;
 
-  const handleGenerateReport = () => {
-    if (!notes.trim() || !status.trim()) {
-      setIsModalOpen(true);
-      return;
-    }
-    generateAndDownload();
-  };
-  
-  const handleModalSubmit = () => {
-     if (!notes.trim() || !status.trim()) {
-        toast({
+  const generateAndDownload = () => {
+    if (!reportContent.trim() || !status.trim()) {
+       toast({
             variant: "destructive",
             title: "Campos Obrigatórios",
-            description: "Por favor, preencha os campos de status e notas para gerar o relatório.",
+            description: "Status e o corpo do relatório são obrigatórios.",
         });
-        return;
+      return;
     }
-    setIsModalOpen(false);
-    generateAndDownload();
-  }
-
-  const generateAndDownload = () => {
+      
     const phaseKey = phase as keyof Pick<SiteEntry, 'planejamento' | 'preparacao' | 'migracao'>;
     const phaseData = site[phaseKey];
-
-    const formatPeople = (people: {id: number, name: string}[]) => (people && people.length > 0) ? people.map(p => p.name).join(', ') : 'N/A';
-
-    const technicians = [
-        ...(phaseData?.zoom?.map(p => `(zoom) ${p.name}`) || []),
-        ...(phaseData?.bts?.map(p => `(bts) ${p.name}`) || [])
-    ].join(' - ');
     
     const responsavelTecnico = [
       ...(phaseData?.v2mr?.map(p => p.name) || []),
     ].join(', ');
 
+    const reportFileContent = `
+###[${phase.charAt(0).toUpperCase() + phase.slice(1)}] – ${site.sigla} Finalização ###
 
-    const reportContent = `###[${phase.charAt(0).toUpperCase() + phase.slice(1)}] – ${site.sigla} Finalização ###
-
-**Hora:** ${phaseData?.date ? new Date(phaseData.date + 'T00:00:00').toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit'}) : 'N/A'} - ${phaseData?.date ? new Date(phaseData.date + 'T23:59:59').toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit'}) : 'N/A'} ${phaseData?.date ? new Date(phaseData.date + 'T00:00:00').toLocaleDateString('pt-BR') : 'N/A'}
-**Local:** ${site.sigla}
+**Hora de Inicio:** ${startTime || new Date(phaseData.date + 'T08:00:00').toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit'})}
+**Intervalo:** ${breakTime || 'N/A'}
+**Hora de Término:** ${endTime || new Date(phaseData.date + 'T18:00:00').toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit'})}
+**Data:** ${phaseData?.date ? new Date(phaseData.date + 'T00:00:00').toLocaleDateString('pt-BR') : 'N/A'}
+**Local:** ${site.sigla} - ${site.descricaoBreve}
 **Template:** N/A
 **Switches novos:** N/A
 **Status:** ${status}
-**Técnico em campo:** ${technicians || 'N/A'}
+**Técnico em campo:** ${fieldTechs || 'N/A'}
 **Responsável técnico:** ${responsavelTecnico || 'N/A'}
-**Notas Adicionais:** ${notes}
+
+---
+**RELATÓRIO DE ATIVIDADES:**
+
+${reportContent}
+
+---
 **Atualizado por:** [Nome do Usuário Logado]
     `.trim();
 
-    const blob = new Blob([reportContent], { type: 'text/markdown;charset=utf-8' });
+    const blob = new Blob([reportFileContent], { type: 'text/markdown;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
@@ -111,74 +96,61 @@ export function FinalReport({ phase, title, site }: FinalReportProps) {
         <CardHeader>
           <CardTitle>{title}</CardTitle>
           <CardDescription>
-            Gere o relatório final para a fase: {phase}
+            Preencha os detalhes da fase de {phase} para gerar o relatório de atividades.
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div>
-            <Label htmlFor="report-status">Status (Obrigatório)</Label>
-            <Input
-              id="report-status"
-              placeholder="Ex: Concluído, Feito parcialmente..."
-              value={status}
-              onChange={(e) => setStatus(e.target.value)}
-            />
+        <CardContent className="space-y-6">
+          <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+             <div>
+                <Label htmlFor="report-status">Status (Obrigatório)</Label>
+                <Input
+                  id="report-status"
+                  placeholder="Ex: Concluído, Feito parcialmente..."
+                  value={status}
+                  onChange={(e) => setStatus(e.target.value)}
+                />
+              </div>
+               <div>
+                <Label htmlFor="field-techs">Técnicos em Campo</Label>
+                <Input
+                  id="field-techs"
+                  placeholder="Ex: Márcio, Marcos"
+                  value={fieldTechs}
+                  onChange={(e) => setFieldTechs(e.target.value)}
+                />
+              </div>
           </div>
+           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div>
+                <Label htmlFor="start-time">Hora Início</Label>
+                <Input id="start-time" type="time" value={startTime} onChange={e => setStartTime(e.target.value)} />
+              </div>
+              <div>
+                <Label htmlFor="break-time">Intervalo</Label>
+                <Input id="break-time" placeholder="Ex: 12h - 13h" value={breakTime} onChange={e => setBreakTime(e.target.value)} />
+              </div>
+              <div>
+                <Label htmlFor="end-time">Hora Término</Label>
+                <Input id="end-time" type="time" value={endTime} onChange={e => setEndTime(e.target.value)} />
+              </div>
+           </div>
+          
           <div>
-            <Label htmlFor="report-notes">Notas Adicionais (Obrigatório)</Label>
-            <Textarea
-              id="report-notes"
-              placeholder="Adicione observações relevantes aqui..."
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-            />
+            <Label>Relatório de Atividades (Obrigatório)</Label>
+            <div className='mt-2'>
+              <RichTextEditor
+                  content={reportContent}
+                  onChange={setReportContent}
+                  placeholder="Descreva as atividades, insira checklists e observações aqui..."
+              />
+            </div>
           </div>
-          <Button onClick={handleGenerateReport}>
+          <Button onClick={generateAndDownload} className="w-full">
             <Download className="mr-2" />
             Gerar e Baixar Relatório
           </Button>
         </CardContent>
       </Card>
-      
-      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent>
-            <DialogHeader>
-                <DialogTitle className="flex items-center gap-2">
-                    <AlertCircle className="text-yellow-500" />
-                    Campos Obrigatórios
-                </DialogTitle>
-                <DialogDescription>
-                    Os campos "Status" e "Notas Adicionais" são obrigatórios para gerar o relatório. Por favor, preencha as informações necessárias.
-                </DialogDescription>
-            </DialogHeader>
-            <div className="py-4 space-y-4">
-                <div>
-                  <Label htmlFor="modal-report-status">Status</Label>
-                  <Input
-                    id="modal-report-status"
-                    placeholder="Ex: Concluído, Feito parcialmente..."
-                    value={status}
-                    onChange={(e) => setStatus(e.target.value)}
-                    className="mt-2"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="modal-report-notes">Notas Adicionais</Label>
-                  <Textarea
-                  id="modal-report-notes"
-                  placeholder="Insira suas notas aqui..."
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
-                  className="mt-2"
-                  />
-                </div>
-            </div>
-            <DialogFooter>
-                <Button onClick={() => setIsModalOpen(false)} variant="outline">Cancelar</Button>
-                <Button onClick={handleModalSubmit}>Salvar e Gerar Relatório</Button>
-            </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </>
   );
 }
