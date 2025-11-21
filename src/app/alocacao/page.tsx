@@ -21,17 +21,17 @@ export default function AlocacaoPage() {
   };
 
   return (
-    <div>
+    <div className="space-y-4">
       <PageHeader
         title="REDEMAP – Alocação & Ponto"
         description="Planejamento de alocação e registro de horas dos analistas."
-      />
-      <div className="mb-4 flex justify-end">
+      >
         <Button onClick={handleExport}>
           <Download className="mr-2" />
           Baixar PDF
         </Button>
-      </div>
+      </PageHeader>
+      
       <Tabs defaultValue="allocation">
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="allocation">Alocação por Analista</TabsTrigger>
