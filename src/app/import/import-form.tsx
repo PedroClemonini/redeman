@@ -15,10 +15,8 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Terminal, UploadCloud, Loader2, CheckCircle } from 'lucide-react';
-import {
-  importDataWithModelDetection,
-  type ImportDataOutput,
-} from '@/ai/flows/import-data-with-model-detection';
+import { handleImport } from '@/app/import/actions';
+import type { ImportDataOutput } from '@/ai/flows/import-data-with-model-detection';
 import { useToast } from '@/hooks/use-toast';
 
 export function ImportForm() {
@@ -59,7 +57,7 @@ export function ImportForm() {
 
     try {
       const fileDataUri = await readFileAsDataURI(file);
-      const output = await importDataWithModelDetection({ fileDataUri });
+      const output = await handleImport({ fileDataUri });
       setResult(output);
       toast({
         title: 'Import Processed',

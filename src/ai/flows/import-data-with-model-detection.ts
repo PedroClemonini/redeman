@@ -1,4 +1,3 @@
-'use server';
 /**
  * @fileOverview A data import AI agent that identifies the model type of each line from a template and imports the data.
  *
@@ -10,13 +9,13 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 import { collection, doc, setDoc } from 'firebase/firestore';
-import { useFirestore } from '@/firebase';
+import { initializeFirebase } from '@/firebase';
 
 const ImportDataInputSchema = z.object({
   fileDataUri: z
     .string()
     .describe(
-      'The data file as a data URI that must include a MIME type and use Base64 encoding. Expected format: \'data:<mimetype>;base64,<encoded_data>\'.' + 
+      'The data file as a data URI that must include a MIME type and use Base64 encoding. Expected format: \'data:<mimetype>;base64,<encoded_data>\'. ' + 
       'The file should contain data in CSV or JSON format.'
     ),
 });
@@ -38,7 +37,7 @@ const identifyAndSaveTool = ai.defineTool(
       outputSchema: z.string(),
     },
     async ({ records }) => {
-        const firestore = useFirestore();
+        const { firestore } = initializeFirebase();
         let userCount = 0;
         let siteCount = 0;
         let switchCount = 0;
@@ -46,23 +45,29 @@ const identifyAndSaveTool = ai.defineTool(
 
         for (const record of records) {
             try {
-                if (record.cargo && record.nivel) { // Likely a User
+                // Ensure the record is a plain object
+                const recordData = JSON.parse(JSON.stringify(record));
+                const recordId = recordData.id || doc(collection(firestore, 'temporary')).id; // Generate ID if missing
+                delete recordData.id;
+
+
+                if (recordData.cargo && recordData.nivel) { // Likely a User
                     const usersCollection = collection(firestore, 'users');
-                    const newDocRef = doc(usersCollection, record.id || undefined);
-                    await setDoc(newDocRef, { id: newDocRef.id, ...record });
+                    const newDocRef = doc(usersCollection, recordId);
+                    await setDoc(newDocRef, { id: newDocRef.id, ...recordData });
                     userCount++;
-                } else if (record.codigo && record.qtd_switches) { // Likely a Site/Agencia
+                } else if (recordData.codigo && recordData.qtd_switches) { // Likely a Site/Agencia
                     const agenciasCollection = collection(firestore, 'agencias');
-                    const newDocRef = doc(agenciasCollection, record.id || undefined);
-                    await setDoc(newDocRef, { id: newDocRef.id, ...record });
+                    const newDocRef = doc(agenciasCollection, recordId);
+                    await setDoc(newDocRef, { id: newDocRef.id, ...recordData });
                     siteCount++;
-                } else if (record.numero_serie && record.hostname) { // Likely a Switch
+                } else if (recordData.numero_serie && recordData.hostname) { // Likely a Switch
                     const switchesCollection = collection(firestore, 'switches');
-                    const newDocRef = doc(switchesCollection, record.id || undefined);
-                    await setDoc(newDocRef, { id: newDocRef.id, ...record });
+                    const newDocRef = doc(switchesCollection, recordId);
+                    await setDoc(newDocRef, { id: newDocRef.id, ...recordData });
                     switchCount++;
                 } else {
-                   errors.push(`Could not identify model for record: ${JSON.stringify(record)}`);
+                   errors.push(`Could not identify model for record: ${JSON.stringify(recordData)}`);
                 }
             } catch (e: any) {
                 errors.push(`Error saving record ${JSON.stringify(record)}: ${e.message}`);
@@ -79,41 +84,36 @@ const identifyAndSaveTool = ai.defineTool(
     }
 );
 
-
-export async function importDataWithModelDetection(input: ImportDataInput): Promise<ImportDataOutput> {
-  return importDataWithModelDetectionFlow(input);
-}
-
 const prompt = ai.definePrompt({
   name: 'importDataWithModelDetectionPrompt',
   input: {schema: ImportDataInputSchema},
   output: {schema: ImportDataOutputSchema},
   tools: [identifyAndSaveTool],
-  prompt: `You are an expert data processing agent.
-
-You will receive a data file as input. The file may contain records for different data models (users, agencies, switches, etc.).
-Your task is to:
-1.  Parse the file content into a JSON array of records.
-2.  Use the 'identifyAndSave' tool to process and save each record to the database.
-3.  Provide a summary of the import process based on the tool's output.
+  prompt: `You are an expert data processing agent. You will receive a data file as a data URI. Your task is to:
+1. Decode the Base64 content of the data URI.
+2. Determine if the content is JSON or CSV.
+3. Parse the content into a JSON array of records.
+4. Use the 'identifyAndSave' tool to process the array of records.
+5. Provide a summary of the import process based on the tool's output.
 
 Here is the data file content:
 
 {{#if fileDataUri}}
-\`\`\`
 {{{fileDataUri}}}
-\`\`\`
 {{/if}}`,
 });
 
-const importDataWithModelDetectionFlow = ai.defineFlow(
+export const importDataWithModelDetectionFlow = ai.defineFlow(
   {
     name: 'importDataWithModelDetectionFlow',
     inputSchema: ImportDataInputSchema,
     outputSchema: ImportDataOutputSchema,
   },
-  async input => {
-    const {output} = await prompt(input);
-    return output!;
+  async (input) => {
+    const { output } = await prompt(input);
+    if (!output) {
+      throw new Error('AI failed to process the import.');
+    }
+    return { importSummary: output.importSummary };
   }
 );
