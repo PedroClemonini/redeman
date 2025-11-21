@@ -40,7 +40,7 @@ export default function AlocacaoPage() {
           <TabsTrigger value="timecard">Cartão de Ponto (Grid)</TabsTrigger>
         </TabsList>
         <TabsContent value="allocation">
-          <AllocationTable alocacao={alocacao} analistas={analistas} nomes={nomes} />
+          <AllocationTable alocacao={alocacao} disponibilidade={disponibilidade} analistas={analistas} nomes={nomes} />
         </TabsContent>
         <TabsContent value="availability">
           <AvailabilityGrid disponibilidade={disponibilidade} analistas={analistas} nomes={nomes} />

@@ -15,14 +15,17 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { cn } from '@/lib/utils';
 
 interface AllocationTableProps {
   alocacao: any;
+  disponibilidade: any;
   analistas: string[];
   nomes: { [key: string]: string };
 }
 
-export function AllocationTable({ alocacao, analistas, nomes }: AllocationTableProps) {
+export function AllocationTable({ alocacao, disponibilidade, analistas, nomes }: AllocationTableProps) {
+  const weekName = "Semana 2 (17/11 a 22/11/2025)";
   const datas = [
     '17/11/2025',
     '18/11/2025',
@@ -35,6 +38,15 @@ export function AllocationTable({ alocacao, analistas, nomes }: AllocationTableP
   const getDayFromDate = (dateString: string) => {
     return dateString.split('/')[0];
   }
+
+  const isAnalystAvailableOnDay = (analistaId: string, dayIndex: number) => {
+    const weekData = disponibilidade[analistaId]?.[weekName];
+    if (weekData && weekData[dayIndex]) {
+      // Check if there's any available hour in that day
+      return weekData[dayIndex].some((isAvailable: boolean) => isAvailable);
+    }
+    return false;
+  };
 
   return (
     <Card>
@@ -59,7 +71,7 @@ export function AllocationTable({ alocacao, analistas, nomes }: AllocationTableP
             {analistas.map((usuario) => (
               <TableRow key={usuario}>
                 <TableCell className="font-medium">{nomes[usuario]}</TableCell>
-                {datas.map((data) => {
+                {datas.map((data, dayIndex) => {
                   let cellContent: React.ReactNode = <span className="italic text-muted-foreground">—</span>;
                   let cellClass = "";
                   
@@ -82,10 +94,14 @@ export function AllocationTable({ alocacao, analistas, nomes }: AllocationTableP
 
                   if (assignments.length > 0) {
                     cellContent = <div className="flex flex-col gap-1">{assignments}</div>;
+                  } else if (isAnalystAvailableOnDay(usuario, dayIndex)) {
+                     cellClass = "bg-gray-100 dark:bg-gray-800/30";
+                     cellContent = <span className="italic text-muted-foreground text-xs">Disponível</span>
                   }
 
+
                   return (
-                    <TableCell key={data} className={`text-center align-top ${cellClass} p-2 min-w-[150px]`}>
+                    <TableCell key={data} className={cn("text-center align-top p-2 min-w-[150px]", cellClass)}>
                       {cellContent}
                     </TableCell>
                   );
