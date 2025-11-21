@@ -358,18 +358,20 @@ export default function RegisterSitePage() {
                 {/* Coluna da Esquerda: Informações Gerais */}
                 <div className="space-y-4">
                   <CardTitle>Informações Gerais</CardTitle>
-                  <div className="space-y-2">
-                    <Label htmlFor="sigla">SIGLA (máx. 5)</Label>
-                    <Input id="sigla" value={sigla} onChange={(e) => setSigla(e.target.value)} maxLength={5} placeholder="ex: ARN01" required />
-                    {sigla.length > 5 && <p className="text-red-500 text-xs mt-1">Máx. 5 caracteres!</p>}
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="descricaoBreve">DESCRIÇÃO BREVE</Label>
-                    <Input id="descricaoBreve" value={descricaoBreve} onChange={(e) => setDescricaoBreve(e.target.value)} placeholder="ex: Arniqueiras" required />
-                  </div>
-                   <div className="space-y-2">
-                    <Label htmlFor="localidade">LOCALIDADE</Label>
-                    <Input id="localidade" value={localidade} onChange={(e) => setLocalidade(e.target.value)} placeholder="ex: Taguatinga/DF" required />
+                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="space-y-2">
+                        <Label htmlFor="sigla">SIGLA (máx. 5)</Label>
+                        <Input id="sigla" value={sigla} onChange={(e) => setSigla(e.target.value)} maxLength={5} placeholder="ex: ARN01" required />
+                        {sigla.length > 5 && <p className="text-red-500 text-xs mt-1">Máx. 5 caracteres!</p>}
+                    </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="descricaoBreve">DESCRIÇÃO BREVE</Label>
+                        <Input id="descricaoBreve" value={descricaoBreve} onChange={(e) => setDescricaoBreve(e.target.value)} placeholder="ex: Arniqueiras" required />
+                    </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="localidade">LOCALIDADE</Label>
+                        <Input id="localidade" value={localidade} onChange={(e) => setLocalidade(e.target.value)} placeholder="ex: Taguatinga/DF" required />
+                    </div>
                   </div>
                   <div className='grid grid-cols-1 md:grid-cols-2 gap-4 items-end'>
                     <div className="space-y-2">
