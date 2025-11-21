@@ -8,6 +8,7 @@ export type User = {
   avatar?: string;
   nivel: 'Sênior' | 'Pleno' | 'Júnior';
   telefone?: string;
+  fotoUrl?: string;
 };
 
 export type Site = {

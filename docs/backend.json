@@ -1,3 +1,4 @@
+
 {
   "entities": {
     "User": {
@@ -42,6 +43,15 @@
         "status": {
           "type": "string",
           "description": "The user's status (e.g., ativo)."
+        },
+        "telefone": {
+          "type": "string",
+          "description": "The user's phone number."
+        },
+        "fotoUrl": {
+          "type": "string",
+          "description": "URL for the user's profile picture.",
+          "format": "uri"
         }
       },
       "required": [

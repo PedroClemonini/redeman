@@ -109,10 +109,15 @@ export default function UsersPage() {
     const updatedUser: Partial<User> = {
       nome: formData.get('name') as string,
       email: formData.get('email') as string,
+      telefone: formData.get('phone') as string,
+      fotoUrl: formData.get('photoUrl') as string,
       cargo: formData.get('cargo') as User['cargo'],
       nivel: formData.get('nivel') as User['nivel'],
       status: formData.get('status') as User['status'],
     };
+    
+    // Note: Password change logic should be handled separately and securely
+    // For this prototype, we are not implementing the actual password update.
     
     const userRef = doc(firestore, 'users', selectedUser.id);
     updateDocumentNonBlocking(userRef, updatedUser);
@@ -133,19 +138,19 @@ export default function UsersPage() {
     const formData = new FormData(event.currentTarget);
     const usersCollection = collection(firestore, 'users');
     
-    // Generate a new document ID client-side
     const newDocRef = doc(usersCollection);
 
     const newUserPayload = {
-      id: newDocRef.id, // Include the ID in the payload
+      id: newDocRef.id,
       nome: formData.get('name') as string,
       email: formData.get('email') as string,
+      telefone: formData.get('phone') as string,
+      fotoUrl: formData.get('photoUrl') as string,
       cargo: formData.get('cargo') as User['cargo'],
       nivel: formData.get('nivel') as User['nivel'],
       status: formData.get('status') as User['status'],
     };
 
-    // Create the document in a single operation
     setDocumentNonBlocking(newDocRef, newUserPayload, { merge: false });
 
     toast({
@@ -188,6 +193,7 @@ export default function UsersPage() {
                 <TableHead>Nome</TableHead>
                 <TableHead>Nível</TableHead>
                 <TableHead>Função</TableHead>
+                <TableHead>Telefone</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>
                   <span className="sr-only">Ações</span>
@@ -197,12 +203,12 @@ export default function UsersPage() {
             <TableBody>
               {isLoading && (
                 <TableRow>
-                    <TableCell colSpan={5} className='text-center text-muted-foreground'>Carregando usuários...</TableCell>
+                    <TableCell colSpan={6} className='text-center text-muted-foreground'>Carregando usuários...</TableCell>
                 </TableRow>
               )}
               {!isLoading && users?.length === 0 && (
                 <TableRow>
-                    <TableCell colSpan={5} className='text-center text-muted-foreground'>Nenhum usuário cadastrado.</TableCell>
+                    <TableCell colSpan={6} className='text-center text-muted-foreground'>Nenhum usuário cadastrado.</TableCell>
                 </TableRow>
               )}
               {users && users.map((user) => (
@@ -210,7 +216,7 @@ export default function UsersPage() {
                   <TableCell className="font-medium">
                     <div className="flex items-center gap-3">
                       <Avatar className="h-9 w-9">
-                        <AvatarImage src={`https://i.pravatar.cc/40?u=${user.id}`} alt={user.nome} />
+                        <AvatarImage src={user.fotoUrl || `https://i.pravatar.cc/40?u=${user.id}`} alt={user.nome} />
                         <AvatarFallback>
                           {user.nome
                             ?.split(' ')
@@ -226,6 +232,7 @@ export default function UsersPage() {
                   </TableCell>
                   <TableCell>{user.nivel}</TableCell>
                   <TableCell>{user.cargo}</TableCell>
+                  <TableCell>{user.telefone}</TableCell>
                   <TableCell>
                     <Badge variant={user.status === 'ativo' ? 'default' : 'destructive'}
                       className={
@@ -263,7 +270,7 @@ export default function UsersPage() {
       
       {/* Edit User Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Editar Usuário</DialogTitle>
             <DialogDescription>
@@ -272,64 +279,69 @@ export default function UsersPage() {
           </DialogHeader>
           {selectedUser && (
             <form onSubmit={handleEditSubmit} className="grid gap-4 py-4">
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="name" className="text-right">
-                  Nome
-                </Label>
-                <Input id="name" name="name" defaultValue={selectedUser.nome} className="col-span-3" />
+              <div className="space-y-2">
+                <Label htmlFor="name">Nome</Label>
+                <Input id="name" name="name" defaultValue={selectedUser.nome} />
               </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="email" className="text-right">
-                  Email
-                </Label>
-                <Input id="email" name="email" type="email" defaultValue={selectedUser.email} className="col-span-3" />
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input id="email" name="email" type="email" defaultValue={selectedUser.email} />
               </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="role" className="text-right">
-                  Função
-                </Label>
-                <Select name="cargo" defaultValue={selectedUser.cargo}>
-                  <SelectTrigger className="col-span-3">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Administrador">Administrador</SelectItem>
-                    <SelectItem value="Coordenador">Coordenador</SelectItem>
-                    <SelectItem value="Analista">Analista</SelectItem>
-                    <SelectItem value="Visualizador">Visualizador</SelectItem>
-                  </SelectContent>
-                </Select>
+              <div className="space-y-2">
+                <Label htmlFor="phone">Telefone</Label>
+                <Input id="phone" name="phone" type="tel" defaultValue={selectedUser.telefone} />
               </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="nivel" className="text-right">
-                  Nível
-                </Label>
-                <Select name="nivel" defaultValue={selectedUser.nivel}>
-                  <SelectTrigger className="col-span-3">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Sênior">Sênior</SelectItem>
-                    <SelectItem value="Pleno">Pleno</SelectItem>
-                    <SelectItem value="Júnior">Júnior</SelectItem>
-                  </SelectContent>
-                </Select>
+               <div className="space-y-2">
+                <Label htmlFor="photoUrl">URL da Foto</Label>
+                <Input id="photoUrl" name="photoUrl" type="url" defaultValue={selectedUser.fotoUrl} placeholder="https://..." />
               </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="status" className="text-right">
-                  Status
-                </Label>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                    <Label htmlFor="role">Função</Label>
+                    <Select name="cargo" defaultValue={selectedUser.cargo}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Administrador">Administrador</SelectItem>
+                        <SelectItem value="Coordenador">Coordenador</SelectItem>
+                        <SelectItem value="Analista">Analista</SelectItem>
+                        <SelectItem value="Visualizador">Visualizador</SelectItem>
+                      </SelectContent>
+                    </Select>
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="nivel">Nível</Label>
+                    <Select name="nivel" defaultValue={selectedUser.nivel}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Sênior">Sênior</SelectItem>
+                        <SelectItem value="Pleno">Pleno</SelectItem>
+                        <SelectItem value="Júnior">Júnior</SelectItem>
+                      </SelectContent>
+                    </Select>
+                </div>
+              </div>
+               <div className="space-y-2">
+                <Label htmlFor="status">Status</Label>
                 <Select name="status" defaultValue={selectedUser.status}>
-                  <SelectTrigger className="col-span-3">
-                    <SelectValue />
-                  </SelectTrigger>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="ativo">Ativo</SelectItem>
                     <SelectItem value="inativo">Inativo</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
-              <DialogFooter>
+              <div className="grid grid-cols-2 gap-4">
+                 <div className="space-y-2">
+                    <Label htmlFor="newPassword">Nova Senha</Label>
+                    <Input id="newPassword" name="newPassword" type="password" placeholder="Deixe em branco para não alterar"/>
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="confirmPassword">Confirmar Senha</Label>
+                    <Input id="confirmPassword" name="confirmPassword" type="password" />
+                </div>
+              </div>
+
+              <DialogFooter className='pt-4'>
                 <Button type="submit">Salvar alterações</Button>
               </DialogFooter>
             </form>
@@ -339,7 +351,7 @@ export default function UsersPage() {
 
       {/* Add User Dialog */}
       <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Adicionar Novo Usuário</DialogTitle>
             <DialogDescription>
@@ -347,64 +359,68 @@ export default function UsersPage() {
             </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleAddSubmit} className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="add-name" className="text-right">
-                Nome
-              </Label>
-              <Input id="add-name" name="name" placeholder="Nome completo" className="col-span-3" required />
+             <div className="space-y-2">
+              <Label htmlFor="add-name">Nome</Label>
+              <Input id="add-name" name="name" placeholder="Nome completo" required />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="add-email" className="text-right">
-                Email
-              </Label>
-              <Input id="add-email" name="email" type="email" placeholder="email@v2mr.com" className="col-span-3" required />
+             <div className="space-y-2">
+              <Label htmlFor="add-email">Email</Label>
+              <Input id="add-email" name="email" type="email" placeholder="email@v2mr.com" required />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="add-role" className="text-right">
-                Função
-              </Label>
-              <Select name="cargo" defaultValue="Analista" required>
-                <SelectTrigger className="col-span-3">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Administrador">Administrador</SelectItem>
-                  <SelectItem value="Coordenador">Coordenador</SelectItem>
-                  <SelectItem value="Analista">Analista</SelectItem>
-                  <SelectItem value="Visualizador">Visualizador</SelectItem>
-                </SelectContent>
-              </Select>
+             <div className="space-y-2">
+              <Label htmlFor="add-phone">Telefone</Label>
+              <Input id="add-phone" name="phone" type="tel" placeholder="(00) 00000-0000" />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="add-nivel" className="text-right">
-                Nível
-              </Label>
-              <Select name="nivel" defaultValue="Júnior" required>
-                <SelectTrigger className="col-span-3">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Sênior">Sênior</SelectItem>
-                  <SelectItem value="Pleno">Pleno</SelectItem>
-                  <SelectItem value="Júnior">Júnior</SelectItem>
-                </SelectContent>
-              </Select>
+             <div className="space-y-2">
+                <Label htmlFor="add-photoUrl">URL da Foto</Label>
+                <Input id="add-photoUrl" name="photoUrl" type="url" placeholder="https://..." />
+              </div>
+            <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                    <Label htmlFor="add-role">Função</Label>
+                    <Select name="cargo" defaultValue="Analista" required>
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                        <SelectItem value="Administrador">Administrador</SelectItem>
+                        <SelectItem value="Coordenador">Coordenador</SelectItem>
+                        <SelectItem value="Analista">Analista</SelectItem>
+                        <SelectItem value="Visualizador">Visualizador</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="add-nivel">Nível</Label>
+                    <Select name="nivel" defaultValue="Júnior" required>
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                        <SelectItem value="Sênior">Sênior</SelectItem>
+                        <SelectItem value="Pleno">Pleno</SelectItem>
+                        <SelectItem value="Júnior">Júnior</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="add-status" className="text-right">
-                Status
-              </Label>
+             <div className="space-y-2">
+              <Label htmlFor="add-status">Status</Label>
               <Select name="status" defaultValue="ativo" required>
-                <SelectTrigger className="col-span-3">
-                  <SelectValue />
-                </SelectTrigger>
+                <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="ativo">Ativo</SelectItem>
                   <SelectItem value="inativo">Inativo</SelectItem>
                 </SelectContent>
               </Select>
             </div>
-            <DialogFooter>
+             <div className="grid grid-cols-2 gap-4">
+                 <div className="space-y-2">
+                    <Label htmlFor="add-password">Senha</Label>
+                    <Input id="add-password" name="password" type="password" required />
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="add-confirmPassword">Confirmar Senha</Label>
+                    <Input id="add-confirmPassword" name="confirmPassword" type="password" required />
+                </div>
+              </div>
+            <DialogFooter className='pt-4'>
                <Button variant="outline" type="button" onClick={() => setIsAddDialogOpen(false)}>Cancelar</Button>
               <Button type="submit">Criar Usuário</Button>
             </DialogFooter>
@@ -434,5 +450,3 @@ export default function UsersPage() {
     </div>
   );
 }
-
-    
