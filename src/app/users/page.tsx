@@ -204,6 +204,7 @@ export default function UsersPage() {
     setIsAddDialogOpen(false);
   };
 
+  const defaultAvatar = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAACfUlEQVRYR+2Wz0sUYRzHP3/vjM6yK05CSguR4qEQFvQDpWlI8dDDR/8DCSk8dGgoiIeKPAQRRARRKLQgHlJKS0lJkV5CehQpXWdmdt5jZ3ZnZtf5bO/B8z7v8z7P+/N93x8eRjCg/g9I9YcK/M8PyH59+o8/xZcWnxxr5dC8qjGqZXyVquWk+k6aB6T6YFz5JflX2l+svxReeYQJ4d0J3YfHj6D+fPCu+bQnOqD2jc1YnhYcv6nUvHsm70U/D5+lK4a6Ak0y3YUd7s+K9fQ6w4Y0D51y//9Cg/PmjgWqI4fXFjYv352y310TKVx/LBCW5/c54s53n88s8iP8/Vd3hNaD/pAFpyAyuMvLCPdDtkfAEsD2o/hL8dM/X2/i70eX+3+nJqJGBGgA3gSgKuyz2A/x4c449t5Uv36d2c49uXyB/b2/i8NnEV3m/X6o/fX/Hl3fL1H+g/v28eF6uA1wD9x2/w4I5j3/cZfXz+vP/u7C+/X9zs/L1Ifv3E/v6iYgGAAiYAdgT4AYB/BsBfAHgA4P/GgO9sB7gBwFbgaq/uFih8P8S8L8T793w8UDD/Z4Bqj8P/0/o/fL14gO8BwB/xMgA/AkBvAQSAM4qU+aEEeP5WwO0mAPo0AJ/j/ZcD6v2AK4DdBOAIAE8Clks2n893LgKYA1bA+78w4IsA7ADwFwBuFqh+fQE3gNcA3BGAo/Fm3b08fzrwGgAHAJzH0K8D2J8BvAVgAHA3gC8DGFeA7z8B+BTA93vVb+IAfA/gFwB3gAcA3wK4uQLvPwB4B+DuBqj+/QE3gGcAvgTwL4C/A/g3gOcA/gxwG/BrgK4G6LcDvAD4MMD/pwB/Ange4NcAnwI4BPi3D+BvAf4O4EcAZwI453L6+wBGAIAfAngfwK8B/A3gpwD+CfAnAOcD3AVwL8BXARwG8K8D/gZwF8A7D9D3AK4BfAfgiwD+CuBfB+wD/A1gFsC/DPgjwD8AfAPwOQAPAjgD4DcAdx0g7wDcA3gEYBmA8QC2AnAPgC0AmwC2AbgE4A7AJgCPAbgI4GkAxwM4DeDRkEwBcB/gDIBfAmARgC0AjwG4EOBGAI8C2AvgRQAPAq8CuBvAswDuAtgG4GkARwI4BfBPgN8C+AvAhwC+DPAYwK8BvAq8CuAtAOcDfA7gSgBvAwgA/3k0j03gYgH2y//9kXwA2wAfAQgAfgP4Yw/AX//iB3i+AcCqgL/B/4n/A20fAbT5hYF2AAAAAElFTkSuQmCC";
 
   return (
     <div>
@@ -275,7 +276,7 @@ export default function UsersPage() {
                   <TableCell className="font-medium">
                     <div className="flex items-center gap-3">
                       <Avatar className="h-9 w-9">
-                        <AvatarImage src={user.fotoUrl || `https://i.pravatar.cc/40?u=${user.id}`} alt={user.nome} />
+                        <AvatarImage src={user.fotoUrl || defaultAvatar} alt={user.nome} />
                         <AvatarFallback>
                           {user.nome
                             ?.split(' ')
@@ -509,3 +510,5 @@ export default function UsersPage() {
     </div>
   );
 }
+
+    
