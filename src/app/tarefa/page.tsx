@@ -2,7 +2,7 @@
 
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { useSearchParams } from 'next/navigation'
 import {
   Card,
@@ -16,7 +16,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Progress } from "@/components/ui/progress"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { CheckCircle2, Circle, ArrowLeft, RotateCcw, Play, Pause, Square, Calendar } from 'lucide-react'
+import { CheckCircle2, Circle, ArrowLeft, RotateCcw, Play, Pause, Square, Calendar, Search } from 'lucide-react'
 import { FinalReport } from "@/components/final-report"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import type { SiteEntry } from "@/lib/registered-sites"
@@ -25,6 +25,7 @@ import { PageHeader } from "@/components/page-header"
 import { Label } from "@/components/ui/label"
 import { useCollection, useFirestore, useMemoFirebase } from "@/firebase"
 import { collection, doc, query } from 'firebase/firestore'
+import { Input } from "@/components/ui/input"
 
 
 // Interface para o timer
@@ -44,6 +45,8 @@ export default function UnifiedTasksPage() {
   const [timers, setTimers] = useState<Record<string, PhaseTimer>>({})
   const [selectedSite, setSelectedSite] = useState<SiteEntry | null>(null)
   const [activePhase, setActivePhase] = useState<string | null>(null)
+  const [siteSearchTerm, setSiteSearchTerm] = useState('');
+  const [phaseFilter, setPhaseFilter] = useState('all');
 
   const sitesQuery = useMemoFirebase(() => {
     if (!firestore) return null;
@@ -219,6 +222,40 @@ export default function UnifiedTasksPage() {
     { id: 'migracao', title: 'Migração', date: selectedSite?.migracao?.date },
   ];
 
+  const filteredSitesForSelection = useMemo(() => {
+    if (!registeredSites) return [];
+
+    const getPhaseStatus = (site: SiteEntry, phase: 'planejamento' | 'preparacao' | 'migracao') => {
+        const phaseTasks = unifiedTasks.filter(t => t.phase === phase);
+        if (phaseTasks.length === 0) return 'Completo';
+        const completedCount = phaseTasks.filter(task => completedItems.has(`${site.id}-${task.id}`)).length;
+        if (completedCount === phaseTasks.length) return 'Completo';
+        if (completedCount > 0) return 'Em Andamento';
+        return 'Não Iniciado';
+    };
+
+    return registeredSites.filter(site => {
+        const searchTermLower = siteSearchTerm.toLowerCase();
+        const matchesSearch = site.sigla.toLowerCase().includes(searchTermLower) || site.descricaoBreve.toLowerCase().includes(searchTermLower);
+
+        if (phaseFilter === 'all') {
+            return matchesSearch;
+        }
+
+        const planningStatus = getPhaseStatus(site, 'planejamento');
+        if (phaseFilter === 'planejamento' && planningStatus !== 'Completo') return matchesSearch;
+
+        const preparationStatus = getPhaseStatus(site, 'preparacao');
+        if (phaseFilter === 'preparacao' && planningStatus === 'Completo' && preparationStatus !== 'Completo') return matchesSearch;
+
+        const migrationStatus = getPhaseStatus(site, 'migracao');
+        if (phaseFilter === 'migracao' && preparationStatus === 'Completo' && migrationStatus !== 'Completo') return matchesSearch;
+        
+        return false;
+    });
+}, [registeredSites, siteSearchTerm, phaseFilter, completedItems]);
+
+
   if (!activePhase) {
     return (
       <div>
@@ -228,23 +265,61 @@ export default function UnifiedTasksPage() {
         />
 
         <main className="container mx-auto px-4 py-8 md:px-6">
-          <div className="max-w-md mx-auto mb-8">
-            <Label className="text-sm font-medium mb-2 block">Selecione um Site</Label>
-            {sitesLoading ? <p>Carregando sites...</p> : 
-              <Select onValueChange={handleSiteChange} value={selectedSite?.id.toString()}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Escolha um site..." />
-                </SelectTrigger>
-                <SelectContent>
-                  {registeredSites?.map(site => (
-                    <SelectItem key={site.id} value={site.id.toString()}>
-                      {site.sigla} - {site.descricaoBreve}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            }
-          </div>
+            <Card className="max-w-2xl mx-auto mb-8">
+                <CardHeader>
+                    <CardTitle>Filtro de Sites</CardTitle>
+                    <CardDescription>Use os campos abaixo para encontrar um site e visualizar suas tarefas.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <Label htmlFor="site-search">Buscar por Sigla/Nome</Label>
+                             <div className="relative">
+                                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                                <Input 
+                                    id="site-search"
+                                    placeholder="Ex: ARN01, Arniqueiras..." 
+                                    className="pl-8"
+                                    value={siteSearchTerm}
+                                    onChange={(e) => setSiteSearchTerm(e.target.value)}
+                                />
+                            </div>
+                        </div>
+                        <div>
+                            <Label htmlFor="phase-filter">Filtrar por Etapa</Label>
+                            <Select value={phaseFilter} onValueChange={setPhaseFilter}>
+                                <SelectTrigger id="phase-filter">
+                                    <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="all">Todas as Etapas</SelectItem>
+                                    <SelectItem value="planejamento">Planejamento</SelectItem>
+                                    <SelectItem value="preparacao">Preparação</SelectItem>
+                                    <SelectItem value="migracao">Migração</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    </div>
+                     <div>
+                        <Label htmlFor="site-select">Selecione um Site</Label>
+                        {sitesLoading ? <p className="text-sm text-muted-foreground mt-2">Carregando sites...</p> : 
+                        <Select onValueChange={handleSiteChange} value={selectedSite?.id.toString()}>
+                            <SelectTrigger id="site-select">
+                            <SelectValue placeholder="Escolha um site da lista..." />
+                            </SelectTrigger>
+                            <SelectContent>
+                            {filteredSitesForSelection.length > 0 ? filteredSitesForSelection.map(site => (
+                                <SelectItem key={site.id} value={site.id.toString()}>
+                                {site.sigla} - {site.descricaoBreve}
+                                </SelectItem>
+                            )) : <div className="p-4 text-sm text-center text-muted-foreground">Nenhum site encontrado.</div>}
+                            </SelectContent>
+                        </Select>
+                        }
+                    </div>
+                </CardContent>
+            </Card>
+
 
           {selectedSite && (
             <div className="grid md:grid-cols-3 gap-6">
@@ -418,5 +493,7 @@ export default function UnifiedTasksPage() {
     </div>
   )
 }
+
+    
 
     
