@@ -16,7 +16,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Progress } from "@/components/ui/progress"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { CheckCircle2, Circle, ArrowLeft, RotateCcw, Play, Pause, Square, Calendar, Search } from 'lucide-react'
+import { CheckCircle2, Circle, ArrowLeft, RotateCcw, Play, Pause, Square, Calendar, Search, MoreHorizontal } from 'lucide-react'
 import { FinalReport } from "@/components/final-report"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import type { SiteEntry } from "@/lib/registered-sites"
@@ -26,6 +26,29 @@ import { Label } from "@/components/ui/label"
 import { useCollection, useFirestore, useMemoFirebase } from "@/firebase"
 import { collection, doc, query } from 'firebase/firestore'
 import { Input } from "@/components/ui/input"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command"
+import { Check } from "lucide-react"
+import { cn } from "@/lib/utils"
 
 
 // Interface para o timer
@@ -47,8 +70,8 @@ export default function UnifiedTasksPage() {
   const [timers, setTimers] = useState<Record<string, PhaseTimer>>({})
   const [selectedSite, setSelectedSite] = useState<SiteEntry | null>(null)
   const [activePhase, setActivePhase] = useState<string | null>(null)
-  const [siteSearchTerm, setSiteSearchTerm] = useState('');
   const [phaseFilter, setPhaseFilter] = useState('all');
+  const [openCombobox, setOpenCombobox] = useState(false)
 
   const sitesQuery = useMemoFirebase(() => {
     if (!firestore) return null;
@@ -135,6 +158,7 @@ export default function UnifiedTasksPage() {
     const site = registeredSites.find(s => s.id.toString() === siteId) || null
     setSelectedSite(site)
     setActivePhase(null) // Reset phase when site changes
+    setOpenCombobox(false)
     
     // Update URL
     const params = new URLSearchParams(window.location.search);
@@ -250,25 +274,22 @@ export default function UnifiedTasksPage() {
     if (!registeredSites) return [];
 
     return registeredSites.filter(site => {
-        const searchTermLower = siteSearchTerm.toLowerCase();
-        const matchesSearch = site.sigla.toLowerCase().includes(searchTermLower) || site.descricaoBreve.toLowerCase().includes(searchTermLower);
-
         if (phaseFilter === 'all') {
-            return matchesSearch;
+            return true;
         }
 
         const planningStatus = getPhaseStatus(site, 'planejamento');
-        if (phaseFilter === 'planejamento' && planningStatus !== 'Completo') return matchesSearch;
+        if (phaseFilter === 'planejamento' && planningStatus !== 'Completo') return true;
 
         const preparationStatus = getPhaseStatus(site, 'preparacao');
-        if (phaseFilter === 'preparacao' && planningStatus === 'Completo' && preparationStatus !== 'Completo') return matchesSearch;
+        if (phaseFilter === 'preparacao' && planningStatus === 'Completo' && preparationStatus !== 'Completo') return true;
 
         const migrationStatus = getPhaseStatus(site, 'migracao');
-        if (phaseFilter === 'migracao' && preparationStatus === 'Completo' && migrationStatus !== 'Completo') return matchesSearch;
+        if (phaseFilter === 'migracao' && preparationStatus === 'Completo' && migrationStatus !== 'Completo') return true;
         
         return false;
     });
-}, [registeredSites, siteSearchTerm, phaseFilter, completedItems]);
+}, [registeredSites, phaseFilter, completedItems]);
 
 
   if (!activePhase) {
@@ -285,43 +306,66 @@ export default function UnifiedTasksPage() {
                     <CardTitle>Filtro de Sites</CardTitle>
                     <CardDescription>Use os campos abaixo para encontrar um site e visualizar suas tarefas.</CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div>
-                            <Label htmlFor="phase-filter">Filtrar por Etapa</Label>
-                            <Select value={phaseFilter} onValueChange={setPhaseFilter}>
-                                <SelectTrigger id="phase-filter">
-                                    <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="all">Todas as Etapas</SelectItem>
-                                    <SelectItem value="planejamento">Planejamento</SelectItem>
-                                    <SelectItem value="preparacao">Preparação</SelectItem>
-                                    <SelectItem value="migracao">Migração</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
-                         <div>
-                            <Label htmlFor="site-select">Selecione um Site</Label>
-                            {sitesLoading ? <p className="text-sm text-muted-foreground mt-2">Carregando sites...</p> : 
-                            <Select onValueChange={handleSiteChange} value={selectedSite?.id.toString()}>
-                                <SelectTrigger id="site-select">
-                                <SelectValue placeholder="Escolha um site da lista..." />
-                                </SelectTrigger>
-                                <SelectContent>
-                                {filteredSitesForSelection.length > 0 ? filteredSitesForSelection.map(site => (
-                                    <SelectItem key={site.id} value={site.id.toString()}>
-                                    {`${site.sigla} - ${site.descricaoBreve} (${getCurrentPhaseName(site)})`}
-                                    </SelectItem>
-                                )) : <div className="p-4 text-sm text-center text-muted-foreground">Nenhum site encontrado.</div>}
-                                </SelectContent>
-                            </Select>
-                            }
-                        </div>
+                <CardContent className="grid gap-4 sm:grid-cols-2">
+                    <div>
+                        <Label htmlFor="phase-filter">Filtrar por Etapa</Label>
+                        <Select value={phaseFilter} onValueChange={setPhaseFilter}>
+                            <SelectTrigger id="phase-filter">
+                                <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">Todas as Etapas</SelectItem>
+                                <SelectItem value="planejamento">Planejamento</SelectItem>
+                                <SelectItem value="preparacao">Preparação</SelectItem>
+                                <SelectItem value="migracao">Migração</SelectItem>
+                            </SelectContent>
+                        </Select>
                     </div>
                      <div>
-                           
-                        </div>
+                        <Label htmlFor="site-select">Selecione um Site</Label>
+                        {sitesLoading ? <p className="text-sm text-muted-foreground mt-2">Carregando sites...</p> : 
+                          <Popover open={openCombobox} onOpenChange={setOpenCombobox}>
+                            <PopoverTrigger asChild>
+                              <Button
+                                variant="outline"
+                                role="combobox"
+                                aria-expanded={openCombobox}
+                                className="w-full justify-between"
+                              >
+                                {selectedSite
+                                  ? `${selectedSite.sigla} - ${selectedSite.descricaoBreve}`
+                                  : "Escolha um site da lista..."}
+                                <Search className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                              </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
+                              <Command>
+                                <CommandInput placeholder="Buscar site..." />
+                                <CommandList>
+                                  <CommandEmpty>Nenhum site encontrado.</CommandEmpty>
+                                  <CommandGroup>
+                                    {filteredSitesForSelection.map((site) => (
+                                      <CommandItem
+                                        key={site.id}
+                                        value={`${site.sigla} - ${site.descricaoBreve}`}
+                                        onSelect={() => handleSiteChange(site.id.toString())}
+                                      >
+                                        <Check
+                                          className={cn(
+                                            "mr-2 h-4 w-4",
+                                            selectedSite?.id === site.id ? "opacity-100" : "opacity-0"
+                                          )}
+                                        />
+                                        {`${site.sigla} - ${site.descricaoBreve} (${getCurrentPhaseName(site)})`}
+                                      </CommandItem>
+                                    ))}
+                                  </CommandGroup>
+                                </CommandList>
+                              </Command>
+                            </PopoverContent>
+                          </Popover>
+                        }
+                    </div>
                 </CardContent>
             </Card>
 
@@ -398,6 +442,17 @@ export default function UnifiedTasksPage() {
                         Responsável: {tasks[0]?.responsible}
                       </CardDescription>
                     </div>
+                     <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                           <Button variant="outline" size="sm">
+                                Report
+                                <MoreHorizontal className="ml-2 h-4 w-4" />
+                           </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-full max-w-2xl p-4">
+                            <FinalReport site={selectedSite} phase={activePhase} title={`Relatório da Fase: ${activePhase}`} />
+                        </DropdownMenuContent>
+                     </DropdownMenu>
                   </div>
                   <Progress value={phaseProgress} className="mt-4 h-2" />
                 </CardHeader>
@@ -486,7 +541,6 @@ export default function UnifiedTasksPage() {
                                 <div className="text-lg font-semibold text-primary">{Math.round(phaseProgress)}%</div>
                             </div>
                         </div>
-                        <FinalReport site={selectedSite} phase={activePhase} title={`Relatório da Fase: ${activePhase}`} />
                     </CardFooter>
                  )}
               </Card>
@@ -498,8 +552,3 @@ export default function UnifiedTasksPage() {
     </div>
   )
 }
-
-    
-
-    
-
