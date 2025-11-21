@@ -21,10 +21,8 @@ import {
   FileJson,
   FileText,
 } from 'lucide-react';
-import {
-  importDataWithModelDetection,
-  type ImportDataOutput,
-} from '@/ai/flows/import-data-with-model-detection';
+import { handleImport } from '@/app/import/actions';
+import type { ImportDataOutput } from '@/ai/flows/import-data-with-model-detection';
 import { useToast } from '@/hooks/use-toast';
 
 interface ImportDialogProps {
@@ -165,7 +163,7 @@ export function ImportDialog({ modelName, open, onOpenChange }: ImportDialogProp
 
     try {
       const fileDataUri = await readFileAsDataURI(file);
-      const output = await importDataWithModelDetection({ fileDataUri });
+      const output = await handleImport({ fileDataUri });
       setResult(output);
       toast({
         title: 'Importação Processada',

@@ -5,6 +5,7 @@
  * - ImportDataInput - The input type for the importDataWith-ModelDetection function.
  * - ImportDataOutput - The return type for the importDataWithModelDetection function.
  */
+'use server';
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
@@ -84,32 +85,32 @@ const identifyAndSaveTool = ai.defineTool(
     }
 );
 
-const prompt = ai.definePrompt({
-  name: 'importDataWithModelDetectionPrompt',
-  input: {schema: ImportDataInputSchema},
-  output: {schema: ImportDataOutputSchema},
-  tools: [identifyAndSaveTool],
-  prompt: `You are an expert data processing agent. You will receive a data file as a data URI. Your task is to:
-1. Decode the Base64 content of the data URI.
-2. Determine if the content is JSON or CSV.
-3. Parse the content into a JSON array of records.
-4. Use the 'identifyAndSave' tool to process the array of records.
-5. Provide a summary of the import process based on the tool's output.
-
-Here is the data file content:
-
-{{#if fileDataUri}}
-{{{fileDataUri}}}
-{{/if}}`,
-});
-
-export const importDataWithModelDetectionFlow = ai.defineFlow(
+const importDataWithModelDetectionFlow = ai.defineFlow(
   {
     name: 'importDataWithModelDetectionFlow',
     inputSchema: ImportDataInputSchema,
     outputSchema: ImportDataOutputSchema,
   },
   async (input) => {
+    const prompt = ai.definePrompt({
+        name: 'importDataWithModelDetectionPrompt',
+        input: {schema: ImportDataInputSchema},
+        output: {schema: ImportDataOutputSchema},
+        tools: [identifyAndSaveTool],
+        prompt: `You are an expert data processing agent. You will receive a data file as a data URI. Your task is to:
+      1. Decode the Base64 content of the data URI.
+      2. Determine if the content is JSON or CSV.
+      3. Parse the content into a JSON array of records.
+      4. Use the 'identifyAndSave' tool to process the array of records.
+      5. Provide a summary of the import process based on the tool's output.
+
+      Here is the data file content:
+
+      {{#if fileDataUri}}
+      {{{fileDataUri}}}
+      {{/if}}`,
+    });
+
     const { output } = await prompt(input);
     if (!output) {
       throw new Error('AI failed to process the import.');
@@ -117,3 +118,8 @@ export const importDataWithModelDetectionFlow = ai.defineFlow(
     return { importSummary: output.importSummary };
   }
 );
+
+
+export async function importDataWithModelDetection(input: ImportDataInput): Promise<ImportDataOutput> {
+  return await importDataWithModelDetectionFlow(input);
+}

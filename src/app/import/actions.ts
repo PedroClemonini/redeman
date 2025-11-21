@@ -1,14 +1,14 @@
 'use server';
 
 import {
-  importDataWithModelDetectionFlow,
+  importDataWithModelDetection,
   type ImportDataInput,
 } from '@/ai/flows/import-data-with-model-detection';
 
 // This function is now the server action that Next.js will call.
 export async function handleImport(input: ImportDataInput) {
   try {
-    const result = await importDataWithModelDetectionFlow(input);
+    const result = await importDataWithModelDetection(input);
     return result;
   } catch (e: any) {
     console.error('Flow execution failed', e);
