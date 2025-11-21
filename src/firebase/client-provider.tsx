@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useMemo, useEffect, type ReactNode } from 'react';
@@ -6,6 +7,7 @@ import { initializeFirebase } from '@/firebase';
 import { initiateAnonymousSignIn } from '@/firebase/non-blocking-login';
 import { useUser } from '@/firebase/provider';
 import { SidebarProvider } from '@/components/ui/sidebar';
+import { seedAgencias } from '@/lib/seed-db';
 
 interface FirebaseClientProviderProps {
   children: ReactNode;
@@ -13,13 +15,19 @@ interface FirebaseClientProviderProps {
 
 function AuthGate({ children }: { children: ReactNode }) {
   const { user, isUserLoading } = useUser();
-  const auth = useMemo(() => initializeFirebase().auth, []);
+  const { auth, firestore } = useMemo(() => initializeFirebase(), []);
 
   useEffect(() => {
     if (!isUserLoading && !user) {
       initiateAnonymousSignIn(auth);
     }
   }, [isUserLoading, user, auth]);
+  
+  useEffect(() => {
+    if (firestore) {
+      seedAgencias(firestore);
+    }
+  }, [firestore]);
 
   if (isUserLoading || !user) {
     return (
