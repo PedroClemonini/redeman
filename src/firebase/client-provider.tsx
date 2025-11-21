@@ -8,6 +8,7 @@ import { initiateAnonymousSignIn } from '@/firebase/non-blocking-login';
 import { useUser } from '@/firebase/provider';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { seedAgencias } from '@/lib/seed-db';
+import { seedUsers } from '@/lib/seed-users';
 
 interface FirebaseClientProviderProps {
   children: ReactNode;
@@ -26,6 +27,7 @@ function AuthGate({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (firestore) {
       seedAgencias(firestore);
+      seedUsers(firestore);
     }
   }, [firestore]);
 
