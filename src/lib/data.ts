@@ -3,55 +3,167 @@ import type { User, Site, Switch, MigrationFlow, WeeklySchedule } from './types'
 
 export const users: User[] = [
   {
-    id: 'usr_001',
-    name: 'Administrador',
-    email: 'admin@v2mr.com',
-    role: 'Administrador',
-    status: 'Ativo',
-    avatar: '/avatars/01.png',
-    nivel: 'Sênior',
-    telefone: '(11) 99999-0001'
+    "id": "usr_101",
+    "nome": "Fabrício Costa do Nascimento",
+    "email": "fabriciocostadn@gmail.com",
+    "cargo": "Analista",
+    "nivel": "Júnior",
+    "status": "ativo",
+    "telefone": ""
   },
   {
-    id: 'usr_002',
-    name: 'Coordenador Geral',
-    email: 'coordenador@v2mr.com',
-    role: 'Coordenador',
-    status: 'Ativo',
-    avatar: '/avatars/02.png',
-    nivel: 'Sênior',
-    telefone: '(11) 99999-0002'
+    "id": "usr_102",
+    "nome": "Fernando Luis Da Silva Loiola",
+    "email": "fernando.l.s.loiola@gmail.com",
+    "cargo": "Analista",
+    "nivel": "Júnior",
+    "status": "ativo",
+    "telefone": ""
   },
   {
-    id: 'usr_003',
-    name: 'Paulo Borges',
-    email: 'paulo.borges@v2mr.com',
-    role: 'Analista',
-    status: 'Ativo',
-    avatar: '/avatars/03.png',
-    nivel: 'Pleno',
-    telefone: '(11) 99999-0003'
+    "id": "usr_103",
+    "nome": "Glória Maria de Andrade Alves",
+    "email": "gloria.alves61@aluno.ifce.edu.br",
+    "cargo": "Analista",
+    "nivel": "Júnior",
+    "status": "ativo",
+    "telefone": ""
   },
   {
-    id: 'usr_004',
-    name: 'Raissa Moreira',
-    email: 'raissa.moreira@v2mr.com',
-    role: 'Analista',
-    status: 'Ativo',
-    avatar: '/avatars/04.png',
-    nivel: 'Júnior',
-    telefone: '(11) 99999-0004'
+    "id": "usr_104",
+    "nome": "Heloisa Silva Carvalho",
+    "email": "heloisa2006carvalho@gmail.com",
+    "cargo": "Analista",
+    "nivel": "Júnior",
+    "status": "ativo",
+    "telefone": ""
   },
   {
-    id: 'usr_005',
-    name: 'Pedro Rocha',
-    email: 'pedro.rocha@v2mr.com',
-    role: 'Visualizador',
-    status: 'Ativo',
-    avatar: '/avatars/05.png',
-    nivel: 'Pleno',
-    telefone: '(11) 99999-0005'
+    "id": "usr_105",
+    "nome": "João Guilherme Assis da Silva Alves",
+    "email": "guilherme.alves09@aluno.ifce.edu.br",
+    "cargo": "Analista",
+    "nivel": "Júnior",
+    "status": "ativo",
+    "telefone": ""
   },
+  {
+    "id": "usr_106",
+    "nome": "João Ruffino dos Santos",
+    "email": "ruffino.joaoo@gmail.com",
+    "cargo": "Analista",
+    "nivel": "Júnior",
+    "status": "ativo",
+    "telefone": ""
+  },
+  {
+    "id": "usr_107",
+    "nome": "Lailton Bezerra de Abreu",
+    "email": "lailtonabreu28@gmal.com",
+    "cargo": "Analista",
+    "nivel": "Júnior",
+    "status": "ativo",
+    "telefone": ""
+  },
+  {
+    "id": "usr_108",
+    "nome": "Lucas de Lima Araújo",
+    "email": "llucas.lima03@gmail.com",
+    "cargo": "Analista",
+    "nivel": "Júnior",
+    "status": "ativo",
+    "telefone": ""
+  },
+  {
+    "id": "usr_109",
+    "nome": "Marcelo dos Anjos Fernandes",
+    "email": "marceloadm79@gmail.com",
+    "cargo": "Analista",
+    "nivel": "Júnior",
+    "status": "ativo",
+    "telefone": ""
+  },
+  {
+    "id": "usr_110",
+    "nome": "Nicolas de Sousa Soares",
+    "email": "nickisoarez@gmail.com",
+    "cargo": "Analista",
+    "nivel": "Júnior",
+    "status": "ativo",
+    "telefone": ""
+  },
+  {
+    "id": "usr_111",
+    "nome": "Paulo Borges",
+    "email": "borgespaulo026@gmail.com",
+    "cargo": "Analista",
+    "nivel": "Júnior",
+    "status": "ativo",
+    "telefone": ""
+  },
+  {
+    "id": "usr_112",
+    "nome": "Pedro Abílio Dota de Mesquita",
+    "email": "pedroabilio0303@gmail.com",
+    "cargo": "Analista",
+    "nivel": "Júnior",
+    "status": "ativo",
+    "telefone": ""
+  },
+  {
+    "id": "usr_113",
+    "nome": "Pedro Marques Clemonini",
+    "email": "pclemonini-00@hotmail.com",
+    "cargo": "Analista",
+    "nivel": "Júnior",
+    "status": "ativo",
+    "telefone": ""
+  },
+  {
+    "id": "usr_114",
+    "nome": "Raissa Moreira Martins",
+    "email": "moreiraraissa81@gmail.com",
+    "cargo": "Analista",
+    "nivel": "Júnior",
+    "status": "ativo",
+    "telefone": ""
+  },
+  {
+    "id": "usr_115",
+    "nome": "Ruan Italo da Silva Carvalho",
+    "email": "ruanitalo5@gmail.com",
+    "cargo": "Analista",
+    "nivel": "Júnior",
+    "status": "ativo",
+    "telefone": ""
+  },
+  {
+    "id": "usr_116",
+    "nome": "Samuel Pereira",
+    "email": "s.pereira@outlook.com",
+    "cargo": "Analista",
+    "nivel": "Júnior",
+    "status": "ativo",
+    "telefone": ""
+  },
+  {
+    "id": "usr_117",
+    "nome": "Vandenilson Araújo dos Santos",
+    "email": "vhmg7705@gmail.com",
+    "cargo": "Analista",
+    "nivel": "Júnior",
+    "status": "ativo",
+    "telefone": ""
+  },
+  {
+    "id": "usr_118",
+    "nome": "vandenilson araujo",
+    "email": "vhmg7705@gmial.com",
+    "cargo": "Analista",
+    "nivel": "Júnior",
+    "status": "ativo",
+    "telefone": ""
+  }
 ];
 
 export const sites: Site[] = [
@@ -240,7 +352,7 @@ export const weeklySchedule: WeeklySchedule[] = [
 
 
 export const analistas = ['paulo','raissa','pedro','marcelo','lailton','fernando','augusto','nicolas','angel','gloria','joao','heloisa'];
-export const nomes: { [key: string]: string } = { paulo: 'Paulo Borges', raissa: 'Raissa Moreira', pedro: 'Pedro Clemonini', marcelo: 'Marcelo Anjos', lailton: 'Lailton Abreu', fernando: 'Fernando Loiola', augusto: 'Augusto Moura', nicolas: 'Nicolas Soares', angel: 'Angel Coello', gloria: 'Glória Alves', joao: 'João Ruffino', heloisa: 'Heloisa Silva' };
+export const nomes: { [key: string]: string } = { paulo: 'Paulo Borges', raissa: 'Raissa Moreira', pedro: 'Pedro Clemonini', marcelo: 'Marcelo dos Anjos Fernandes', lailton: 'Lailton Bezerra de Abreu', fernando: 'Fernando Luis Da Silva Loiola', augusto: 'Augusto Moura', nicolas: 'Nicolas de Sousa Soares', angel: 'Angel Coello', gloria: 'Glória Maria de Andrade Alves', joao: 'João Ruffino dos Santos', heloisa: 'Heloisa Silva Carvalho' };
 
 export const alocacao = {
   "17/11/2025": { "ARN01": ["paulo"], "PAE15": ["raissa"], "RV003": ["pedro"], "SNO01": ["marcelo"] },
@@ -269,3 +381,4 @@ export const disponibilidade = {
 
     
 
+    
