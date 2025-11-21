@@ -18,10 +18,18 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 interface ResourceSummaryProps {
   disponibilidade: any;
   analistas: string[];
+  nomes: { [key: string]: string };
 }
 
 const weeks = [
@@ -39,15 +47,18 @@ const periods = {
 const periodNames = Object.keys(periods) as (keyof typeof periods)[];
 const daysOfWeek = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
 
-export function ResourceSummary({ disponibilidade, analistas }: ResourceSummaryProps) {
-  const [currentWeek, setCurrentWeek] = useState(weeks[1]);
+const getInitials = (name: string) => {
+    return name?.split(' ').map((n) => n[0]).join('').toUpperCase() || '';
+}
 
-  const calculateAvailability = (week: string, dayIndex: number, period: typeof periods[keyof typeof periods]) => {
-    let count = 0;
+export function ResourceSummary({ disponibilidade, analistas, nomes }: ResourceSummaryProps) {
+  const [currentWeek, setCurrentWeek] = useState(weeks[0]);
+
+  const getAvailableAnalysts = (week: string, dayIndex: number, period: typeof periods[keyof typeof periods]) => {
+    const available: string[] = [];
     for (const analista of analistas) {
       const analistaWeekData = disponibilidade[analista]?.[week];
       if (analistaWeekData && analistaWeekData[dayIndex]) {
-        // Check if the analyst is available for at least one hour in the period
         let isAvailableInPeriod = false;
         for (let hour = period.start; hour <= period.end; hour++) {
           if (analistaWeekData[dayIndex][hour - 8]) {
@@ -56,67 +67,85 @@ export function ResourceSummary({ disponibilidade, analistas }: ResourceSummaryP
           }
         }
         if (isAvailableInPeriod) {
-          count++;
+          available.push(analista);
         }
       }
     }
-    return count;
+    return available;
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Resumo de Recursos Disponíveis</CardTitle>
-        <CardDescription>
-          Contagem de analistas disponíveis por período para a semana selecionada.
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="mb-6 max-w-sm">
-          <Label>Semana</Label>
-          <Select onValueChange={setCurrentWeek} value={currentWeek}>
-            <SelectTrigger>
-              <SelectValue placeholder="Selecione a semana" />
-            </SelectTrigger>
-            <SelectContent>
-              {weeks.map((week) => (
-                <SelectItem key={week} value={week}>
-                  {week}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="overflow-x-auto">
-          <Table className="border">
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-[180px]">Período</TableHead>
-                {daysOfWeek.map((day) => (
-                  <TableHead key={day} className="text-center">{day}</TableHead>
+    <TooltipProvider>
+      <Card>
+        <CardHeader>
+          <CardTitle>Resumo de Recursos Disponíveis</CardTitle>
+          <CardDescription>
+            Analistas disponíveis por período para a semana selecionada.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="mb-6 max-w-sm">
+            <Label>Semana</Label>
+            <Select onValueChange={setCurrentWeek} value={currentWeek}>
+              <SelectTrigger>
+                <SelectValue placeholder="Selecione a semana" />
+              </SelectTrigger>
+              <SelectContent>
+                {weeks.map((week) => (
+                  <SelectItem key={week} value={week}>
+                    {week}
+                  </SelectItem>
                 ))}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {periodNames.map((periodName) => (
-                <TableRow key={periodName}>
-                  <TableCell className="font-medium">{periodName}</TableCell>
-                  {daysOfWeek.map((_, dayIndex) => {
-                    const count = calculateAvailability(currentWeek, dayIndex, periods[periodName]);
-                    return (
-                      <TableCell key={dayIndex} className="text-center font-bold text-lg">
-                        <span className={count > 0 ? 'text-primary' : 'text-muted-foreground'}>
-                            {count}
-                        </span>
-                      </TableCell>
-                    );
-                  })}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="overflow-x-auto">
+            <Table className="border min-w-[800px]">
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-[180px]">Período</TableHead>
+                  {daysOfWeek.map((day) => (
+                    <TableHead key={day} className="text-center">{day}</TableHead>
+                  ))}
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-      </CardContent>
-    </Card>
+              </TableHeader>
+              <TableBody>
+                {periodNames.map((periodName) => (
+                  <TableRow key={periodName}>
+                    <TableCell className="font-medium">{periodName}</TableCell>
+                    {daysOfWeek.map((_, dayIndex) => {
+                      const availableAnalysts = getAvailableAnalysts(currentWeek, dayIndex, periods[periodName]);
+                      return (
+                        <TableCell key={dayIndex} className="text-center">
+                          {availableAnalysts.length > 0 ? (
+                            <div className="flex justify-center -space-x-2">
+                              {availableAnalysts.map((analistaId) => (
+                                <Tooltip key={analistaId}>
+                                  <TooltipTrigger asChild>
+                                    <Avatar className="h-8 w-8 border-2 border-background">
+                                      <AvatarImage src={`https://i.pravatar.cc/150?u=${analistaId}`} alt={nomes[analistaId]} />
+                                      <AvatarFallback>{getInitials(nomes[analistaId])}</AvatarFallback>
+                                    </Avatar>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p>{nomes[analistaId]}</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              ))}
+                            </div>
+                          ) : (
+                            <span className="text-muted-foreground">—</span>
+                          )}
+                        </TableCell>
+                      );
+                    })}
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        </CardContent>
+      </Card>
+    </TooltipProvider>
   );
 }

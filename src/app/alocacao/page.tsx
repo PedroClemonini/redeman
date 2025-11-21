@@ -46,7 +46,7 @@ export default function AlocacaoPage() {
           <AvailabilityGrid disponibilidade={disponibilidade} analistas={analistas} nomes={nomes} />
         </TabsContent>
         <TabsContent value="resources">
-          <ResourceSummary disponibilidade={disponibilidade} analistas={analistas} />
+          <ResourceSummary disponibilidade={disponibilidade} analistas={analistas} nomes={nomes} />
         </TabsContent>
         <TabsContent value="timecard">
             <TimecardGrid analistas={analistas} nomes={nomes} />
