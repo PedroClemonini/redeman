@@ -351,7 +351,7 @@ export default function RegisterSitePage() {
       <div className='flex flex-wrap items-center justify-between gap-4'>
         <PageHeader
           title={siteId ? "Editar Site" : "Cadastro de Sites"}
-          description={siteId ? "Atualize as informações do site." : "Fluxo: Planejamento → Preparação → Migração"}
+          description={siteId ? "Atualize as informações do site." : ""}
         />
         <Button variant="outline" onClick={() => setIsImportMigrationOpen(true)}>
             <Upload className="mr-2" />
