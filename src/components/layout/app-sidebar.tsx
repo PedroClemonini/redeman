@@ -24,16 +24,12 @@ import {
   Router,
   Users,
   GitCompareArrows,
-  ListTodo,
+  GanttChartSquare,
   LogOut,
   Settings,
-  CalendarDays,
-  PlusCircle,
   Link2,
-  Lock,
-  KeyRound,
-  UserCog,
   Workflow,
+  UserCog,
 } from 'lucide-react';
 
 const menuItems = [
@@ -45,17 +41,17 @@ const menuItems = [
   {
     href: '/sites/register',
     label: 'Cadastro Sites',
-    icon: PlusCircle,
+    icon: Building2,
   },
   {
     href: '/tarefa',
     label: 'Tarefas',
-    icon: ListTodo,
+    icon: GanttChartSquare,
   },
   {
     href: '/alocacao',
     label: 'Alocação',
-    icon: CalendarDays,
+    icon: Users,
   },
   {
     href: '/links',
@@ -83,7 +79,7 @@ const managementMenuItems = [
     {
         href: '/users',
         label: 'Users',
-        icon: Users,
+        icon: UserCog,
     },
     {
         href: '/integrations',
