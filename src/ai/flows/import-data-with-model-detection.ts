@@ -48,24 +48,23 @@ const identifyAndSaveTool = ai.defineTool(
             try {
                 // Ensure the record is a plain object
                 const recordData = JSON.parse(JSON.stringify(record));
-                const recordId = recordData.id || doc(collection(firestore, 'temporary')).id; // Generate ID if missing
-                delete recordData.id;
+                // Use the provided ID, or generate a new one if it's missing.
+                const recordId = recordData.id || doc(collection(firestore, 'temporary')).id;
+                
+                // Ensure the final data object has the correct ID.
+                const finalData = { ...recordData, id: recordId };
 
-
-                if (recordData.cargo && recordData.nivel) { // Likely a User
-                    const usersCollection = collection(firestore, 'users');
-                    const newDocRef = doc(usersCollection, recordId);
-                    await setDoc(newDocRef, { id: newDocRef.id, ...recordData });
+                if (finalData.cargo && finalData.nivel) { // Likely a User
+                    const newDocRef = doc(firestore, 'users', recordId);
+                    await setDoc(newDocRef, finalData);
                     userCount++;
-                } else if (recordData.codigo && recordData.qtd_switches) { // Likely a Site/Agencia
-                    const agenciasCollection = collection(firestore, 'agencias');
-                    const newDocRef = doc(agenciasCollection, recordId);
-                    await setDoc(newDocRef, { id: newDocRef.id, ...recordData });
+                } else if (finalData.codigo && finalData.qtd_switches) { // Likely a Site/Agencia
+                    const newDocRef = doc(firestore, 'agencias', recordId);
+                    await setDoc(newDocRef, finalData);
                     siteCount++;
-                } else if (recordData.numero_serie && recordData.hostname) { // Likely a Switch
-                    const switchesCollection = collection(firestore, 'switches');
-                    const newDocRef = doc(switchesCollection, recordId);
-                    await setDoc(newDocRef, { id: newDocRef.id, ...recordData });
+                } else if (finalData.numero_serie && finalData.hostname) { // Likely a Switch
+                    const newDocRef = doc(firestore, 'switches', recordId);
+                    await setDoc(newDocRef, finalData);
                     switchCount++;
                 } else {
                    errors.push(`Could not identify model for record: ${JSON.stringify(recordData)}`);
