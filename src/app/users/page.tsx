@@ -57,7 +57,7 @@ import {
 import type { User } from '@/lib/types';
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, doc, query } from 'firebase/firestore';
-import { addDocumentNonBlocking, updateDocumentNonBlocking, deleteDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import { setDocumentNonBlocking, updateDocumentNonBlocking, deleteDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { ImportDialog } from '@/components/import-dialog';
 import { useToast } from '@/hooks/use-toast';
 
@@ -133,8 +133,11 @@ export default function UsersPage() {
     const formData = new FormData(event.currentTarget);
     const usersCollection = collection(firestore, 'users');
     
-    // Create the user object without an ID first
+    // Generate a new document ID client-side
+    const newDocRef = doc(usersCollection);
+
     const newUserPayload = {
+      id: newDocRef.id, // Include the ID in the payload
       nome: formData.get('name') as string,
       email: formData.get('email') as string,
       cargo: formData.get('cargo') as User['cargo'],
@@ -142,16 +145,8 @@ export default function UsersPage() {
       status: formData.get('status') as User['status'],
     };
 
-    // Let addDocumentNonBlocking handle ID generation
-    const docRefPromise = addDocumentNonBlocking(usersCollection, newUserPayload);
-    
-    // We can get the ID from the returned promise if needed, but it's handled by the function.
-    const newDocRef = await docRefPromise;
-
-    // Update the document with its own ID
-    if (newDocRef) {
-        updateDocumentNonBlocking(newDocRef, { id: newDocRef.id });
-    }
+    // Create the document in a single operation
+    setDocumentNonBlocking(newDocRef, newUserPayload, { merge: false });
 
     toast({
       title: 'Usuário Adicionado',
@@ -439,3 +434,5 @@ export default function UsersPage() {
     </div>
   );
 }
+
+    
