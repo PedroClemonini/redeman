@@ -450,7 +450,13 @@ export default function UnifiedTasksPage() {
                            </Button>
                         </DialogTrigger>
                         <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto">
-                            <FinalReport site={selectedSite} phase={activePhase} title={`Relatório da Fase: ${activePhase}`} />
+                           <DialogHeader>
+                              <DialogTitle>Relatório da Fase: {activePhase}</DialogTitle>
+                              <DialogDescription>
+                                Preencha os detalhes da fase de {activePhase} para gerar o relatório de atividades.
+                              </DialogDescription>
+                            </DialogHeader>
+                            <FinalReport site={selectedSite} phase={activePhase} />
                         </DialogContent>
                      </Dialog>
                   </div>

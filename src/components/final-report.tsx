@@ -17,10 +17,10 @@ import { useToast } from '@/hooks/use-toast';
 import type { SiteEntry } from '@/lib/registered-sites';
 import { RichTextEditor } from './rich-text-editor';
 import { nomes as analistasNomes } from '@/lib/data';
+import { DialogClose } from '@radix-ui/react-dialog';
 
 interface FinalReportProps {
   phase: string | null;
-  title: string;
   site: SiteEntry | null;
 }
 
@@ -32,7 +32,7 @@ const preRegisteredEmails = Object.values(analistasNomes).map(nome => ({
 preRegisteredEmails.push({ name: 'Irlei Rodrigues (ZOOM)', email: 'irlei@zoom.com'});
 
 
-export function FinalReport({ phase, title, site }: FinalReportProps) {
+export function FinalReport({ phase, site }: FinalReportProps) {
   const [reportContent, setReportContent] = useState('');
   const [status, setStatus] = useState('');
   const [startTime, setStartTime] = useState('');
@@ -75,13 +75,7 @@ export function FinalReport({ phase, title, site }: FinalReportProps) {
   return (
     <>
       <Card className="border-0 shadow-none">
-        <CardHeader>
-          <CardTitle>{title}</CardTitle>
-          <CardDescription>
-            Preencha os detalhes da fase de {phase} para gerar o relatório de atividades.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
+        <CardContent className="space-y-6 pt-6">
           <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
              <div>
                 <Label htmlFor="report-status">Status (Obrigatório)</Label>
@@ -172,7 +166,9 @@ export function FinalReport({ phase, title, site }: FinalReportProps) {
 
         </CardContent>
         <CardFooter className="flex justify-end gap-2">
-            <Button variant="secondary">Fechar</Button>
+            <DialogClose asChild>
+                <Button variant="secondary">Fechar</Button>
+            </DialogClose>
             <Button onClick={handleSave} className="bg-green-600 hover:bg-green-700">Salvar Atualização</Button>
         </CardFooter>
       </Card>
