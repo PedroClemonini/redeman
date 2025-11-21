@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Download } from 'lucide-react';
 import { alocacao, disponibilidade, analistas, nomes } from '@/lib/data';
 import { TimecardGrid } from './timecard-grid';
+import { ResourceSummary } from './resource-summary';
 
 export default function AlocacaoPage() {
 
@@ -32,9 +33,10 @@ export default function AlocacaoPage() {
         </Button>
       </div>
       <Tabs defaultValue="allocation">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="allocation">Alocação por Analista</TabsTrigger>
           <TabsTrigger value="availability">Grade de Disponibilidade</TabsTrigger>
+          <TabsTrigger value="resources">Recursos</TabsTrigger>
           <TabsTrigger value="timecard">Cartão de Ponto (Grid)</TabsTrigger>
         </TabsList>
         <TabsContent value="allocation">
@@ -42,6 +44,9 @@ export default function AlocacaoPage() {
         </TabsContent>
         <TabsContent value="availability">
           <AvailabilityGrid disponibilidade={disponibilidade} analistas={analistas} nomes={nomes} />
+        </TabsContent>
+        <TabsContent value="resources">
+          <ResourceSummary disponibilidade={disponibilidade} analistas={analistas} />
         </TabsContent>
         <TabsContent value="timecard">
             <TimecardGrid analistas={analistas} nomes={nomes} />
