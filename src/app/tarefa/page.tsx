@@ -27,13 +27,13 @@ import { useCollection, useFirestore, useMemoFirebase } from "@/firebase"
 import { collection, doc, query } from 'firebase/firestore'
 import { Input } from "@/components/ui/input"
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
 import {
   Popover,
   PopoverContent,
@@ -442,17 +442,17 @@ export default function UnifiedTasksPage() {
                         Responsável: {tasks[0]?.responsible}
                       </CardDescription>
                     </div>
-                     <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
+                     <Dialog>
+                        <DialogTrigger asChild>
                            <Button variant="outline" size="sm">
                                 Report
                                 <MoreHorizontal className="ml-2 h-4 w-4" />
                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-full max-w-2xl p-4">
+                        </DialogTrigger>
+                        <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto">
                             <FinalReport site={selectedSite} phase={activePhase} title={`Relatório da Fase: ${activePhase}`} />
-                        </DropdownMenuContent>
-                     </DropdownMenu>
+                        </DialogContent>
+                     </Dialog>
                   </div>
                   <Progress value={phaseProgress} className="mt-4 h-2" />
                 </CardHeader>
