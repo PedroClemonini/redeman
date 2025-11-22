@@ -18,6 +18,7 @@ export type SiteEntry = {
   preparacao: Partial<Stage>;
   migracao: Partial<Stage>;
   linkWhatsapp: string;
+  qtd_equipamentos?: number;
 };
 
 // Helper to convert date from DD/MM/YYYY to YYYY-MM-DD
@@ -28,7 +29,7 @@ const parseDate = (dateString: string | null): string => {
     const year = parts[2].length === 4 ? parts[2] : `20${parts[2]}`;
     return `${year}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
   }
-  return "";
+  return dateString; // Assume YYYY-MM-DD format if not DD/MM/YYYY
 };
 
 // Helper to parse analyst names
@@ -45,9 +46,10 @@ export const registeredSites: SiteEntry[] = [
         localidade: "Taguatinga/DF",
         semana: "Semana 2", 
         planejamento: { date: parseDate("17/11/2025"), v2mr: parseAnalysts("RUAN (M)") }, 
-        preparacao: { date: parseDate("17/11/2025") },
+        preparacao: { date: parseDate("2025-11-17"), v2mr: parseAnalysts("João Ruffino") },
         migracao: { date: parseDate("18/11/2025"), v2mr: parseAnalysts("RUAN (T)") }, 
-        linkWhatsapp: '' 
+        linkWhatsapp: '',
+        qtd_equipamentos: 4
     },
     { 
         id: "site_2", 
@@ -56,9 +58,10 @@ export const registeredSites: SiteEntry[] = [
         localidade: "Goiânia/GO",
         semana: "Semana 2", 
         planejamento: { date: parseDate("17/11/2025"), v2mr: parseAnalysts("GLORIA (M)") }, 
-        preparacao: { date: parseDate("17/11/2025") }, 
+        preparacao: { date: parseDate("2025-11-17"), v2mr: parseAnalysts("Raissa, Abílio, Augusto, João") }, 
         migracao: { date: parseDate("18/11/2025"), v2mr: parseAnalysts("PAULO") }, 
-        linkWhatsapp: '' 
+        linkWhatsapp: '',
+        qtd_equipamentos: 4
     },
     { 
         id: "site_3", 
@@ -78,9 +81,10 @@ export const registeredSites: SiteEntry[] = [
         localidade: "São Paulo/SP",
         semana: "Semana 2",
         planejamento: { },
-        preparacao: { date: parseDate("17/11/2025"), v2mr: parseAnalysts("FERNANDO") },
+        preparacao: { date: parseDate("2025-11-17"), v2mr: parseAnalysts("Nicolas, Clemonini") },
         migracao: { date: parseDate("18/11/2025"), v2mr: parseAnalysts("FERNANDO") },
-        linkWhatsapp: ''
+        linkWhatsapp: '',
+        qtd_equipamentos: 4
     },
     {
         id: "site_5",
@@ -89,9 +93,10 @@ export const registeredSites: SiteEntry[] = [
         localidade: "Goiás/GO",
         semana: "Semana 2",
         planejamento: { },
-        preparacao: { date: parseDate("17/11/2025"), v2mr: parseAnalysts("HELOISA (T)") },
+        preparacao: { date: parseDate("2025-11-17"), v2mr: parseAnalysts("Heloisa") },
         migracao: { date: parseDate("18/11/2025"), v2mr: parseAnalysts("FERNANDO (T)") },
-        linkWhatsapp: ''
+        linkWhatsapp: '',
+        qtd_equipamentos: 4
     },
     {
         id: "site_6",
@@ -100,9 +105,10 @@ export const registeredSites: SiteEntry[] = [
         localidade: "Mato Grosso/MT",
         semana: "Semana 2",
         planejamento: { },
-        preparacao: { date: parseDate("17/11/2025"), v2mr: parseAnalysts("RUAN (T)") },
+        preparacao: { date: parseDate("2025-11-17"), v2mr: parseAnalysts("João Ruffino, Pedro Clemonini") },
         migracao: { date: parseDate("18/11/2025"), v2mr: parseAnalysts("RUAN (M)") },
-        linkWhatsapp: ''
+        linkWhatsapp: '',
+        qtd_equipamentos: 4
     },
     {
         id: "site_7",
@@ -133,9 +139,10 @@ export const registeredSites: SiteEntry[] = [
         localidade: "Mato Grosso do Sul/MS",
         semana: "Semana 2",
         planejamento: { },
-        preparacao: { date: parseDate("18/11/2025"), v2mr: parseAnalysts("ANGEL (M)") },
+        preparacao: { date: parseDate("2025-11-18"), v2mr: parseAnalysts("Paulo Borges") },
         migracao: { date: parseDate("19/11/2025"), v2mr: parseAnalysts("GLORIA") },
-        linkWhatsapp: ''
+        linkWhatsapp: '',
+        qtd_equipamentos: 4
     },
     {
         id: "site_11",
@@ -144,9 +151,10 @@ export const registeredSites: SiteEntry[] = [
         localidade: "Ceará/CE",
         semana: "Semana 2",
         planejamento: { },
-        preparacao: { date: parseDate("18/11/2025"), v2mr: parseAnalysts(null) },
+        preparacao: { date: parseDate("2025-11-18"), v2mr: parseAnalysts("Nicolas, Abílio, Lailton, João Ruffino") },
         migracao: { date: parseDate("19/11/2025"), v2mr: parseAnalysts("FERNANDO") },
-        linkWhatsapp: ''
+        linkWhatsapp: '',
+        qtd_equipamentos: 4
     },
     {
         id: "site_12",
@@ -155,9 +163,10 @@ export const registeredSites: SiteEntry[] = [
         localidade: "Bahia/BA",
         semana: "Semana 2",
         planejamento: { },
-        preparacao: { date: parseDate("18/11/2025"), v2mr: parseAnalysts("MARCELO") },
+        preparacao: { date: parseDate("2025-11-18"), v2mr: parseAnalysts("Heloisa") },
         migracao: { date: parseDate("19/11/2025"), v2mr: parseAnalysts("ANGEL") },
-        linkWhatsapp: ''
+        linkWhatsapp: '',
+        qtd_equipamentos: 5
     },
     {
         id: "site_13",
@@ -188,9 +197,10 @@ export const registeredSites: SiteEntry[] = [
         localidade: "Paraná/PR",
         semana: "Semana 3",
         planejamento: { },
-        preparacao: { date: parseDate("19/11/2025"), v2mr: parseAnalysts("AUGUSTO (M)") },
+        preparacao: { date: parseDate("2025-11-20"), v2mr: parseAnalysts("Pedro Clemonini") },
         migracao: { date: parseDate("20/11/2025"), v2mr: parseAnalysts("GLORIA") },
-        linkWhatsapp: ''
+        linkWhatsapp: '',
+        qtd_equipamentos: 5
     },
     {
         id: "site_16",
@@ -199,9 +209,10 @@ export const registeredSites: SiteEntry[] = [
         localidade: "Goiás/GO",
         semana: "Semana 3",
         planejamento: { },
-        preparacao: { date: parseDate("19/11/2025"), v2mr: parseAnalysts("LAILTON") },
+        preparacao: { date: parseDate("2025-11-19"), v2mr: parseAnalysts("João Ruffino, Paulo Eduardo") },
         migracao: { date: parseDate("20/11/2025"), v2mr: parseAnalysts("PAULO") },
-        linkWhatsapp: ''
+        linkWhatsapp: '',
+        qtd_equipamentos: 4
     },
     {
         id: "site_17",
@@ -210,9 +221,10 @@ export const registeredSites: SiteEntry[] = [
         localidade: "Alagoas/AL",
         semana: "Semana 3",
         planejamento: { },
-        preparacao: { date: parseDate("19/11/2025"), v2mr: parseAnalysts("MARCELO") },
+        preparacao: { date: parseDate("2025-11-19"), v2mr: parseAnalysts("Lailton") },
         migracao: { date: parseDate("20/11/2025"), v2mr: parseAnalysts("PEDRO CLEMONINI") },
-        linkWhatsapp: ''
+        linkWhatsapp: '',
+        qtd_equipamentos: 4
     },
     {
         id: "site_18",
@@ -221,9 +233,10 @@ export const registeredSites: SiteEntry[] = [
         localidade: "Goiás/GO",
         semana: "Semana 3",
         planejamento: { },
-        preparacao: { date: parseDate("19/11/2025"), v2mr: parseAnalysts("RAISSA") },
+        preparacao: { date: parseDate("2025-11-19"), v2mr: parseAnalysts("Augusto, Nicolas, João Ruffino") },
         migracao: { date: parseDate("21/11/2025"), v2mr: parseAnalysts("PAULO SILVA/NICOLAS") }, 
-        linkWhatsapp: '' 
+        linkWhatsapp: '',
+        qtd_equipamentos: 4
     },
     {
         id: "site_19",
@@ -232,9 +245,10 @@ export const registeredSites: SiteEntry[] = [
         localidade: "Goiás/GO",
         semana: "Semana 3",
         planejamento: { },
-        preparacao: { date: parseDate("20/11/2025"), v2mr: parseAnalysts("RAISSA/ABILIO") },
+        preparacao: { date: parseDate("2025-11-20"), v2mr: parseAnalysts("Samuel Pereira") },
         migracao: { date: parseDate("21/11/2025"), v2mr: parseAnalysts(null) },
-        linkWhatsapp: ''
+        linkWhatsapp: '',
+        qtd_equipamentos: 5
     },
     {
         id: "site_20",
@@ -243,9 +257,10 @@ export const registeredSites: SiteEntry[] = [
         localidade: "São Paulo/SP",
         semana: "Semana 3",
         planejamento: { },
-        preparacao: { date: parseDate("20/11/2025"), v2mr: parseAnalysts("JOAO RUFINO, HELOISA (T)") },
+        preparacao: { date: parseDate("2025-11-20"), v2mr: parseAnalysts("Paulo Borges") },
         migracao: { date: parseDate("21/11/2025"), v2mr: parseAnalysts(null) },
-        linkWhatsapp: ''
+        linkWhatsapp: '',
+        qtd_equipamentos: 4
     },
     {
         id: "site_21",
@@ -254,9 +269,10 @@ export const registeredSites: SiteEntry[] = [
         localidade: "Piauí/PI",
         semana: "Semana 3",
         planejamento: { },
-        preparacao: { date: parseDate("20/11/2025"), v2mr: parseAnalysts("NICOLAS") },
+        preparacao: { date: parseDate("2025-11-20"), v2mr: parseAnalysts("Paulo Borges, João Ruffino") },
         migracao: { date: parseDate("21/11/2025"), v2mr: parseAnalysts("ABILIO/PAULO BORGES") },
-        linkWhatsapp: ''
+        linkWhatsapp: '',
+        qtd_equipamentos: 5
     },
     {
         id: "site_22",
@@ -265,9 +281,10 @@ export const registeredSites: SiteEntry[] = [
         localidade: "Sergipe/SE",
         semana: "Semana 3",
         planejamento: { },
-        preparacao: { date: parseDate("21/11/2025"), v2mr: parseAnalysts("RUAN") },
+        preparacao: { date: parseDate("2025-11-21"), v2mr: parseAnalysts(null) },
         migracao: { date: parseDate("22/11/2025"), v2mr: parseAnalysts(null) },
-        linkWhatsapp: ''
+        linkWhatsapp: '',
+        qtd_equipamentos: 8
     },
     {
         id: "site_23",
@@ -276,9 +293,10 @@ export const registeredSites: SiteEntry[] = [
         localidade: "Santa Catarina/SC",
         semana: "Semana 3",
         planejamento: { },
-        preparacao: { date: parseDate("21/11/2025"), v2mr: parseAnalysts("MARCELO") },
+        preparacao: { date: parseDate("2025-11-21"), v2mr: parseAnalysts("João Ruffino, Clemonini") },
         migracao: { date: parseDate("22/11/2025"), v2mr: parseAnalysts("ANGEL") },
-        linkWhatsapp: ''
+        linkWhatsapp: '',
+        qtd_equipamentos: 11
     },
     {
         id: "site_24",
@@ -287,9 +305,10 @@ export const registeredSites: SiteEntry[] = [
         localidade: "Minas Gerais/MG",
         semana: "Semana 3",
         planejamento: { },
-        preparacao: { date: parseDate("21/11/2025"), v2mr: parseAnalysts("AUGUSTO") },
+        preparacao: { date: parseDate("2025-11-21"), v2mr: parseAnalysts(null) },
         migracao: { date: parseDate("22/11/2025"), v2mr: parseAnalysts("AUGUSTO") },
-        linkWhatsapp: ''
+        linkWhatsapp: '',
+        qtd_equipamentos: 11
     },
     {
         id: "site_25",
@@ -298,9 +317,10 @@ export const registeredSites: SiteEntry[] = [
         localidade: "Minas Gerais/MG",
         semana: "Semana 3",
         planejamento: { },
-        preparacao: { date: parseDate("21/11/2025"), v2mr: parseAnalysts("LAILTON (M)") },
+        preparacao: { date: parseDate("2025-11-21"), v2mr: parseAnalysts(null) },
         migracao: { date: parseDate("22/11/2025"), v2mr: parseAnalysts("HELOISA") },
-        linkWhatsapp: ''
+        linkWhatsapp: '',
+        qtd_equipamentos: 10
     },
     {
         id: "site_26",
@@ -309,9 +329,10 @@ export const registeredSites: SiteEntry[] = [
         localidade: "Rio Grande do Sul/RS",
         semana: "Semana 3",
         planejamento: { },
-        preparacao: { date: parseDate("21/11/2025"), v2mr: parseAnalysts("LAILTON/HELOISA") },
+        preparacao: { date: parseDate("2025-11-21"), v2mr: parseAnalysts("Nicolas, Heloisa, Lailton") },
         migracao: { date: parseDate("22/11/2025"), v2mr: parseAnalysts("SAMUEL") },
-        linkWhatsapp: ''
+        linkWhatsapp: '',
+        qtd_equipamentos: 8
     },
     {
         id: "site_27",
@@ -320,9 +341,10 @@ export const registeredSites: SiteEntry[] = [
         localidade: "Espírito Santo/ES",
         semana: "Semana 3",
         planejamento: { },
-        preparacao: { date: parseDate("21/11/2025"), v2mr: parseAnalysts("LUCAS/SAMUEL") },
+        preparacao: { date: parseDate("2025-11-21"), v2mr: parseAnalysts("Samuel Pereira") },
         migracao: { date: parseDate("22/11/2025"), v2mr: parseAnalysts("PAULO SILVA") },
-        linkWhatsapp: ''
+        linkWhatsapp: '',
+        qtd_equipamentos: 14
     },
     {
         id: "site_28",
@@ -331,9 +353,10 @@ export const registeredSites: SiteEntry[] = [
         localidade: "Minas Gerais/MG",
         semana: "Semana 3",
         planejamento: { },
-        preparacao: { date: parseDate("21/11/2025"), v2mr: parseAnalysts("LUCAS (M)/RAISSA (T)") },
+        preparacao: { date: parseDate("2025-11-21"), v2mr: parseAnalysts("Paulo Eduardo") },
         migracao: { date: parseDate("22/11/2025"), v2mr: parseAnalysts("RAISSA") },
-        linkWhatsapp: ''
+        linkWhatsapp: '',
+        qtd_equipamentos: 13
     },
     {
         id: "site_29",
@@ -364,9 +387,10 @@ export const registeredSites: SiteEntry[] = [
         localidade: "Piauí/PI",
         semana: "Semana 3",
         planejamento: { },
-        preparacao: { date: parseDate("21/11/2025"), v2mr: parseAnalysts("RUAN/NICOLAS") },
+        preparacao: { date: parseDate("2025-11-21"), v2mr: parseAnalysts("Nicolas, João R.") },
         migracao: { date: parseDate("22/11/2025"), v2mr: parseAnalysts("AUGUSTO") },
-        linkWhatsapp: ''
+        linkWhatsapp: '',
+        qtd_equipamentos: 8
     },
     {
         id: "site_32",
@@ -378,5 +402,187 @@ export const registeredSites: SiteEntry[] = [
         preparacao: { },
         migracao: { date: parseDate("22/11/2025"), v2mr: parseAnalysts("LAILTON/PEDRO CLEMONINI") },
         linkWhatsapp: ''
+    },
+    {
+        id: "site_33",
+        sigla: "MNS03",
+        descricaoBreve: "Manaus",
+        localidade: "Amazonas/AM",
+        semana: "Semana 1",
+        planejamento: { },
+        preparacao: { },
+        migracao: { date: parseDate("12/11/2025")},
+        linkWhatsapp: '',
+        qtd_equipamentos: 4
+    },
+    {
+        id: "site_34",
+        sigla: "SNO03",
+        descricaoBreve: "Sinop",
+        localidade: "Mato Grosso/MT",
+        semana: "Semana 1",
+        planejamento: { },
+        preparacao: { },
+        migracao: { date: parseDate("12/11/2025")},
+        linkWhatsapp: '',
+        qtd_equipamentos: 4
+    },
+    {
+        id: "site_35",
+        sigla: "GNA04",
+        descricaoBreve: "Goiânia",
+        localidade: "Goiás/GO",
+        semana: "Semana 1",
+        planejamento: { },
+        preparacao: { },
+        migracao: { date: parseDate("12/11/2025")},
+        linkWhatsapp: '',
+        qtd_equipamentos: 4
+    },
+    {
+        id: "site_36",
+        sigla: "CAH01",
+        descricaoBreve: "Cachoeiro de Itapemirim",
+        localidade: "Espírito Santo/ES",
+        semana: "Semana 1",
+        planejamento: { },
+        preparacao: { },
+        migracao: { date: parseDate("12/11/2025")},
+        linkWhatsapp: '',
+        qtd_equipamentos: 4
+    },
+    {
+        id: "site_37",
+        sigla: "AIR01",
+        descricaoBreve: "Ariquemes",
+        localidade: "Rondônia/RO",
+        semana: "Semana 1",
+        planejamento: { },
+        preparacao: { },
+        migracao: { date: parseDate("14/11/2025")},
+        linkWhatsapp: '',
+        qtd_equipamentos: 4
+    },
+    {
+        id: "site_38",
+        sigla: "FLA05",
+        descricaoBreve: "Florianópolis",
+        localidade: "Santa Catarina/SC",
+        semana: "Semana 1",
+        planejamento: { },
+        preparacao: { },
+        migracao: { date: parseDate("13/11/2025")},
+        linkWhatsapp: '',
+        qtd_equipamentos: 4
+    },
+    {
+        id: "site_39",
+        sigla: "LNS01",
+        descricaoBreve: "Lins",
+        localidade: "São Paulo/SP",
+        semana: "Semana 1",
+        planejamento: { },
+        preparacao: { },
+        migracao: { date: parseDate("13/11/2025")},
+        linkWhatsapp: '',
+        qtd_equipamentos: 4
+    },
+    {
+        id: "site_40",
+        sigla: "SLS03",
+        descricaoBreve: "São Luís",
+        localidade: "Maranhão/MA",
+        semana: "Semana 1",
+        planejamento: { },
+        preparacao: { },
+        migracao: { date: parseDate("14/11/2025")},
+        linkWhatsapp: '',
+        qtd_equipamentos: 4
+    },
+    {
+        id: "site_41",
+        sigla: "MRO01",
+        descricaoBreve: "Marabá",
+        localidade: "Pará/PA",
+        semana: "Semana 1",
+        planejamento: { },
+        preparacao: { },
+        migracao: { date: parseDate("14/11/2025")},
+        linkWhatsapp: '',
+        qtd_equipamentos: 4
+    },
+    {
+        id: "site_42",
+        sigla: "BES01",
+        descricaoBreve: "Belém",
+        localidade: "Pará/PA",
+        semana: "Semana 1",
+        planejamento: { },
+        preparacao: { },
+        migracao: { date: parseDate("14/11/2025")},
+        linkWhatsapp: '',
+        qtd_equipamentos: 4
+    },
+    {
+        id: "site_43",
+        sigla: "SMA01",
+        descricaoBreve: "Santa Maria",
+        localidade: "Rio Grande do Sul/RS",
+        semana: "Semana 1",
+        planejamento: { },
+        preparacao: { },
+        migracao: { date: parseDate("14/11/2025")},
+        linkWhatsapp: '',
+        qtd_equipamentos: 5
+    },
+    {
+        id: "site_44",
+        sigla: "PAA01",
+        descricaoBreve: "Palmas",
+        localidade: "Tocantins/TO",
+        semana: "Semana 1",
+        planejamento: { },
+        preparacao: { },
+        migracao: { date: parseDate("15/11/2025")},
+        linkWhatsapp: '',
+        qtd_equipamentos: 10
+    },
+    {
+        id: "site_45",
+        sigla: "SOO03",
+        descricaoBreve: "Sorocaba",
+        localidade: "São Paulo/SP",
+        semana: "Semana 1",
+        planejamento: { },
+        preparacao: { },
+        migracao: { date: parseDate("15/11/2025")},
+        linkWhatsapp: '',
+        qtd_equipamentos: 11
+    },
+    {
+        id: "site_46",
+        sigla: "VGA01",
+        descricaoBreve: "Varginha",
+        localidade: "Minas Gerais/MG",
+        semana: "Semana 1",
+        planejamento: { },
+        preparacao: { },
+        migracao: { date: parseDate("15/11/2025")},
+        linkWhatsapp: '',
+        qtd_equipamentos: 8
+    },
+    {
+        id: "site_47",
+        sigla: "BRU04",
+        descricaoBreve: "Bauru",
+        localidade: "São Paulo/SP",
+        semana: "Semana 3",
+        planejamento: { },
+        preparacao: { date: parseDate("2025-11-21"), v2mr: parseAnalysts("Heloisa, Nicolas") },
+        migracao: { date: parseDate("21/11/2025"), v2mr: parseAnalysts("AUGUSTO") },
+        linkWhatsapp: '',
+        qtd_equipamentos: 11
     }
 ];
+
+    
