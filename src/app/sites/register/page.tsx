@@ -18,7 +18,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { X, Plus, ListTodo, Upload, Search } from 'lucide-react';
+import { X, Plus, ListTodo, Upload, Search, ArrowUpDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { SiteEntry, Person } from '@/lib/registered-sites';
 import { unifiedTasks } from '@/lib/tasks-data';
@@ -34,6 +34,15 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 
 type Status = 'Completo' | 'Em Andamento' | 'Pendente' | 'Não Iniciado';
+type SiteWithProgress = SiteEntry & {
+    planningStatus: Status;
+    preparationStatus: Status;
+    migrationStatus: Status;
+    currentPhase: 'Planejamento' | 'Preparação' | 'Migração' | 'Concluído';
+    currentStatus: Status;
+};
+type SortKey = keyof SiteWithProgress | 'analysts';
+
 
 const statusClasses: Record<Status, string> = {
   'Completo': 'status-concluido',
@@ -109,6 +118,7 @@ export default function RegisterSitePage() {
   const [completedTasks, setCompletedTasks] = useState<Set<string>>(new Set());
   const [isImportMigrationOpen, setIsImportMigrationOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [sortConfig, setSortConfig] = useState<{ key: SortKey | null; direction: 'ascending' | 'descending' }>({ key: 'sigla', direction: 'ascending' });
 
 
   useEffect(() => {
@@ -219,7 +229,7 @@ export default function RegisterSitePage() {
     router.push('/sites');
   };
 
-  const siteProgress = useMemo(() => {
+  const siteProgress = useMemo<SiteWithProgress[]>(() => {
     if (!sites) return [];
     return sites.map(site => {
       const getPhaseStatus = (tasks: typeof unifiedTasks) => {
@@ -277,8 +287,28 @@ export default function RegisterSitePage() {
   }, [sites, completedTasks]);
 
 
+  const requestSort = (key: SortKey) => {
+    let direction: 'ascending' | 'descending' = 'ascending';
+    if (sortConfig.key === key && sortConfig.direction === 'ascending') {
+      direction = 'descending';
+    }
+    setSortConfig({ key, direction });
+  };
+
+  const getSortIcon = (key: SortKey) => {
+    if (sortConfig.key !== key) {
+      return <ArrowUpDown className="ml-2 h-4 w-4 opacity-0 group-hover:opacity-50" />;
+    }
+    return <ArrowUpDown className="ml-2 h-4 w-4" />;
+  };
+
+  const getAnalystsString = (people?: Person[]) => {
+      if (!people || people.length === 0) return "";
+      return people.map(p => p.name).join(', ');
+  }
+
   const sitesByWeek = useMemo(() => {
-    const filteredSites = siteProgress.filter(site => {
+    let filteredSites = siteProgress.filter(site => {
         if (searchTerm === '') return true;
         const searchLower = searchTerm.toLowerCase();
 
@@ -291,24 +321,69 @@ export default function RegisterSitePage() {
         const datePlanejamento = formatDateForSearch(site.planejamento?.date || '');
         const datePreparacao = formatDateForSearch(site.preparacao?.date || '');
         const dateMigracao = formatDateForSearch(site.migracao?.date || '');
+        const analysts = getAnalystsString(site.planejamento?.v2mr || site.preparacao?.v2mr || site.migracao?.v2mr).toLowerCase();
+
 
         return (
             site.sigla.toLowerCase().includes(searchLower) ||
             site.descricaoBreve.toLowerCase().includes(searchLower) ||
             datePlanejamento.includes(searchLower) ||
             datePreparacao.includes(searchLower) ||
-            dateMigracao.includes(searchLower)
+            dateMigracao.includes(searchLower) ||
+            analysts.includes(searchLower)
         );
     });
 
+    if (sortConfig.key) {
+        filteredSites.sort((a, b) => {
+            let aValue: any, bValue: any;
+
+            if (sortConfig.key === 'analysts') {
+                aValue = getAnalystsString(a.planejamento?.v2mr || a.preparacao?.v2mr || a.migracao?.v2mr).toLowerCase();
+                bValue = getAnalystsString(b.planejamento?.v2mr || b.preparacao?.v2mr || b.migracao?.v2mr).toLowerCase();
+            } else {
+                aValue = a[sortConfig.key as keyof SiteWithProgress];
+                bValue = b[sortConfig.key as keyof SiteWithProgress];
+            }
+            
+            if (aValue < bValue) return sortConfig.direction === 'ascending' ? -1 : 1;
+            if (aValue > bValue) return sortConfig.direction === 'ascending' ? 1 : -1;
+            return 0;
+        });
+    }
+
     return filteredSites.reduce((acc, site) => {
-      if (!acc[site.semana]) {
-        acc[site.semana] = [];
+      const week = site.semana || 'Semana indefinida';
+      if (!acc[week]) {
+        acc[week] = [];
       }
-      acc[site.semana].push(site);
+      acc[week].push(site);
       return acc;
-    }, {} as Record<string, typeof siteProgress>);
-  }, [siteProgress, searchTerm]);
+    }, {} as Record<string, SiteWithProgress[]>);
+  }, [siteProgress, searchTerm, sortConfig]);
+
+  
+  const getInitials = (name: string) => {
+    if (!name) return '';
+    return name.split(' ').map(n => n[0]).join('').toUpperCase();
+  }
+
+  const getMeetingLink = (site: SiteWithProgress) => {
+    if (site.planningStatus !== 'Completo' && site.planejamento.link) {
+        return site.planejamento.link;
+    }
+    if (site.preparationStatus !== 'Completo' && site.preparacao.link) {
+        return site.preparacao.link;
+    }
+    if (site.migrationStatus !== 'Completo' && site.migracao.link) {
+        return site.migracao.link;
+    }
+    return site.planejamento.link || site.preparacao.link || site.migracao.link || '';
+  };
+  
+  if (isSiteLoading && siteId) {
+      return <div className="text-center p-8">Carregando dados do site...</div>;
+  }
 
   const AnalystSelector = ({ list, setter, buttonColor }: { list: Person[], setter: React.Dispatch<React.SetStateAction<Person[]>>, buttonColor: string }) => (
     <div>
@@ -345,34 +420,7 @@ export default function RegisterSitePage() {
         </Popover>
     </div>
 );
-
-
-  const getAnalystsString = (people?: Person[]) => {
-      if (!people || people.length === 0) return null;
-      return people.map(p => p.name).join(', ');
-  }
   
-  const getInitials = (name: string) => {
-    return name.split(' ').map(n => n[0]).join('').toUpperCase();
-  }
-
-  const getMeetingLink = (site: SiteEntry & { planningStatus: Status; preparationStatus: Status; migrationStatus: Status; }) => {
-    if (site.planningStatus !== 'Completo' && site.planejamento.link) {
-        return site.planejamento.link;
-    }
-    if (site.preparationStatus !== 'Completo' && site.preparacao.link) {
-        return site.preparacao.link;
-    }
-    if (site.migrationStatus !== 'Completo' && site.migracao.link) {
-        return site.migracao.link;
-    }
-    return site.planejamento.link || site.preparacao.link || site.migracao.link || '';
-  };
-  
-  if (isSiteLoading && siteId) {
-      return <div className="text-center p-8">Carregando dados do site...</div>;
-  }
-
   return (
     <div className="space-y-8">
       <PageHeader title={siteId ? "Editar Site" : "Cadastro de Sites"} />
@@ -515,10 +563,26 @@ export default function RegisterSitePage() {
               <table className="w-full min-w-[1200px] border-collapse text-left text-sm text-gray-600">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-6 py-4 font-semibold text-gray-900">Site</th>
-                    <th className="px-6 py-4 font-semibold text-gray-900">Etapa Atual</th>
-                    <th className="px-6 py-4 font-semibold text-gray-900">Status</th>
-                    <th className="px-6 py-4 font-semibold text-gray-900">Analista(s) V2MR</th>
+                    <th className="px-6 py-4 font-semibold text-gray-900">
+                        <button onClick={() => requestSort('sigla')} className="group flex items-center">
+                            Site {getSortIcon('sigla')}
+                        </button>
+                    </th>
+                    <th className="px-6 py-4 font-semibold text-gray-900">
+                         <button onClick={() => requestSort('currentPhase')} className="group flex items-center">
+                            Etapa Atual {getSortIcon('currentPhase')}
+                        </button>
+                    </th>
+                    <th className="px-6 py-4 font-semibold text-gray-900">
+                        <button onClick={() => requestSort('currentStatus')} className="group flex items-center">
+                            Status {getSortIcon('currentStatus')}
+                        </button>
+                    </th>
+                    <th className="px-6 py-4 font-semibold text-gray-900">
+                        <button onClick={() => requestSort('analysts')} className="group flex items-center">
+                           Analista(s) V2MR {getSortIcon('analysts')}
+                        </button>
+                    </th>
                     <th className="px-6 py-4 font-semibold text-gray-900">Observação</th>
                     <th className="px-6 py-4 font-semibold text-gray-900">Teams</th>
                     <th className="px-6 py-4 font-semibold text-gray-900 text-right">Ações</th>
@@ -528,7 +592,7 @@ export default function RegisterSitePage() {
                   {sitesLoading && <tr><td colSpan={7} className='text-center p-4'>Carregando...</td></tr>}
                   {sitesByWeek[week] && sitesByWeek[week].length > 0 ? (
                     sitesByWeek[week].map(site => {
-                      const { planningStatus, preparationStatus, migrationStatus, currentPhase, currentStatus } = site;
+                      const { currentPhase, currentStatus } = site;
                       const meetingLink = getMeetingLink(site);
                       
                       const analysts = site.planejamento.v2mr || site.preparacao.v2mr || site.migracao.v2mr || [];
@@ -564,7 +628,7 @@ export default function RegisterSitePage() {
                               {currentStatus}
                             </span>
                           </td>
-                          <td className="px-6 py-5">
+                           <td className="px-6 py-5">
                             <div className="flex flex-col items-center gap-2">
                                 <div className="flex -space-x-2">
                                   {analysts.slice(0, 3).map(analyst => (
