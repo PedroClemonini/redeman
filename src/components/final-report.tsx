@@ -24,10 +24,18 @@ interface FinalReportProps {
   site: SiteEntry | null;
 }
 
+const generateUniqueEmail = (fullName: string) => {
+  const parts = fullName.toLowerCase().split(' ');
+  const firstName = parts[0];
+  const lastName = parts.length > 1 ? parts[1].substring(0, 1) : '';
+  return `${firstName}${lastName}@v2mr.com`;
+};
+
+
 // Mock de emails, em um app real viria de um backend
 const preRegisteredEmails = Object.values(analistasNomes).map(nome => ({
     name: `${nome} (V2MR)`,
-    email: `${nome.toLowerCase().split(' ')[0]}@v2mr.com`
+    email: generateUniqueEmail(nome)
 }));
 preRegisteredEmails.push({ name: 'Irlei Rodrigues (ZOOM)', email: 'irlei@zoom.com'});
 
