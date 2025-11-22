@@ -216,16 +216,6 @@ export default function UnifiedTasksPage() {
     }));
   }
 
-  const resetChecklist = () => {
-    if (!selectedSite) return;
-    if (confirm("Tem certeza que deseja resetar todo o checklist para este site?")) {
-      setCompletedItems(new Set())
-      setTimers({})
-      localStorage.removeItem(`tasks-${selectedSite.id}`);
-      localStorage.removeItem(`timers-${selectedSite.id}`);
-    }
-  }
-
   const getPhaseProgress = (phase: string) => {
     if (!selectedSite) return 0;
     const phaseTasks = unifiedTasks.filter(task => task.phase === phase)
@@ -409,10 +399,6 @@ export default function UnifiedTasksPage() {
                 <Button variant="outline" size="sm" onClick={() => setActivePhase(null)}>
                     <ArrowLeft className="mr-2 size-4" />
                     Voltar para Fases
-                </Button>
-                 <Button variant="destructive" size="sm" onClick={resetChecklist}>
-                    <RotateCcw className="mr-2 size-4" />
-                    Resetar Checklist
                 </Button>
             </div>
         </div>
