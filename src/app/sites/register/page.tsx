@@ -119,6 +119,7 @@ export default function RegisterSitePage() {
   const [isImportMigrationOpen, setIsImportMigrationOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortConfig, setSortConfig] = useState<{ key: SortKey | null; direction: 'ascending' | 'descending' }>({ key: 'sigla', direction: 'ascending' });
+  const [selectedWeekFilter, setSelectedWeekFilter] = useState<string>('all');
 
 
   useEffect(() => {
@@ -309,6 +310,9 @@ export default function RegisterSitePage() {
 
   const sitesByWeek = useMemo(() => {
     let filteredSites = siteProgress.filter(site => {
+        const weekMatch = selectedWeekFilter === 'all' || site.semana === selectedWeekFilter;
+        if (!weekMatch) return false;
+
         if (searchTerm === '') return true;
         const searchLower = searchTerm.toLowerCase();
 
@@ -351,16 +355,16 @@ export default function RegisterSitePage() {
             return 0;
         });
     }
-
-    return filteredSites.reduce((acc, site) => {
-      const week = site.semana || 'Semana indefinida';
-      if (!acc[week]) {
-        acc[week] = [];
-      }
-      acc[week].push(site);
-      return acc;
-    }, {} as Record<string, SiteWithProgress[]>);
-  }, [siteProgress, searchTerm, sortConfig]);
+    
+    // This part is now just returning the filtered and sorted list, not grouping by week.
+    return filteredSites;
+  }, [siteProgress, searchTerm, sortConfig, selectedWeekFilter]);
+  
+  const allWeeks = useMemo(() => {
+    if (!siteProgress) return [];
+    const weeks = new Set(siteProgress.map(s => s.semana).filter(Boolean));
+    return ['all', ...Array.from(weeks).sort()];
+  }, [siteProgress]);
 
   
   const getInitials = (name: string) => {
@@ -545,12 +549,26 @@ export default function RegisterSitePage() {
       </Card>
       
       <div className="space-y-6 mt-8">
-        {Object.keys(sitesByWeek).sort().map(week => (
-          <div key={week}>
+        <div>
             <div className="flex justify-between items-center mb-4">
-                <h3 className="text-xl font-bold text-primary">{week}</h3>
+                <div className="w-full max-w-sm">
+                    <Label>Filtrar por Semana</Label>
+                    <Select value={selectedWeekFilter} onValueChange={setSelectedWeekFilter}>
+                        <SelectTrigger>
+                            <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {allWeeks.map(week => (
+                                <SelectItem key={week} value={week}>
+                                    {week === 'all' ? 'Todas as Semanas' : week}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
                 <div className="relative w-full max-w-sm">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Label>Buscar</Label>
+                    <Search className="absolute left-3 top-[calc(1.5rem+8px)] -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input 
                         placeholder="Buscar por sigla, nome, data..." 
                         className="pl-9"
@@ -590,8 +608,8 @@ export default function RegisterSitePage() {
                 </thead>
                 <tbody className="divide-y divide-gray-100">
                   {sitesLoading && <tr><td colSpan={7} className='text-center p-4'>Carregando...</td></tr>}
-                  {sitesByWeek[week] && sitesByWeek[week].length > 0 ? (
-                    sitesByWeek[week].map(site => {
+                  {sitesByWeek && sitesByWeek.length > 0 ? (
+                    sitesByWeek.map(site => {
                       const { currentPhase, currentStatus } = site;
                       const meetingLink = getMeetingLink(site);
                       
@@ -678,10 +696,9 @@ export default function RegisterSitePage() {
               </table>
             </div>
              <div className="mt-6 text-center text-sm text-gray-500">
-                Total: <strong>{sitesByWeek[week]?.length || 0} sites</strong> • {week}
+                Total: <strong>{sitesByWeek?.length || 0} sites</strong>
             </div>
           </div>
-        ))}
       </div>
       <ImportDialog modelName="SiteMigration" open={isImportMigrationOpen} onOpenChange={setIsImportMigrationOpen} />
     </div>
