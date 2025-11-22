@@ -4,6 +4,7 @@
 
 import { useState, useEffect, useMemo } from "react"
 import { useSearchParams } from 'next/navigation'
+import Link from 'next/link';
 import {
   Card,
   CardContent,
@@ -16,7 +17,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Progress } from "@/components/ui/progress"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { CheckCircle2, Circle, ArrowLeft, RotateCcw, Play, Pause, Square, Calendar, Search, MoreHorizontal } from 'lucide-react'
+import { CheckCircle2, Circle, ArrowLeft, Link2, Play, Pause, Square, Calendar, Search, MoreHorizontal } from 'lucide-react'
 import { FinalReport } from "@/components/final-report"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import type { SiteEntry } from "@/lib/registered-sites"
@@ -428,23 +429,31 @@ export default function UnifiedTasksPage() {
                         Responsável: {tasks[0]?.responsible}
                       </CardDescription>
                     </div>
-                     <Dialog>
-                        <DialogTrigger asChild>
-                           <Button variant="outline" size="sm">
-                                Report
-                                <MoreHorizontal className="ml-2 h-4 w-4" />
-                           </Button>
-                        </DialogTrigger>
-                        <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto">
-                           <DialogHeader>
-                              <DialogTitle>Relatório da Fase: {activePhase}</DialogTitle>
-                              <DialogDescription>
-                                Preencha os detalhes da fase de {activePhase} para gerar o relatório de atividades.
-                              </DialogDescription>
-                            </DialogHeader>
-                            <FinalReport site={selectedSite} phase={activePhase} />
-                        </DialogContent>
-                     </Dialog>
+                    <div className="flex items-center gap-2">
+                      <Button variant="outline" size="sm" asChild>
+                          <Link href="/links" target="_blank">
+                              <Link2 className="mr-2" />
+                              Links Úteis
+                          </Link>
+                      </Button>
+                      <Dialog>
+                          <DialogTrigger asChild>
+                            <Button variant="outline" size="sm">
+                                  Report
+                                  <MoreHorizontal className="ml-2 h-4 w-4" />
+                            </Button>
+                          </DialogTrigger>
+                          <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto">
+                            <DialogHeader>
+                                <DialogTitle>Relatório da Fase: {activePhase}</DialogTitle>
+                                <DialogDescription>
+                                  Preencha os detalhes da fase de {activePhase} para gerar o relatório de atividades.
+                                </DialogDescription>
+                              </DialogHeader>
+                              <FinalReport site={selectedSite} phase={activePhase} />
+                          </DialogContent>
+                      </Dialog>
+                    </div>
                   </div>
                   <Progress value={phaseProgress} className="mt-4 h-2" />
                 </CardHeader>
