@@ -95,53 +95,123 @@ export const unifiedTasks = [
   
     // Fase: Preparação
     {
-      id: "prep-1-1",
-      title: "Solicitar credenciais de acesso às instalações",
+      id: "prep-1",
+      title: "Chegada dos técnicos",
       phase: "preparacao",
       phaseTitle: "Preparação",
       responsible: "Field"
     },
     {
-      id: "prep-1-2",
-      title: "Validar acesso físico às salas técnicas",
+      id: "prep-2",
+      title: "Checklist de equipamentos (Rotuladora, cabo console, usb com dados de update)",
       phase: "preparacao",
       phaseTitle: "Preparação",
       responsible: "Field"
     },
     {
-      id: "prep-1-3",
-      title: "Confirmar horário e ponto de contato local",
+      id: "prep-3",
+      title: "Enviar os técnico para localizar os equipamentos (criar um documento com informações do andar e disponibilidade de portas de cada equipamento)",
       phase: "preparacao",
       phaseTitle: "Preparação",
       responsible: "Field"
     },
     {
-      id: "prep-2-1",
-      title: "Realizar reunião de alinhamento presencial",
+      id: "prep-4",
+      title: "Fazer uma tabela de relação do número de série do equipamento legado com o número de bem",
       phase: "preparacao",
       phaseTitle: "Preparação",
       responsible: "Field"
     },
     {
-      id: "prep-2-2",
-      title: "Configurar canal Teams para suporte remoto",
+      id: "prep-5",
+      title: "Enviar um dos técnicos para rotular os cabos",
       phase: "preparacao",
       phaseTitle: "Preparação",
       responsible: "Field"
     },
     {
-      id: "prep-2-3",
-      title: "Distribuir responsabilidades entre equipes",
+      id: "prep-6",
+      title: "Enviar um técnico para montagem dos switches de DIST",
       phase: "preparacao",
       phaseTitle: "Preparação",
       responsible: "Field"
     },
     {
-      id: "prep-2-4",
-      title: "Confirmar disponibilidade de todos os envolvidos",
+      id: "prep-7",
+      title: "Pedir para o técnico abrir o teams e compartilhar a tela para acesso remoto",
       phase: "preparacao",
       phaseTitle: "Preparação",
       responsible: "Field"
+    },
+    {
+      id: "prep-8",
+      title: "Confirmar montagem de todos os switches DIST",
+      phase: "preparacao",
+      phaseTitle: "Preparação",
+      responsible: "Field"
+    },
+    {
+      id: "prep-9",
+      title: "pedir ao técnico para conectar o usb no switch de DIST e o cabo console para acesso remoto",
+      phase: "preparacao",
+      phaseTitle: "Preparação",
+      responsible: "Field"
+    },
+    {
+      id: "prep-10",
+      title: "Executar a configuração do Stack no DIST 1",
+      phase: "preparacao",
+      phaseTitle: "Preparação",
+      responsible: "ZOOM"
+    },
+    {
+      id: "prep-11",
+      title: "Executar a configuração do Stack no DIST 2",
+      phase: "preparacao",
+      phaseTitle: "Preparação",
+      responsible: "ZOOM"
+    },
+    {
+      id: "prep-12",
+      title: "Solicitar ao técnico para conectar o cabo de stack nos DISTS",
+      phase: "preparacao",
+      phaseTitle: "Preparação",
+      responsible: "ZOOM"
+    },
+    {
+      id: "prep-13",
+      title: "Confirmar instalação do Stack",
+      phase: "preparacao",
+      phaseTitle: "Preparação",
+      responsible: "ZOOM"
+    },
+    {
+      id: "prep-14",
+      title: "Rodar script de atualização",
+      phase: "preparacao",
+      phaseTitle: "Preparação",
+      responsible: "ZOOM"
+    },
+    {
+      id: "prep-15",
+      title: "Solicitar ao técnico a montagem dos demais switches",
+      phase: "preparacao",
+      phaseTitle: "Preparação",
+      responsible: "ZOOM"
+    },
+    {
+      id: "prep-16",
+      title: "Rodar script de onboarding",
+      phase: "preparacao",
+      phaseTitle: "Preparação",
+      responsible: "ZOOM"
+    },
+    {
+      id: "prep-17",
+      title: "Após montagem dos switches de acesso repetir os passos de configuração de STACK se necessário, e depois atualização e onboarding",
+      phase: "preparacao",
+      phaseTitle: "Preparação",
+      responsible: "ZOOM"
     },
   
     // Fase: Migração
