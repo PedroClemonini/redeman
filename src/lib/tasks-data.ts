@@ -216,24 +216,87 @@ export const unifiedTasks = [
   
     // Fase: Migração
     {
-      id: "mig-1-1",
-      title: "Criar pasta do site dentro da pasta 'Rollout'",
+      id: "mig-1",
+      title: "Criação do site e equipamentos no iMaster",
+      phase: "migracao",
+      phaseTitle: "Migração",
+      responsible: "ZOOM"
+    },
+    {
+      id: "mig-2",
+      title: "Solicitar confirmação ao banco para migração",
       phase: "migracao",
       phaseTitle: "Migração",
       responsible: "ZOOM/Field"
     },
     {
-      id: "mig-1-2",
-      title: "Acessar ferramenta NNMI",
+      id: "mig-3",
+      title: "Pedir ao técnico para desconectar o cabo do roteador do DIST antigo e conectar nas portas corretas do DIST novo",
+      phase: "migracao",
+      phaseTitle: "Migração",
+      responsible: "Field"
+    },
+    {
+      id: "mig-4",
+      title: "Acesso via iMaster, os equipamentos devem subir no iMaster",
       phase: "migracao",
       phaseTitle: "Migração",
       responsible: "ZOOM"
     },
     {
-      id: "mig-1-3",
-      title: "Identificar site a ser migrado e coletar IPs ou ranges",
+      id: "mig-5",
+      title: "Realizar upload do template aos switches",
       phase: "migracao",
       phaseTitle: "Migração",
       responsible: "ZOOM"
     },
+    {
+      id: "mig-6",
+      title: "Realizar a conexão dos demais cabos ao switch Dist",
+      phase: "migracao",
+      phaseTitle: "Migração",
+      responsible: "Field"
+    },
+    {
+      id: "mig-7",
+      title: "Ir até o switch de acesso",
+      phase: "migracao",
+      phaseTitle: "Migração",
+      responsible: "Field"
+    },
+    {
+      id: "mig-8",
+      title: "Conectar cabo de uplink na porta 48 do acesso",
+      phase: "migracao",
+      phaseTitle: "Migração",
+      responsible: "Field"
+    },
+    {
+      id: "mig-9",
+      title: "Realizar a ligação dos demais cabos",
+      phase: "migracao",
+      phaseTitle: "Migração",
+      responsible: "Field"
+    },
+    {
+      id: "mig-10",
+      title: "Verificar se apareceu no iMaster",
+      phase: "migracao",
+      phaseTitle: "Migração",
+      responsible: "ZOOM"
+    },
+    {
+      id: "mig-11",
+      title: "Aplicar template",
+      phase: "migracao",
+      phaseTitle: "Migração",
+      responsible: "ZOOM"
+    },
+    {
+      id: "mig-12",
+      title: "Validar se todos os equipamentos estão funcionando e distribuindo acesso para os usuários",
+      phase: "migracao",
+      phaseTitle: "Migração",
+      responsible: "ZOOM/Field"
+    }
   ];
