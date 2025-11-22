@@ -9,6 +9,43 @@ import { useUser } from '@/firebase/provider';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { seedAgencias } from '@/lib/seed-db';
 import { seedUsers } from '@/lib/seed-users';
+import { registeredSites } from '@/lib/registered-sites';
+import { unifiedTasks } from '@/lib/tasks-data';
+
+
+// Automatically mark planning tasks as complete for sites that are past that stage.
+function prefillCompletedTasks() {
+  const planningTasks = unifiedTasks.filter(task => task.phase === 'planejamento');
+
+  registeredSites.forEach(site => {
+    // Check if the site has a preparation or migration date, indicating planning is complete.
+    const isPlanningComplete = site.preparacao?.date || site.migracao?.date;
+
+    if (isPlanningComplete) {
+      const storageKey = `tasks-${site.id}`;
+      
+      // Avoid overwriting existing completed tasks.
+      const existingData = localStorage.getItem(storageKey);
+      const completedSet = existingData ? new Set(JSON.parse(existingData)) : new Set();
+      
+      let updated = false;
+      planningTasks.forEach(task => {
+        const taskId = `${site.id}-${task.id}`;
+        if (!completedSet.has(taskId)) {
+          completedSet.add(taskId);
+          updated = true;
+        }
+      });
+
+      if (updated) {
+        localStorage.setItem(storageKey, JSON.stringify(Array.from(completedSet)));
+      }
+    }
+  });
+  // Dispatch a storage event to notify other tabs/components of the change.
+  window.dispatchEvent(new Event('storage'));
+}
+
 
 interface FirebaseClientProviderProps {
   children: ReactNode;
@@ -28,6 +65,7 @@ function AuthGate({ children }: { children: ReactNode }) {
     if (firestore) {
       seedAgencias(firestore);
       seedUsers(firestore);
+      prefillCompletedTasks();
     }
   }, [firestore]);
 
