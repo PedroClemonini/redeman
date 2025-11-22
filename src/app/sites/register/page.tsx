@@ -565,14 +565,16 @@ export default function RegisterSitePage() {
                             </span>
                           </td>
                           <td className="px-6 py-5">
-                            <div className="flex -space-x-2">
-                              {analysts.slice(0, 3).map(analyst => (
-                                <div key={analyst.id} title={analyst.name} className="h-8 w-8 rounded-full bg-indigo-600 text-white flex items-center justify-center text-xs font-bold ring-2 ring-white">
-                                    {getInitials(analyst.name)}
+                            <div className="flex flex-col items-center gap-2">
+                                <div className="flex -space-x-2">
+                                  {analysts.slice(0, 3).map(analyst => (
+                                    <div key={analyst.id} title={analyst.name} className="h-8 w-8 rounded-full bg-indigo-600 text-white flex items-center justify-center text-xs font-bold ring-2 ring-white">
+                                        {getInitials(analyst.name)}
+                                    </div>
+                                  ))}
                                 </div>
-                              ))}
+                                {analysts.length > 0 && <span className="text-sm font-medium text-gray-700">{getAnalystsString(analysts)}</span>}
                             </div>
-                            {analysts.length > 0 && <span className="ml-3 text-sm font-medium text-gray-700">{getAnalystsString(analysts)}</span>}
                           </td>
                           <td className="px-6 py-5 text-gray-600">
                             {/* Placeholder for observation */}
