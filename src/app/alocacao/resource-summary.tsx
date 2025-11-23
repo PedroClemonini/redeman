@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import {
   Table,
@@ -25,6 +25,10 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { collection, query } from 'firebase/firestore';
+import type { User } from '@/lib/types';
+
 
 interface ResourceSummaryProps {
   disponibilidade: any;
@@ -53,6 +57,18 @@ const getInitials = (name: string) => {
 
 export function ResourceSummary({ disponibilidade, analistas, nomes }: ResourceSummaryProps) {
   const [currentWeek, setCurrentWeek] = useState(weeks[0]);
+  const firestore = useFirestore();
+
+  const usersQuery = useMemoFirebase(() => {
+    if (!firestore) return null;
+    return query(collection(firestore, 'users'));
+  }, [firestore]);
+  const { data: usersData } = useCollection<User>(usersQuery);
+
+  const usersMap = useMemo(() => {
+    if (!usersData) return new Map();
+    return new Map(usersData.map(user => [user.id, user]));
+  }, [usersData]);
 
   const getAvailableAnalysts = (week: string, dayIndex: number, period: typeof periods[keyof typeof periods]) => {
     const available: string[] = [];
@@ -119,19 +135,23 @@ export function ResourceSummary({ disponibilidade, analistas, nomes }: ResourceS
                         <TableCell key={dayIndex} className="text-center">
                           {availableAnalysts.length > 0 ? (
                             <div className="flex justify-center -space-x-2">
-                              {availableAnalysts.map((analistaId) => (
-                                <Tooltip key={analistaId}>
-                                  <TooltipTrigger asChild>
-                                    <Avatar className="h-8 w-8 border-2 border-background">
-                                      <AvatarImage src={`https://i.pravatar.cc/150?u=${analistaId}`} alt={nomes[analistaId]} />
-                                      <AvatarFallback>{getInitials(nomes[analistaId])}</AvatarFallback>
-                                    </Avatar>
-                                  </TooltipTrigger>
-                                  <TooltipContent>
-                                    <p>{nomes[analistaId]}</p>
-                                  </TooltipContent>
-                                </Tooltip>
-                              ))}
+                              {availableAnalysts.map((analistaId) => {
+                                const user = usersMap.get(analistaId);
+                                const userName = nomes[analistaId] || 'Analista';
+                                return (
+                                  <Tooltip key={analistaId}>
+                                    <TooltipTrigger asChild>
+                                      <Avatar className="h-8 w-8 border-2 border-background">
+                                        <AvatarImage src={user?.fotoUrl || ''} alt={userName} />
+                                        <AvatarFallback>{getInitials(userName)}</AvatarFallback>
+                                      </Avatar>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                      <p>{userName}</p>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                );
+                              })}
                             </div>
                           ) : (
                             <span className="text-muted-foreground">—</span>
